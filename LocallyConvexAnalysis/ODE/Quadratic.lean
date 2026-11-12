@@ -19,7 +19,7 @@ smooth, see `SmoothMBOn.contDiffMBOn`). We study the second order equation
   `c'' = Γ_c (c', c')`,
 
 the local equation of the geodesics of a quadratic spray (equivalently, of a connection with
-Christoffel map `Γ`) on a Banach manifold; see [Lan99, Chapter IV, §3] and [Lar, §§6.1–6.2]. It
+Christoffel map `Γ`) on a Banach manifold; see [Lan99, Chapter IV, §3] and [Lar24, §§6.1–6.2]. It
 is the first order system on `E × E` given by the vector field `sprayField Γ (x, v) = (v, Γ x v v)`.
 
 ## Main results
@@ -49,7 +49,7 @@ follow from the general results on flows applied to the vector field `sprayField
 
 * [H. Glöckner, K.-H. Neeb, *Infinite-Dimensional Lie Groups*][GN26]
 * [S. Lang, *Fundamentals of Differential Geometry*][Lan99]
-* [G. Larotonda, *Estructuras geométricas para las variedades de Banach*][Lar]
+* [G. Larotonda, *Estructuras geométricas para las variedades de Banach*][Lar24]
 -/
 
 @[expose] public section

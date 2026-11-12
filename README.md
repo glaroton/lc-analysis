@@ -639,8 +639,8 @@ The docstrings cite these works by key, as `[GN26, Theorem 1.2.3]`; the BibTeX e
   Monogr. 53, Amer. Math. Soc., 1997, [doi:10.1090/surv/053](https://doi.org/10.1090/surv/053).
 * **[Lan99]** S. Lang, *Fundamentals of Differential Geometry*, Grad. Texts in Math. 191,
   Springer, 1999, [doi:10.1007/978-1-4612-0541-8](https://doi.org/10.1007/978-1-4612-0541-8).
-* **[Lar]** G. Larotonda, *Estructuras geométricas para las variedades de Banach*, 2nd ed., book
-  manuscript, version 3, 2024,
+* **[Lar24]** G. Larotonda, *Estructuras geométricas para las variedades de Banach*, 2nd ed.,
+  unpublished book manuscript, version of 11 September 2024,
   [PDF at the author's page](https://mate.dm.uba.ar/~glaroton/Estructuras_v2.pdf).
 * **[Mar72]** J. E. Marsden, *Darboux's theorem fails for weak symplectic forms*, Proc. Amer.
   Math. Soc. 32 (1972), 590–592,
