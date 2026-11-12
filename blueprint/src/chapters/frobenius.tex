@@ -1,0 +1,135 @@
+\chapter{The Frobenius theorem}
+\label{chap:frobenius}
+
+The local Frobenius theorem on Banach spaces, in the form of Penot \cite{Pen70}: a total
+differential equation $D_1\alpha(x, y) = f(x, \alpha(x, y))$ is integrable when it
+satisfies the symmetry condition (Frob), and the solution is as regular as $f$, including the
+real analytic case. In chart form this is the integrability of involutive split distributions
+\cite[Chapter~VI]{Lan99}. Outside Banach spaces the theorem fails, already for distributions of
+rank one on a Fréchet space (Chapter~\ref{chap:counterexamples}).
+
+\section{The local Frobenius theorem on Banach spaces}
+
+Let $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$, $E$, $F$ Banach spaces over $\mathbb{K}$,
+$O \subseteq E \times F$ open and $f \colon O \to L(E, F)$ of class $\Ck{n}$ over $\mathbb{K}$,
+$1 \le n \le \infty$. We follow Penot, who derives the Frobenius theorem from the implicit
+function theorem \cite[Théorème~1.1]{Pen70}.
+
+\begin{lemma}[Penot's map]
+  \label{lem:penot-map}
+  \lean{LocallyConvex.Analysis.contDiffOn_penotMap, LocallyConvex.Analysis.hasFDerivAt_penotRHS,
+    LocallyConvex.Analysis.hasFDerivAt_penotMap_zero}
+  \leanok
+  \uses{lem:superposition-banach}
+  The map $P(x, y, \delta) = \bigl(x, y, \delta - (s \mapsto f(sx, y + \int_0^s \delta)\,x)\bigr)$
+  on $E \times F \times C([-1, 1], F)$ is $\Ck{n}$ where the curve
+  $s \mapsto (sx, y + \int_0^s \delta)$ has values in $O$. If $(0, y_0) \in O$, its derivative at
+  $(0, y_0, 0)$ is the invertible shear $(a, b, c) \mapsto (a, b, c - f(0, y_0)\,a)$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  $P$ is built from continuous linear maps, the superposition operator of $f$
+  (Lemma~\ref{lem:superposition-banach}) and the continuous bilinear pointwise application
+  $C([-1,1], L(E, F)) \times C([-1,1], E) \to C([-1,1], F)$. At $x = 0$ the term
+  $f(\dots)\,x$ vanishes, and so does the part of its derivative that differentiates $f$.
+\end{proof}
+
+\begin{theorem}[Local Frobenius theorem {\cite[Théorème~1.1 and Remarque~1]{Pen70}}]
+  \label{thm:frobenius-banach}
+  \lean{LocallyConvex.Analysis.exists_frobenius, LocallyConvex.Analysis.exists_frobenius_zero,
+    LocallyConvex.Analysis.exists_frobenius_holomorphic}
+  \leanok
+  \uses{lem:penot-map, thm:banach-holomorphic}
+  Assume (Frob): for $q \in O$ and $a, b \in E$,
+  \[ D_1 f(q)(a)(b) + D_2 f(q)(f(q)\,a)(b) = D_1 f(q)(b)(a) + D_2 f(q)(f(q)\,b)(a). \]
+  For every $(x_0, y_0) \in O$ there are $r > 0$ with $B(x_0, r) \times B(y_0, r) \subseteq O$ and
+  a $\Ck{n}$ map $\alpha \colon B(x_0, r) \times B(y_0, r) \to F$ with $\alpha(x_0, y) = y$ and
+  $D_1 \alpha(x, y) = f(x, \alpha(x, y))$. If $\mathbb{K} = \mathbb{C}$ and $f$ is holomorphic,
+  $\alpha$ is holomorphic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Translate $x_0$ to $0$. By Lemma~\ref{lem:penot-map} and the inverse function theorem there is a
+  $\Ck{n}$ family $\varphi(x, y) \in C([-1, 1], F)$ with $P(x, y, \varphi(x, y)) = (x, y, 0)$ and
+  $\varphi(0, y) = 0$; put $\alpha(x, y) = y + \int_0^1 \varphi(x, y)$. Let
+  $c(s) = (sx, y + \int_0^s \varphi(x, y))$ and $z \in E$. Differentiating the fixed point
+  identity, $K(s) = \partial_x\bigl(\int_0^s \varphi\bigr)(x, y)\,z$ solves the linear equation
+  $u' = Df(c(s))(sz, u)\,x + f(c(s))\,z$ with $u(0) = 0$. By (Frob), so does
+  $L(s) = s\, f(c(s))\,z$, and uniqueness for linear equations gives $K(1) = L(1)$, which is
+  $D_1 \alpha(x, y)\,z = f(x, \alpha(x, y))\,z$. Penot instead shows that $D_3 P$ maps $K'$ and
+  $L'$ to the same point and that it is invertible near $0$; and he works with curves of class
+  $\Ck{1}$ and the implicit function theorem, where we take $\delta = \gamma'$ as unknown. We do
+  not claim this argument is new. For $\mathbb{K} = \mathbb{C}$, holomorphic maps are $\Ck{1}$
+  over $\mathbb{C}$ and $\Ck{1}$ maps over $\mathbb{C}$ are holomorphic
+  (Theorem~\ref{thm:banach-holomorphic}).
+\end{proof}
+
+\begin{theorem}[Local Frobenius theorem, real analytic case {\cite[Théorème~1.1]{Pen70}}]
+  \label{thm:frobenius-real-analytic}
+  \lean{LocallyConvex.Analysis.exists_frobenius_realAnalytic,
+    LocallyConvex.Analysis.frobeniusRayField,
+    LocallyConvex.Analysis.realAnalyticOn_frobeniusRayField}
+  \leanok
+  \uses{thm:frobenius-banach, thm:banach-local-flow-analytic, thm:banach-ode-uniqueness,
+    def:real-analytic}
+  Let $E$, $F$ be real Banach spaces and $f \colon O \to L(E, F)$ real analytic in the sense of
+  Milnor, satisfying (Frob). Then the map $\alpha$ of Theorem~\ref{thm:frobenius-banach} is real
+  analytic on some $B(x_0, r) \times B(y_0, r)$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Penot uses a real analytic implicit function theorem; we argue with flows instead. The vector
+  field $X(s, v, c) = (1, 0, f(x_0 + sv, c)\,v)$ on $\mathbb{R} \times E \times F$ is real
+  analytic. Since $\frac{d}{dt}\alpha(x_0 + tv, y) = f(x_0 + tv, \alpha(x_0 + tv, y))\,v$, the
+  curve $t \mapsto (t, v, \alpha(x_0 + tv, y))$ is an integral curve of $X$ through $(0, v, y)$,
+  so by uniqueness it is $t \mapsto \mathrm{Fl}(t, (0, v, y))$, where $\mathrm{Fl}$ is the local
+  flow of $X$ on $(-\varepsilon, \varepsilon) \times V$. Hence $\alpha(x, y)$ is the last
+  component of $\mathrm{Fl}(\varepsilon/2, (0, \tfrac{2}{\varepsilon}(x - x_0), y))$, which is
+  real analytic by Theorem~\ref{thm:banach-local-flow-analytic}. We do not claim this argument is
+  new.
+\end{proof}
+
+\begin{proposition}[Involutivity in local form {\cite[Chapter~VI, \S1, p.~157]{Lan99}}]
+  \label{prop:frobenius-involutive}
+  \lean{LocallyConvex.Analysis.lieBracket_mem_graph_iff,
+    LocallyConvex.Analysis.frob_iff_involutive}
+  \leanok
+  Let $E$, $F$ be normed spaces and $f \colon E \times F \to L(E, F)$ differentiable at $q$. If
+  the vector fields $X$, $Y$ are differentiable at $q$ and $X(p), Y(p) \in \operatorname{graph}
+  f(p)$ for $p$ near $q$, then $[X, Y](q) \in \operatorname{graph} f(q)$ if and only if
+  $Df(q)(X(q))(Y_1(q)) = Df(q)(Y(q))(X_1(q))$. Hence (Frob) at $q$ holds if and only if the
+  distribution $p \mapsto \operatorname{graph} f(p)$ is involutive at $q$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  Differentiating $X_2 = f\,X_1$ gives $DX_2(q)\,v = Df(q)(v)\,X_1(q) + f(q)\,DX_1(q)\,v$, and
+  similarly for $Y$. In $[X, Y](q)_2 - f(q)\,[X, Y](q)_1$ the terms with $DX_1$ and $DY_1$ cancel,
+  leaving $Df(q)(X(q))\,Y_1(q) - Df(q)(Y(q))\,X_1(q)$. For the converse take the fields
+  $p \mapsto (a, f(p)\,a)$ and $p \mapsto (b, f(p)\,b)$.
+\end{proof}
+
+\begin{theorem}[Frobenius theorem in chart form {\cite[Chapter~VI, Theorems~1.1 and 1.2]{Lan99}}]
+  \label{thm:frobenius-chart}
+  \lean{LocallyConvex.Analysis.exists_frobenius_chart,
+    LocallyConvex.Analysis.exists_frobenius_chart_holomorphic,
+    LocallyConvex.Analysis.map_range_inl_eq_graph}
+  \leanok
+  \uses{thm:frobenius-banach, prop:frobenius-involutive}
+  Under the hypotheses of Theorem~\ref{thm:frobenius-banach}, every $(x_0, y_0) \in O$ is fixed
+  by a $\Ck{n}$ diffeomorphism $\Phi(x, y) = (x, \alpha(x, y))$ between open subsets of $O$ with
+  $D\Phi(p)(a, 0) = (a, f(\Phi(p))\,a)$. Thus $D\Phi^{-1}(z)$ maps $\operatorname{graph} f(z)$
+  onto $E \times 0$: the chart $\Phi^{-1}$ rectifies the distribution. If $\mathbb{K} = \mathbb{C}$
+  and $f$ is holomorphic, $\Phi$ and $\Phi^{-1}$ are holomorphic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Take $\alpha$ from Theorem~\ref{thm:frobenius-banach}. Since $D_1\alpha = f(x, \alpha)$ and
+  $\alpha(x_0, \cdot) = \mathrm{id}$, the derivative of $\Phi$ at $(x_0, y_0)$ is the shear
+  $(a, b) \mapsto (a, f(x_0, y_0)\,a + b)$, which is invertible. Apply the inverse function
+  theorem and restrict to the open set where $D\Phi$ is invertible.
+\end{proof}

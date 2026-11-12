@@ -34,14 +34,14 @@ space `C^∞(V, F)` with its projective limit topology, is in
   `ContDiffLC₂UpTo.prodMk`, `ContDiffLC₂UpTo.add`, `ContDiffLC₂UpTo.const_smul`,
   `contDiffLC₂UpTo_const`, `contDiffLC₂UpTo_prodMk_iff`, `ContDiffLC₂UpTo.pi`,
   `contDiffLC₂UpTo_pi_iff`: `C^{k,ℓ}` maps are stable under the basic operations, and a map into
-  a product is `C^{k,ℓ}` if and only if its components are ([GN26, Lemma 1.7.20]).
+  a product is `C^{k,ℓ}` if and only if its components are ([GN26, Proposition 1.7.20]).
 * `ContDiffLC₂UpTo.contDiffLC_right`, `ContDiffLC₂UpTo.smoothLC_right`: the partial maps
   `f(x, ·)` are `C^j` for all finite `j ≤ ℓ`, and smooth if `ℓ = ∞` ([GN26, Lemma 1.7.18]).
 * `ContDiffLC₂UpTo.contDiffLC_left`: for finite `j ≤ ℓ`, `y ∈ V` and `w ∈ E₂^j`, the map
   `x ↦ d^(0,j) f(x, y, w)` is `C^i` for all finite `i ≤ k` ([GN26, Remark 1.7.19(b)]).
 * `ContDiffLC₂UpTo.comp_prodMap`: `g ∘ (f₁ × f₂)` is `C^{r,s}` if `g` is `C^{r,s}`, `f₁` is
-  `C^r` and `f₂` is `C^s` ([GN26, Lemma 1.7.26]); `ContDiffLC₂UpTo.comp_left`: `g ∘ f` is
-  `C^{r,s}` if `f` is `C^{r,s}` and `g` is `C^{r+s}` ([GN26, Lemma 1.7.28]).
+  `C^r` and `f₂` is `C^s` ([GN26, Proposition 1.7.26]); `ContDiffLC₂UpTo.comp_left`: `g ∘ f` is
+  `C^{r,s}` if `f` is `C^{r,s}` and `g` is `C^{r+s}` ([GN26, Proposition 1.7.28]).
 * `contDiffLC₂UpTo_of_contDiffLC`, `SmoothLC.contDiffLC₂UpTo`: `C^{k+ℓ}` maps on `U × V` are
   `C^{k,ℓ}`, and smooth maps are `C^{∞,∞}` ([GN26, Proposition 1.7.33(a)]).
 * `ContDiffLC₂UpTo.contDiffLC_curryLC`: `f^∨ : U → C^j(V, F)` is `C^i` for finite `i ≤ k`,
@@ -133,7 +133,7 @@ theorem contDiffLC₂UpTo_prodMk_iff {g : E₁ × E₂ → G} (hU : HasDenseInte
     fun i j hi hj ↦ ((contDiffLC₂_prodMk_iff hU hV).1 (h i j hi hj)).2⟩,
     fun h ↦ h.1.prodMk hU hV h.2⟩
 
-/-- **[GN26, Lemma 1.7.20]**, for `k, ℓ ∈ ℕ∞`: maps into products. -/
+/-- **[GN26, Proposition 1.7.20]**, for `k, ℓ ∈ ℕ∞`: maps into products. -/
 theorem ContDiffLC₂UpTo.pi {ι : Type w} {Fi : ι → Type v} [∀ a, AddCommGroup (Fi a)]
     [∀ a, Module ℝ (Fi a)] [∀ a, TopologicalSpace (Fi a)] [∀ a, IsTopologicalAddGroup (Fi a)]
     [∀ a, ContinuousSMul ℝ (Fi a)] [∀ a, LocallyConvexSpace ℝ (Fi a)] [∀ a, T2Space (Fi a)]
@@ -141,7 +141,7 @@ theorem ContDiffLC₂UpTo.pi {ι : Type w} {Fi : ι → Type v} [∀ a, AddCommG
     (hf : ∀ a, ContDiffLC₂UpTo k ℓ (f a) U V) : ContDiffLC₂UpTo k ℓ (fun p a ↦ f a p) U V :=
   fun i j hi hj ↦ ContDiffLC₂.pi hU hV fun a ↦ hf a i j hi hj
 
-/-- **[GN26, Lemma 1.7.20]**, for `k, ℓ ∈ ℕ∞`. -/
+/-- **[GN26, Proposition 1.7.20]**, for `k, ℓ ∈ ℕ∞`. -/
 theorem contDiffLC₂UpTo_pi_iff {ι : Type w} {Fi : ι → Type v} [∀ a, AddCommGroup (Fi a)]
     [∀ a, Module ℝ (Fi a)] [∀ a, TopologicalSpace (Fi a)] [∀ a, IsTopologicalAddGroup (Fi a)]
     [∀ a, ContinuousSMul ℝ (Fi a)] [∀ a, LocallyConvexSpace ℝ (Fi a)] [∀ a, T2Space (Fi a)]
@@ -201,7 +201,7 @@ variable {F₁ : Type u} [AddCommGroup F₁] [Module ℝ F₁] [TopologicalSpace
   {F₂ : Type u} [AddCommGroup F₂] [Module ℝ F₂] [TopologicalSpace F₂]
   [IsTopologicalAddGroup F₂] [ContinuousSMul ℝ F₂] [LocallyConvexSpace ℝ F₂] [T2Space F₂]
 
-/-- **[GN26, Lemma 1.7.26]**, for `r, s ∈ ℕ∞`: `g ∘ (f₁ × f₂)` is `C^{r,s}` if `g` is
+/-- **[GN26, Proposition 1.7.26]**, for `r, s ∈ ℕ∞`: `g ∘ (f₁ × f₂)` is `C^{r,s}` if `g` is
 `C^{r,s}`, `f₁` is `C^i` for all finite `i ≤ r` and `f₂` is `C^j` for all finite `j ≤ s`. -/
 theorem ContDiffLC₂UpTo.comp_prodMap {r s : ℕ∞} {g : F₁ × F₂ → F} {f₁ : E₁ → F₁}
     {f₂ : E₂ → F₂} {U₁ : Set E₁} {U₂ : Set E₂} {V₁ : Set F₁} {V₂ : Set F₂}
@@ -213,7 +213,7 @@ theorem ContDiffLC₂UpTo.comp_prodMap {r s : ℕ∞} {g : F₁ × F₂ → F} {
   fun i j hi hj ↦ (hg i j hi hj).comp_prodMap hU₁ hU₂ hV₁c hV₁ hV₂c hV₂ (hf₁ i hi) (hf₂ j hj)
     h₁ h₂
 
-/-- **[GN26, Lemma 1.7.28]**, for `r, s ∈ ℕ∞`: `g ∘ f` is `C^{r,s}` if `f` is `C^{r,s}` and
+/-- **[GN26, Proposition 1.7.28]**, for `r, s ∈ ℕ∞`: `g ∘ f` is `C^{r,s}` if `f` is `C^{r,s}` and
 `g` is `C^n` for all finite `n ≤ r + s`. -/
 theorem ContDiffLC₂UpTo.comp_left {r s : ℕ∞} {f : E₁ × E₂ → F₁} {g : F₁ → F} {W : Set F₁}
     (hUc : IsLocallyConvexSubset U) (hU : HasDenseInterior U) (hVc : IsLocallyConvexSubset V)

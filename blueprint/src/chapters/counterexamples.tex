@@ -1,0 +1,182 @@
+\chapter{Counterexamples}
+\label{chap:counterexamples}
+
+Many theorems of the Banach theory fail on Fréchet spaces, and most of the hypotheses in this
+document are there because of an example. This chapter collects the examples that are
+formalized. Each one sits next to the positive result it limits, which is also stated in Lean,
+so that the boundary between the two settings can be read off from the formal statements. Two
+further examples are stated where they belong: the counterexamples for series of homogeneous
+polynomials (Remark~\ref{rem:bs-counterexamples}) and Bognár's closed positive definite subspace
+of a Krein space (Example~\ref{ex:kr-bognar}).
+
+Throughout, $s$ denotes the Fréchet space of rapidly decreasing real sequences, with the
+seminorms $p_k(x) = \sup_n (n + 1)^k |x_n|$, and $\R^{\N}$ the Fréchet space of all real
+sequences with the product topology.
+
+\section{Algebras}
+
+\begin{example}[Units need not form an open set {\cite[Example~5.3.9(b)]{GN26}}]
+  \label{ex:ce-units}
+  \lean{LocallyConvex.Analysis.Counterexamples.isOpen_isUnit,
+    LocallyConvex.Analysis.Counterexamples.plateau_not_isUnit,
+    LocallyConvex.Analysis.Counterexamples.tendsto_plateau,
+    LocallyConvex.Analysis.Counterexamples.not_isOpen_isUnit_continuousMap}
+  \leanok
+  In a complete normed ring the units form an open set. In the complete locally convex algebra
+  $C(\R, \R)$, with the compact-open topology, they do not: the plateau functions, equal to $1$ on
+  $[-n, n]$ and to $0$ outside $(-n-1, n+1)$, are not units, and they converge to $1$.
+\end{example}
+
+\section{Inverse functions}
+
+\begin{example}[The inverse function theorem fails on $\R^{\N}$, after {\cite[Counterexample~5.5.1]{Ham82}}]
+  \label{ex:ce-inverse-function}
+  \lean{LocallyConvex.Analysis.Counterexamples.image_mem_nhds_of_hasStrictFDerivAt,
+    LocallyConvex.Analysis.Counterexamples.gradP,
+    LocallyConvex.Analysis.Counterexamples.smoothMBOn_gradP,
+    LocallyConvex.Analysis.Counterexamples.hasDirDerivAt_gradP_zero,
+    LocallyConvex.Analysis.Counterexamples.gSeqN_not_mem_range,
+    LocallyConvex.Analysis.Counterexamples.exists_smooth_not_open}
+  \leanok
+  \uses{def:ck}
+  On a Banach space, a map strictly differentiable at $a$ with derivative the identity sends
+  neighbourhoods of $a$ onto neighbourhoods of $f(a)$. On $\R^{\N}$ the map
+  $P(a)_k = a_k - \sum_{j \le k} j\, a_{k-j} a_j$ is smooth, with $P(0) = 0$ and
+  $\dd P(0) = \mathrm{id}$,
+  but its image is not a neighbourhood of $0$: the sequence $g_n = \frac{1}{n} e_0 + e_n$ tends to
+  $0$, and $g_n \notin P(\R^{\N})$ for $n \ge 2$.
+\end{example}
+
+\begin{remark}
+  Hamilton's operator is $Pf = f - x f f'$ on $C^\infty[-1, 1]$. The map above is its action on the
+  coefficients of formal power series at $0$, which is where his argument takes place; we state
+  it on $\R^{\N}$ to avoid power series.
+\end{remark}
+
+\begin{example}[Lower bounds are not locally uniform]
+  \label{ex:ce-bounded-below}
+  \lean{LocallyConvex.Analysis.Counterexamples.eventually_boundedBelow,
+    LocallyConvex.Analysis.Counterexamples.exists_uniform_boundedBelow,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.smoothMBOn_L,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.not_uniform_boundedBelow,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.not_equicontinuousAt_L_symm,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.counterexample}
+  \leanok
+  \uses{thm:bounded-below}
+  On normed spaces, if $(y, v) \mapsto L(y)v$ is $\Ck{1}$ and $L(y_0)$ is a topological embedding,
+  then the $L(y)$ are bounded below, with a common constant, for $y$ near $y_0$. On $s$ there is a
+  smooth family $L(t)$ of linear automorphisms, $L(t)x = (a_n(t) x_n)_n$, with $L(0) = \mathrm{id}$,
+  whose lower bound is not locally uniform near $t = 0$: the inverses $L(t)^{-1}$ are not
+  equicontinuous on any neighbourhood of $0$. This is why the hypothesis of
+  Definition~\ref{def:equi-embedding} is needed.
+\end{example}
+
+\begin{example}[Invertible derivatives do not reflect smoothness]
+  \label{ex:ce-reflect}
+  \lean{LocallyConvex.Analysis.Counterexamples.RapidDecay.not_reflect_smoothness,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.Reflect.smoothMBOn_j,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.Reflect.bijective_j,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.Reflect.not_contDiffMBOn_γ,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.Reflect.not_continuous_dj_symm,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.Reflect.not_contDiffMBOn_jInv}
+  \leanok
+  \uses{thm:equi-embedding, ex:ce-bounded-below}
+  There are a smooth bijection $j$ of $\R \times s$, whose derivative at every point is a
+  continuous linear automorphism, and a continuous curve $\gamma$ such that $j \circ \gamma$ is
+  smooth but $\gamma$ is not $\Ck{1}$ on any neighbourhood of $0$. Moreover $j$ satisfies the
+  hypothesis of Theorem~\ref{thm:equi-embedding} at each single point but not near every point,
+  $(p, v) \mapsto \dd j(p)^{-1} v$ is not continuous, and $j^{-1}$ is not $\Ck{1}$ near $(0, c)$.
+  Compare Theorem~\ref{thm:bounded-below} and Theorem~\ref{thm:equi-embedding}.
+\end{example}
+
+\section{Differential equations}
+
+\begin{example}[Uniqueness fails for linear equations {\cite[Example~2.4.3]{GN26}}]
+  \label{ex:ce-ode-uniqueness}
+  \lean{LocallyConvex.Analysis.Counterexamples.linearODE_eq_zero,
+    LocallyConvex.Analysis.Counterexamples.leftShift,
+    LocallyConvex.Analysis.Counterexamples.jetCurve,
+    LocallyConvex.Analysis.Counterexamples.hasDirDerivAt_jetCurve,
+    LocallyConvex.Analysis.Counterexamples.exists_linearODE_ne_zero}
+  \leanok
+  On a normed space, the only solution of $y' = Ay$, $y(0) = 0$, for a continuous linear $A$, is
+  $y = 0$ \cite[Proposition~2.4.11]{GN26}. On $\R^{\N}$, with $A$ the left shift, the curve
+  $t \mapsto (h(t), h'(t), h''(t), \dots)$ is a nonzero solution with $y(0) = 0$, where $h$ is the
+  smooth function $h(t) = e^{-1/t}$ for $t > 0$, $h(t) = 0$ for $t \le 0$, all of whose derivatives
+  vanish at $0$.
+\end{example}
+
+\begin{example}[Existence fails for linear equations]
+  \label{ex:ce-ode-existence}
+  \lean{LocallyConvex.Analysis.Counterexamples.exists_linearODE_solution,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.sqMul,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.not_exists_solution,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.not_exists_linearODE_solution}
+  \leanok
+  On a Banach space, $t \mapsto e^{tA} y_0$ solves $y' = Ay$, $y(0) = y_0$, for all $t$. On $s$,
+  with $D x = (n^2 x_n)_n$, the equation $y' = Dy$ has no solution on any interval
+  $[0, \varepsilon)$
+  with $y(0) = (e^{-(n+1)})_n$. This is the heat equation with reversed time on $C^\infty(S^1)$,
+  written on the Fourier side; the example goes back to Milnor \cite{Mil84}, and is presented in
+  \cite[Example~II.3.12]{Nee06} (numbering of the arXiv version).
+\end{example}
+
+\begin{example}[The Frobenius theorem fails on $s$ {\cite[32.12, Example~1]{KM97}}]
+  \label{ex:ce-frobenius}
+  \lean{LocallyConvex.Analysis.Counterexamples.RapidDecay.not_exists_tangent_curve,
+    LocallyConvex.Analysis.Counterexamples.RapidDecay.not_exists_integral_curve}
+  \leanok
+  \uses{ex:ce-ode-existence, thm:frobenius-banach}
+  There are a continuous linear operator $D$ of $s$ and a point $a$ with $Da \neq 0$ such that no
+  curve through $a$ is tangent to the rank one distribution $x \mapsto \R\, Dx$; compare
+  Theorem~\ref{thm:frobenius-banach}.
+\end{example}
+
+\section{Analytic maps}
+
+\begin{example}[Complex analytic maps need not be locally bounded {\cite[Exercise~2.1.10]{GN26}}]
+  \label{ex:ce-local-boundedness}
+  \lean{LocallyConvex.Analysis.Counterexamples.ComplexAnalyticOn.exists_bounded,
+    LocallyConvex.Analysis.Counterexamples.complexAnalyticOn_fSeries,
+    LocallyConvex.Analysis.Counterexamples.not_bddAbove_fSeries,
+    LocallyConvex.Analysis.Counterexamples.complexAnalyticOn_gSeq,
+    LocallyConvex.Analysis.Counterexamples.not_isVonNBounded_gSeq,
+    LocallyConvex.Analysis.Counterexamples.exists_complexAnalyticOn_not_bounded}
+  \leanok
+  \uses{thm:banach-holomorphic}
+  A complex analytic map into a normed space is bounded near each point. The map
+  $f(x) = \sum_k 2^{k+1} x_k^{2k+2}$ is complex analytic on $\ell^1(\N, \mathbb{C})$ but
+  unbounded on
+  the unit ball, and $g(x) = (f((k + 1)x))_k$ is a complex analytic map from $\ell^1$ to the
+  Fréchet space $\mathbb{C}^{\N}$ which is bounded on no neighbourhood of $0$.
+\end{example}
+
+\section{Symplectic forms}
+
+\begin{example}[Darboux's theorem fails for weak symplectic forms {\cite{Mar72}}]
+  \label{ex:ce-darboux}
+  \lean{LocallyConvex.Analysis.Counterexamples.DiffForm.d₂_d₁,
+    LocallyConvex.Analysis.Counterexamples.Marsden.contDiff_Ω,
+    LocallyConvex.Analysis.Counterexamples.Marsden.d₂_Ω,
+    LocallyConvex.Analysis.Counterexamples.Marsden.injective_Ω,
+    LocallyConvex.Analysis.Counterexamples.Marsden.not_surjective_Ω_zero,
+    LocallyConvex.Analysis.Counterexamples.Marsden.no_darboux_chart,
+    LocallyConvex.Analysis.Counterexamples.Marsden.no_vector_bundle_chart,
+    LocallyConvex.Analysis.Counterexamples.Marsden.L2.no_darboux_chart,
+    LocallyConvex.Analysis.Counterexamples.Marsden.L2.no_vector_bundle_chart}
+  \leanok
+  By the Darboux--Weinstein theorem a strong symplectic form on a Banach space is constant in
+  suitable charts \cite{Wei69} (formalized in lc-manifolds). On $H = \ell^2(\N, \R)$, with
+  $S = \mathrm{diag}(1/(n+1))$, Marsden's form $\Omega = -\dd\theta$ on $H \times H$, where
+  $\theta_{(x, e)}(e_1, e_2) = g_x(e, e_1)$ and $g_x(e, f) = \langle (S + \|x\|^2 I) e, f\rangle$,
+  is smooth, closed and weakly nondegenerate, but it admits no Darboux chart at the origin; it
+  cannot even be made constant by a vector bundle chart of the fibres, as observed by the referee
+  of \cite{Mar72}.
+\end{example}
+
+\begin{proof}
+  \leanok
+  $\Omega$ is strongly nondegenerate at $(x, 0)$ for $x \neq 0$, since $S + \|x\|^2 I$ is onto,
+  and not at $(0, 0)$, since $S$ is not onto. A chart carrying $\Omega$ to a constant form at every
+  point would make both nondegeneracy conditions equivalent.
+\end{proof}

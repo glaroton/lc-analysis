@@ -1,0 +1,286 @@
+\chapter{\texorpdfstring{$\Ck{k}$}{Ck} maps on sets with dense interior}
+\label{chap:denseinterior}
+
+Cubes $[0, 1]^n$, half-spaces and their open subsets are not open, but they are the domains of
+the charts of manifolds with boundary or with corners, and of the curves on compact intervals.
+Glöckner and Neeb extend the calculus to \emph{locally convex subsets with dense interior}
+\cite[\S1.4]{GN26}: a map is $\Ck{1}$ on such a set $U$ if it is $\Ck{1}$ on the interior $U^0$
+and its differential extends continuously to $U \times E$. In this chapter we prove that the
+first-order calculus of Chapter~\ref{chap:differentiability}, the higher differentials of
+Chapter~\ref{chap:higher}, and the $\Ck{k,\ell}$ maps and the exponential law of
+Chapter~\ref{chap:mapping} all survive on such sets. Manifolds with rough boundary, whose charts
+take values in these sets \cite[Definition~3.5.1]{GN26}, are built on this chapter in
+lc-manifolds.
+
+As everywhere else, no completeness is assumed: integrals are weak integrals. In a few places
+the proofs depart from those of \cite{GN26}; the remarks say where.
+
+\section{Locally convex subsets and \texorpdfstring{$\Ck{k}$}{Ck} maps}
+
+\begin{definition}[Locally convex subsets with dense interior {\cite[Definitions~1.4.1 and 1.4.4]{GN26}}]
+  \label{def:lc-subset}
+  \lean{LocallyConvex.Analysis.IsLocallyConvexSubset, LocallyConvex.Analysis.HasDenseInterior,
+    LocallyConvex.Analysis.dLC, LocallyConvex.Analysis.ContDiffLC}
+  \leanok
+  \uses{def:ck}
+  A subset $U$ of a locally convex space $E$ is \emph{locally convex} if every point of $U$ has a
+  convex neighbourhood in $U$, and it has \emph{dense interior} if $U \subseteq \overline{U^0}$.
+  A map $f \colon U \to F$ on such a set is $\Ck{0}$ if it is continuous. It is $\Ck{k+1}$ if it
+  is continuous, $f|_{U^0}$ has all directional derivatives, and the differential
+  $\dd(f|_{U^0}) \colon U^0 \times E \to F$ extends to a map $\dd f \colon U \times E \to F$ which
+  is $\Ck{k}$ on $U \times E$.
+\end{definition}
+
+The definition is recursive, as Definition~\ref{def:ck}; Glöckner and Neeb state it through the
+iterated differentials, and the two forms agree by Theorem~\ref{thm:lc-higher} below.
+
+\begin{proposition}[Basic properties]
+  \label{prop:lc-basic}
+  \lean{LocallyConvex.Analysis.contDiffLC_iff_contDiffMBOn,
+    LocallyConvex.Analysis.dLC_eqOn_of_continuousOn, LocallyConvex.Analysis.ContDiffLC.of_hasDirDerivAt,
+    LocallyConvex.Analysis.ContDiffLC.exists_clm}
+  \leanok
+  \uses{def:lc-subset}
+  Let $U \subseteq E$ be a locally convex subset with dense interior.
+  \begin{enumerate}
+    \item On open sets, $\Ck{k}$ in the sense of Definition~\ref{def:lc-subset} is $\Ck{k}$ in the
+      sense of Definition~\ref{def:ck}.
+    \item The continuous extension of $\dd(f|_{U^0})$ is unique.
+    \item $f$ is $\Ck{k+1}$ as soon as $\dd(f|_{U^0})$ has some $\Ck{k}$ extension to $U \times E$,
+      and then $\dd f$ is that extension.
+    \item If $f$ is $\Ck{1}$, then $\dd f(x, \cdot)$ is continuous and linear for every $x \in U$
+      \cite[Lemma~1.4.7]{GN26}.
+  \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  (b) holds because $U^0$ is dense in $U$; (c) is a reformulation of the definition, and all the
+  rules below are proved from it. (d): $\dd f(x, \cdot)$ is a pointwise limit of the linear maps
+  $\dd f(y, \cdot)$, $y \in U^0$, so it is linear, and it is continuous by definition.
+\end{proof}
+
+\section{First-order calculus}
+
+\begin{theorem}[Mean value theorem and difference quotients {\cite[Proposition~1.4.8, Lemma~1.4.9]{GN26}}]
+  \label{thm:lc-mean-value}
+  \lean{LocallyConvex.Analysis.ContDiffLC.integral_dLC,
+    LocallyConvex.Analysis.ContDiffLC.tendsto_quotient}
+  \leanok
+  \uses{prop:lc-basic, prop:mean-value-weak}
+  Let $f \colon U \to F$ be $\Ck{1}$.
+  \begin{enumerate}
+    \item If the segment $[x, x + h]$ lies in $U$, then
+      $\lambda(f(x + h) - f(x)) = \int_0^1 \lambda(\dd f(x + th, h))\, dt$ for every continuous
+      linear functional $\lambda$ on $F$.
+    \item The difference quotients $t^{-1}(f(x + th) - f(x))$ extend continuously to $t = 0$, with
+      value $\dd f(x, h)$.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  For a convex $U$ we shrink the segment towards an interior point, where
+  Proposition~\ref{prop:mean-value-weak} applies, and pass to the limit in a parameter-dependent
+  integral; this gives (a) for convex sets, and (b). For a general locally convex $U$, the
+  function $t \mapsto \lambda(f(x + th))$ has right derivative $\lambda(\dd f(x + th, h))$ on
+  $[0, 1)$ by (b), and (a) follows from the fundamental theorem of calculus for real functions.
+\end{proof}
+
+\begin{remark}
+  Glöckner and Neeb prove the mean value theorem first on convex sets, with an integral in a
+  completion of $F$, and then split a segment into finitely many pieces lying in convex
+  neighbourhoods. The argument above avoids the completion. We do not claim it is new.
+\end{remark}
+
+\begin{theorem}[Rules of calculus {\cite[Propositions~1.4.10 and 1.4.11]{GN26}}]
+  \label{thm:lc-rules}
+  \lean{LocallyConvex.Analysis.ContDiffLC.comp, LocallyConvex.Analysis.ContDiffLC.dLC_comp,
+    LocallyConvex.Analysis.ContDiffLC.prodMk, LocallyConvex.Analysis.ContDiffLC.prodMap,
+    LocallyConvex.Analysis.ContDiffLC.clm_comp, LocallyConvex.Analysis.ContDiffLC.add,
+    LocallyConvex.Analysis.ContDiffLC.bilin, LocallyConvex.Analysis.ContDiffMBOn.contDiffLC,
+    LocallyConvex.Analysis.ContDiffLC.mono, LocallyConvex.Analysis.ContDiffLC.of_local,
+    LocallyConvex.Analysis.contDiffLC_one_iff_partials,
+    LocallyConvex.Analysis.ContDiffLC.dLC_eq_add_partials}
+  \leanok
+  \uses{thm:lc-mean-value, thm:chain-rule}
+  On locally convex subsets with dense interior:
+  \begin{enumerate}
+    \item \textbf{Chain rule.} If $f \colon U \to V$ and $g \colon V \to G$ are $\Ck{k}$, so is
+      $g \circ f$, with $\dd(g \circ f)(x, h) = \dd g(f(x), \dd f(x, h))$.
+    \item Pairs, products of maps, compositions with continuous linear maps, sums and continuous
+      bilinear images of $\Ck{k}$ maps are $\Ck{k}$; restrictions of $\Ck{k}$ maps on open sets
+      are $\Ck{k}$.
+    \item $\Ck{k}$ is inherited by locally convex subsets with dense interior, and it is a local
+      property.
+    \item \textbf{Partial differentials.} A map on $U_1 \times U_2$ is $\Ck{1}$ if and only if its
+      partial differentials exist and extend continuously, and then
+      $\dd f((x, y), (h, k)) = \dd_1 f((x, y), h) + \dd_2 f((x, y), k)$.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  (a) The candidate differential $\dd g(f(x), \dd f(x, h))$ is continuous, and on $U^0$ it is the
+  derivative of $g \circ f$ by Theorem~\ref{thm:lc-mean-value}(b) applied to $g$ along
+  $f(x + th)$; conclude with Proposition~\ref{prop:lc-basic}(c), by induction on $k$. The chain
+  rule needs only $V$ to be locally convex with dense interior, and only density of $U^0$ in $U$.
+  (b)--(d) follow from (a) and Proposition~\ref{prop:lc-basic}(c) as in the open case.
+\end{proof}
+
+Items (b) and (c) are what the transition maps of manifolds with rough boundary need
+\cite[Remark~3.5.2]{GN26}.
+
+\section{Higher differentials, curves and subspaces}
+
+\begin{theorem}[Higher differentials {\cite[Lemma~1.4.5]{GN26}}]
+  \label{thm:lc-higher}
+  \lean{LocallyConvex.Analysis.iteratedDLC, LocallyConvex.Analysis.ContDiffLC.iteratedDLC_extends,
+    LocallyConvex.Analysis.iteratedDLC_unique, LocallyConvex.Analysis.contDiffLC_of_extends,
+    LocallyConvex.Analysis.contDiffLC_iff_extends}
+  \leanok
+  \uses{prop:lc-basic, thm:ck-iff-bastiani}
+  A map $f \colon U \to F$ is $\Ck{k}$ if and only if it is continuous, $f|_{U^0}$ is $\Ck{k}$,
+  and the iterated differentials $\dd^{(j)}(f|_{U^0})$ extend continuously to
+  $U \times E^j$ for $j \le k$. The extensions are unique.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Necessity by induction on $k$, from the definition. For sufficiency, \cite{GN26} uses the
+  version of \cite[Lemma~1.3.12]{GN26} for sets with dense interior
+  \cite[Remark~1.4.12]{GN26}. We argue by induction on $k$ instead, with the explicit formula of
+  Theorem~\ref{thm:ck-iff-bastiani} for the differentials of $\dd(f|_{U^0})$ on the open set
+  $U^0 \times E$, whose right-hand side extends continuously. We do not claim this argument is
+  new.
+\end{proof}
+
+\begin{proposition}[Curves and subspaces {\cite[Lemmas~1.4.13 and 1.4.16]{GN26}}]
+  \label{prop:lc-curves}
+  \lean{LocallyConvex.Analysis.contDiffLC_iff_contDiffCurveOn,
+    LocallyConvex.Analysis.ContDiffLC.dLC_curve, LocallyConvex.Analysis.contDiffLC_subtype_iff,
+    LocallyConvex.Analysis.IsLocallyConvexSubset.exists_seq_interior}
+  \leanok
+  \uses{def:lc-subset}
+  \begin{enumerate}
+    \item On a non-degenerate interval $I \subseteq \R$, the $\Ck{k}$ maps in the sense of
+      Definition~\ref{def:lc-subset} are the $\Ck{k}$ curves, with
+      $\dd\gamma(s, r) = r\gamma'(s)$.
+    \item Let $F_0 \subseteq F$ be a sequentially closed vector subspace. A map $U \to F_0$ is
+      $\Ck{k}$ into $F$ if and only if it is $\Ck{k}$ into $F_0$.
+  \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  (a) At interior points both notions are the derivative; at the end points both ask for a
+  continuous extension. (b) Every point of $U$ is the limit of a sequence in $U^0$, so the
+  continuous extensions of the differentials take values in $F_0$ when those on $U^0$ do.
+\end{proof}
+
+\section{\texorpdfstring{$\Ck{k,\ell}$}{Ckl} maps and the exponential law}
+
+\begin{definition}[$\Ck{k,\ell}$ maps on sets with dense interior {\cite[Definition~1.7.17]{GN26}}]
+  \label{def:lc-ckl}
+  \lean{LocallyConvex.Analysis.ContDiffLC₂, LocallyConvex.Analysis.iteratedDLC₂,
+    LocallyConvex.Analysis.contDiffLC₂_iff, LocallyConvex.Analysis.contDiffLC₂_iff_contDiffMBOn₂,
+    LocallyConvex.Analysis.ContDiffLC₂UpTo, LocallyConvex.Analysis.contDiffLC₂UpTo_coe_iff}
+  \leanok
+  \uses{def:ckl, def:lc-subset}
+  Let $U \subseteq E_1$ and $V \subseteq E_2$ be locally convex subsets with dense interior. A
+  map $f \colon U \times V \to F$ is $\Ck{k,\ell}$ if it is continuous, it is $\Ck{k,\ell}$ on
+  $U^0 \times V^0$ (Definition~\ref{def:ckl}), and the mixed differentials
+  $\dd^{(i,j)}(f|_{U^0 \times V^0})$, $i \le k$, $j \le \ell$, extend to continuous maps on
+  $U \times V \times E_1^i \times E_2^j$. For $k, \ell \in \N_0 \cup \{\infty\}$, $f$ is
+  $\Ck{k,\ell}$ if it is $\Ck{i,j}$ for all finite $i \le k$, $j \le \ell$. On open sets this is
+  Definition~\ref{def:ckl}.
+\end{definition}
+
+\begin{theorem}[Properties of $\Ck{k,\ell}$ maps {\cite[Lemma~1.7.18, Remark~1.7.19(b), Propositions~1.7.20, 1.7.26, 1.7.28, 1.7.33(a)]{GN26}}]
+  \label{thm:lc-ckl}
+  \lean{LocallyConvex.Analysis.ContDiffLC₂.contDiffLC_right,
+    LocallyConvex.Analysis.ContDiffLC₂.contDiffLC_left,
+    LocallyConvex.Analysis.hasDirDerivAt_of_continuousOn_prod,
+    LocallyConvex.Analysis.ContDiffLC₂.contDiffLC₂_partialDLC₁, LocallyConvex.Analysis.ContDiffLC₂.succ_of,
+    LocallyConvex.Analysis.ContDiffLC₂.contDiffLC₂_partialDLC₂,
+    LocallyConvex.Analysis.ContDiffLC₂.zero_succ_of,
+    LocallyConvex.Analysis.contDiffLC₂_pi_iff, LocallyConvex.Analysis.contDiffLC₂_prodMk_iff,
+    LocallyConvex.Analysis.ContDiffLC₂.comp_prodMap, LocallyConvex.Analysis.ContDiffLC₂.comp_left,
+    LocallyConvex.Analysis.ContDiffLC.contDiffLC₂,
+    LocallyConvex.Analysis.ContDiffLC₂UpTo.comp_prodMap,
+    LocallyConvex.Analysis.ContDiffLC₂UpTo.comp_left}
+  \leanok
+  \uses{def:lc-ckl, thm:lc-higher, thm:lc-rules}
+  Let $f \colon U \times V \to F$ be $\Ck{k,\ell}$.
+  \begin{enumerate}
+    \item For every $x \in U$, also on the boundary, $f(x, \cdot)$ is $\Ck{\ell}$ with
+      $\dd^{(j)}(f(x, \cdot)) = \dd^{(0,j)} f(x, \cdot)$; for $y \in V$ and $w \in E_2^j$,
+      $x \mapsto \dd^{(0,j)} f(x, y, w)$ is $\Ck{k}$.
+    \item \textbf{Recursion.} $f$ is $\Ck{k+1,\ell}$ if and only if it is $\Ck{0,\ell}$ and
+      $((x, a), y) \mapsto \dd^{(1,0)} f(x, y, a)$ is $\Ck{k,\ell}$ on
+      $(U \times E_1) \times V$; and
+      similarly in the second variable.
+    \item A map into a product is $\Ck{k,\ell}$ if and only if its components are.
+    \item \textbf{Chain rules.} $(x, y) \mapsto g(f_1(x), f_2(y))$ is $\Ck{r,s}$ if $g$ is
+      $\Ck{r,s}$, $f_1$ is $\Ck{r}$ and $f_2$ is $\Ck{s}$; and $g \circ f$ is $\Ck{r,s}$ if $f$ is
+      $\Ck{r,s}$ and $g$ is $\Ck{r+s}$.
+    \item $\Ck{k+\ell}$ maps on $U \times V$ are $\Ck{k,\ell}$.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  (a) Pass to the limit from $U^0$ with a parametrized form of the mean value inclusion: a family
+  of maps with continuous directional derivatives keeps them at accumulation points of the
+  parameters (the role of \cite[Lemma~1.4.18]{GN26}); conclude with Theorem~\ref{thm:lc-higher}.
+  (b) From explicit formulas for the mixed differentials of the partial differentials, and the
+  interchange of a derivative in the first variable with derivatives in the second. (c)--(e)
+  follow from (b) by induction, with the chain rule of Theorem~\ref{thm:lc-rules}.
+\end{proof}
+
+\begin{remark}
+  Glöckner and Neeb prove the chain rules by computing the mixed differentials of the composite
+  with Faà di Bruno's formula \cite[(1.91)--(1.97)]{GN26}. The recursive characterization (b)
+  avoids those formulas. We do not claim this argument is new.
+\end{remark}
+
+\begin{theorem}[Exponential law on sets with dense interior {\cite[Theorem~1.7.30]{GN26}}]
+  \label{thm:lc-exponential-law}
+  \lean{LocallyConvex.Analysis.ContDiffLCMap, LocallyConvex.Analysis.ContDiffLCMap₂,
+    LocallyConvex.Analysis.curryLC, LocallyConvex.Analysis.ContDiffLC₂.contDiffLC_curryLC,
+    LocallyConvex.Analysis.iteratedDLC_iteratedDLC_curryLC,
+    LocallyConvex.Analysis.ContDiffLCMap₂.isEmbedding_curry,
+    LocallyConvex.Analysis.ContDiffLCMap₂.curryEquiv,
+    LocallyConvex.Analysis.SmoothLCMap, LocallyConvex.Analysis.SmoothLCMap₂,
+    LocallyConvex.Analysis.SmoothLCMap₂.isEmbedding_curry}
+  \leanok
+  \uses{thm:lc-ckl, thm:exponential-law}
+  Give $\Ck{k}(V, F)$ and $\Ck{k,\ell}(U \times V, F)$ the compact-open $\Ck{k}$ and $\Ck{k,\ell}$
+  topologies, as in Chapter~\ref{chap:mapping}. For $f \in \Ck{k,\ell}(U \times V, F)$, the map
+  $f^\vee \colon U \to \Ck{\ell}(V, F)$, $f^\vee(x) = f(x, \cdot)$, is $\Ck{k}$, with
+  \[
+    \dd^{(j)}\bigl(\dd^{(i)}(f^\vee)(x, v)\bigr)(y, w) = \dd^{(i,j)} f(x, y, v, w)
+    \qquad \text{\cite[(1.98)]{GN26}},
+  \]
+  and $\Phi \colon f \mapsto f^\vee$ is a linear topological embedding
+  $\Ck{k,\ell}(U \times V, F) \to \Ck{k}(U, \Ck{\ell}(V, F))$. If $V$ is locally compact, $\Phi$ is
+  an isomorphism of topological vector spaces. The same holds for $k = \ell = \infty$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  At interior points the derivative of $f^\vee$ is $(\dd^{(1,0)} f)^\vee$: the difference
+  quotients converge in $\Ck{\ell}(V, F)$, uniformly on compact subsets of $V \times E_2^j$, by
+  the mean value inclusion with a parameter ranging over all of $V$. The induction then runs
+  through the recursion of Theorem~\ref{thm:lc-ckl}(b). For $k = \ell = \infty$, $\Ck{\infty}(V, F)$
+  is the closed subspace of compatible families in $\prod_j \Ck{j}(V, F)$, and the law follows from
+  the finite orders.
+\end{proof}
+
+\begin{remark}
+  Glöckner and Neeb differentiate $f^\vee$ through the continuous extension of difference
+  quotients of $\Ck{1,0}$ maps \cite[Lemma~1.7.6]{GN26} and an induction on the order of the
+  differentials \cite[(1.99)]{GN26}. Their alternative hypothesis (b) on $k_{\R}$-spaces is also
+  formalized (\texttt{curryEquivOfKRSpace}); first countable spaces are $k_{\R}$-spaces, so the law
+  holds for Fréchet spaces.
+\end{remark}

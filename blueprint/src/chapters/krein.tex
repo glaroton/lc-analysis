@@ -1,9 +1,39 @@
 \chapter{Krein spaces}
+\label{chap:krein}
 
 Indefinite inner product spaces after Bognár \cite{Bog74}: ortho-complemented subspaces of a Krein
 space (Chapter~V), the majorant topology and the intrinsic dimension (Chapter~IV), and continuous
 families of Krein spaces. This is the linear analysis behind the pseudo-Riemannian metrics of
-infinite index (Krein type) in lc-manifolds; it was moved here from lc-manifolds on 2026-11-10.
+infinite index (Krein type) in lc-manifolds.
+
+\section{Complexification of real Hilbert spaces}
+
+\begin{definition}[Complexification of an inner product space]
+  \label{def:kr-complexification}
+  \lean{LocallyConvex.Analysis.HilbertComplexification,
+    LocallyConvex.Analysis.HilbertComplexification.core,
+    LocallyConvex.Analysis.HilbertComplexification.cx,
+    LocallyConvex.Analysis.HilbertComplexification.conjugate,
+    LocallyConvex.Analysis.HilbertComplexification.norm_sq,
+    LocallyConvex.Analysis.HilbertComplexification.cx_mul,
+    LocallyConvex.Analysis.HilbertComplexification.inner_cx,
+    LocallyConvex.Analysis.HilbertComplexification.conjugate_cx}
+  \leanok
+  For a real (or complex, regarded as real) inner product space $E$, the complexification
+  $E_{\mathbb{C}} = E \times E$, with $(x, y)$ standing for $x + iy$, is a complex inner product
+  space with
+  $\langle (x, y), (u, v)\rangle = \langle x, u\rangle + \langle y, v\rangle
+  + i(\langle x, v\rangle - \langle y, u\rangle)$ (real parts of the inner products of $E$), and
+  $\|(x, y)\|^2 = \|x\|^2 + \|y\|^2$; it is complete when $E$ is. A continuous linear operator $T$
+  extends to $T_{\mathbb{C}}(x, y) = (Tx, Ty)$; $T \mapsto T_{\mathbb{C}}$ is multiplicative and
+  preserves adjoints, and the conjugation $(x, y) \mapsto (x, -y)$ commutes with every
+  $T_{\mathbb{C}}$.
+\end{definition}
+
+This is the standard device that brings the continuous functional calculus of the complex
+C$^*$-algebra of operators of $E_{\mathbb{C}}$ to bear on real Hilbert spaces: it gives the
+spectral projections and the positive and negative parts used below over $\R$. Mathlib has no
+complexification of inner product spaces in the version we use.
 
 \section{Ortho-complemented subspaces}
 

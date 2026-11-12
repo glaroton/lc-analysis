@@ -37,10 +37,6 @@ that the manifolds of `C^ℓ` maps need (`LocallyConvexManifolds.MappingSpaceCk`
   with `C^k` components, and a map into a closed subspace is `C^k` as soon as it is `C^k` into
   the ambient space.
 
-These results were first proved in lc-manifolds (`CkSuperposition.lean` and `MappingSpace.lean`,
-in the namespace `LocallyConvex.Manifolds` for those outside `ContDiffMBMap`) and moved here
-since they concern spaces of maps only.
-
 ## Implementation notes
 
 * **Smoothness of superposition operators.** Glöckner–Neeb obtain the smoothness of the maps

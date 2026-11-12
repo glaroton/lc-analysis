@@ -1,0 +1,172 @@
+\chapter{Complex structures and the Newlander--Nirenberg theorem}
+\label{chap:complex}
+
+Almost complex structures on open subsets of real Banach spaces. The Nijenhuis tensor of a real
+analytic almost complex structure $J$ vanishes if and only if the distribution $\ker(J + i)$ is
+involutive, and then, by the Frobenius theorem in the holomorphic setting
+(Chapter~\ref{chap:frobenius}), $J$ admits holomorphic charts: this is the local
+Newlander--Nirenberg theorem in the real analytic case, after Penot \cite{Pen70}. The chapter
+also collects what is needed about complexifications of normed spaces and about complex
+structures on a fixed space, which lc-manifolds uses to give the holomorphic atlas a single
+model.
+
+\section{The Nijenhuis tensor}
+
+\begin{definition}[Nijenhuis tensor {\cite[p.~73]{Pen70}}]
+  \label{def:nijenhuis}
+  \lean{LocallyConvex.Analysis.nijenhuis, LocallyConvex.Analysis.nijenhuis_apply_eq}
+  \leanok
+  For a field of operators $A \colon G \to L(G)$ differentiable at $z$, put
+  \[ N_A(z)(a, b) = DA(z)(A a)\,b - DA(z)(A b)\,a + A\,DA(z)(b)\,a - A\,DA(z)(a)\,b, \]
+  with $A = A(z)$. For vector fields $X$, $Y$ differentiable at $z$,
+  $N_A(z)(X(z), Y(z)) = \bigl([AX, AY] + A^2[X, Y] - A[X, AY] - A[AX, Y]\bigr)(z)$.
+\end{definition}
+
+\begin{theorem}[Vanishing Nijenhuis tensor {\cite[Théorème~3.5, (4) $\Rightarrow$ (6)]{Pen70}}]
+  \label{thm:nijenhuis-involutive}
+  \lean{LocallyConvex.Analysis.lieBracket_mem_ker_of_nijenhuis,
+    LocallyConvex.Analysis.fderiv_anticomm_of_sq_eq_neg_one}
+  \leanok
+  \uses{def:nijenhuis}
+  Let $G$ be a complex normed space and $F$ differentiable at $z$ with $F^2 = -1$ near $z$ and
+  $N_F(z) = 0$. Then $\ker(F + i)$ is involutive at $z$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Differentiating $F^2 = -1$, $DF(z)(v)$ anticommutes with $F(z)$ and maps $\ker(F + i)$ into
+  $\ker(F - i)$. For $Z$, $W$ of type $(0, 1)$, $c = DF(W)Z - DF(Z)W$ lies in $\ker(F - i)$, while
+  $N_F(Z, W) = (F + i)c$ puts it in $\ker(F + i)$; so $c = 0$. Differentiating $FZ = -iZ$ gives
+  $(F + i)[Z, W] = c$.
+\end{proof}
+
+\begin{proposition}[Complexification {\cite[Théorème~3.5, (2) $\Rightarrow$ (4)]{Pen70}}]
+  \label{prop:nijenhuis-complexified}
+  \lean{LocallyConvex.Analysis.nijenhuis_ofReal,
+    LocallyConvex.Analysis.nijenhuis_eq_zero_of_ofReal,
+    LocallyConvex.Analysis.fderiv_ofReal_of_extends}
+  \leanok
+  \uses{def:nijenhuis}
+  If $F(x + i0)$ extends $J(x)$ complex linearly for real $x$ near $x_0$, then
+  $N_F(x_0)(a + i0, b + i0) = N_J(x_0)(a, b) + i0$; hence $N_J(x_0) = 0$ implies $N_F(x_0) = 0$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  The derivative of $F$ in real directions extends that of $J$, and a complex bilinear map on
+  $E_{\mathbb{C}}$ vanishing on real vectors vanishes.
+\end{proof}
+
+\begin{theorem}[Graph form of the $(0, 1)$ distribution {\cite[p.~75]{Pen70}}]
+  \label{thm:nijenhuis-graph}
+  \lean{LocallyConvex.Analysis.exists_graph_frob_of_nijenhuis,
+    LocallyConvex.Analysis.apply_eq_neg_I_iff_graph, LocallyConvex.Analysis.typeSplit,
+    LocallyConvex.Analysis.lieBracket_comp_equiv}
+  \leanok
+  \uses{thm:nijenhuis-involutive, prop:frobenius-involutive}
+  Let $G$ be a complex Banach space and $F \colon O \to L(G)$ holomorphic with $F^2 = -1$ and
+  $N_F = 0$. Near $z_0 \in O$, in the coordinates $G \cong \ker(F(z_0) + i) \times
+  \ker(F(z_0) - i)$, the distribution $z \mapsto \ker(F(z) + i)$ is the field of graphs of a
+  holomorphic map satisfying (Frob).
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  With $Q = (1 + iF(z_0))/2$, $P = 1 - Q$ and $Q_z = (1 + iF(z))/2$, the space $\ker(F(z) + i)$
+  is the graph of $T_z S_z^{-1}$, $S_z = Q Q_z$, $T_z = P Q_z$ on $\ker(F(z_0) + i)$, as long as
+  $S_z$ is invertible and $\|Q_z - Q\| < 1$. (Frob) follows from
+  Theorem~\ref{thm:nijenhuis-involutive} and Proposition~\ref{prop:frobenius-involutive}. Penot
+  works with the projector and his Théorème~2.3 instead; we do not claim this argument is new.
+\end{proof}
+
+\section{The Newlander--Nirenberg theorem, real analytic case}
+
+\begin{lemma}[Holomorphic extension of a real analytic field of operators]
+  \label{lem:holomorphic-extension-clm}
+  \lean{LocallyConvex.Analysis.RealAnalyticOn.exists_holomorphic_extension_clm,
+    LocallyConvex.Analysis.complexifyCLM, LocallyConvex.Analysis.extendC,
+    LocallyConvex.Analysis.clmOfComplexification}
+  \leanok
+  If $J \colon E \to L(E)$ is real analytic on $U$, there is a holomorphic
+  $F \colon W \to L_{\mathbb{C}}(E_{\mathbb{C}})$ on an open $W \supseteq U + i0$ with
+  $F(x + i0) = J(x)_{\mathbb{C}}$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Compose the complex analytic extension of $J$ given by Milnor's definition with the continuous
+  complex linear map $A + iB \mapsto (u + iv \mapsto (Au - Bv) + i(Av + Bu))$.
+\end{proof}
+
+\begin{theorem}[Real analytic inverse function theorem]
+  \label{thm:real-analytic-inverse}
+  \lean{LocallyConvex.Analysis.RealAnalyticOn.exists_openPartialHomeomorph,
+    OpenPartialHomeomorph.realAnalyticOn_symm}
+  \leanok
+  Let $E$, $F$ be real Banach spaces. A real analytic map $f \colon U \to F$ (in the sense of
+  Milnor) with $Df(x_0)$ invertible restricts to a real analytic diffeomorphism between open
+  neighbourhoods of $x_0$ and $f(x_0)$; the inverse of a real analytic diffeomorphism is real
+  analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  A complex analytic extension $g$ of $f$ to an open subset of the normed complexification
+  $E_{\mathbb{C}}$ has derivative $Df(x_0)_{\mathbb{C}}$ at $x_0 + i0$, which is invertible. The
+  holomorphic inverse function theorem gives a holomorphic local inverse $\psi$ of $g$, and
+  $\psi(y + i0) = f^{-1}(y) + i0$ for real $y$ near $f(x_0)$, since
+  $g(f^{-1}(y) + i0) = y + i0$. So $\psi$ extends $f^{-1}$ near $f(x_0)$, and real analyticity is
+  a local property \cite[Lemma~2.2.3]{GN26}.
+\end{proof}
+
+\begin{theorem}[Local Newlander--Nirenberg theorem {\cite[Théorème~3.5, (6) $\Rightarrow$ (1), pp.~75--76]{Pen70}}]
+  \label{thm:newlander-nirenberg}
+  \lean{LocallyConvex.Analysis.exists_holomorphic_chart,
+    LocallyConvex.Analysis.exists_transverse_coordinate,
+    LocallyConvex.Analysis.eqOn_ball_of_ofReal}
+  \leanok
+  \uses{lem:holomorphic-extension-clm, prop:nijenhuis-complexified, thm:nijenhuis-graph,
+    thm:frobenius-chart, thm:real-analytic-inverse}
+  Let $E$ be a real Banach space, $U \subseteq E$ open and $J \colon U \to L(E)$ real analytic
+  with $J^2 = -1$ and $N_J = 0$. Every $x_0 \in U$ lies in the domain of a chart $\varphi$, real
+  analytic with real analytic inverse, into the complex Banach space $\ker(J(x_0)_{\mathbb{C}} - i)$, with
+  $D\varphi(x)\,J(x) = i\,D\varphi(x)$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Extend $J$ to $F$ (Lemma~\ref{lem:holomorphic-extension-clm}). $F^2 = -1$ and $N_F = 0$ hold at
+  the real points (Proposition~\ref{prop:nijenhuis-complexified}), hence on a ball around
+  $x_0 + i0$ by the identity theorem. By Theorem~\ref{thm:nijenhuis-graph} and the holomorphic
+  Frobenius theorem (Theorem~\ref{thm:frobenius-chart}) there is $\Phi$ with $D\Phi^{-1}$ mapping
+  $\ker(F + i)$ into $\ker(F(z_0) + i) \times 0$. The transverse coordinate
+  $w = (\Phi^{-1} \circ \ell)_2$ kills $\ker(F + i)$; at real points, applied to
+  $a + i J(x) a \in \ker(F + i)$, this gives $Dw(x)(J(x) a) = i\,Dw(x)\,a$. At $x_0$ the kernel
+  of $Dw$ is $\ker(F(z_0) + i)$, which meets $E$ only in $0$, and $Dw$ is onto, so
+  $D(w|_E)(x_0)$ is a real isomorphism and the inverse function theorem applies. The chart
+  $w|_E$ is real analytic since $w$ is holomorphic, and so is its inverse
+  (Theorem~\ref{thm:real-analytic-inverse}). Penot uses
+  $x \mapsto f(x, 0)$ instead; we do not claim this variant is new.
+\end{proof}
+
+\begin{theorem}[Complex structures]
+  \label{thm:complex-structure}
+  \lean{LocallyConvex.Analysis.WithComplexStructure,
+    LocallyConvex.Analysis.WithComplexStructure.equivOfIntertwining,
+    LocallyConvex.Analysis.WithComplexStructure.nonempty_equiv_of_norm_lt,
+    LocallyConvex.Analysis.WithComplexStructure.equivTypeOneZero}
+  \leanok
+  \uses{thm:newlander-nirenberg}
+  A complex structure $J$ ($J^2 = -1$) on a real topological vector space $E$ makes it a complex
+  topological vector space, $(a + ib)v = av + bJv$. A real isomorphism $S$ with $J'S = SJ$ is a
+  complex isomorphism $(E, J) \cong (E, J')$; on a Banach space, if $\|(J' - J)J\| < 2$ then
+  $S = 1 - J'J$ is such an isomorphism. Finally $(E, J) \cong \ker(J_{\mathbb{C}} - i)$ by
+  $v \mapsto (v - iJv)/2$: the models of the holomorphic charts of
+  Theorem~\ref{thm:newlander-nirenberg} at different points are isomorphic for nearby points.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  $J'S = J' + J = SJ$, and $S = 2 - (J' - J)J$ is invertible by the Neumann series. The inverse of
+  $v \mapsto (v - iJv)/2$ is $w \mapsto 2\,\mathrm{Re}\,w$.
+\end{proof}

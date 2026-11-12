@@ -1,4 +1,4 @@
-\chapter{Higher differentials}
+\chapter{Higher differentials and rules of calculus}
 \label{chap:higher}
 
 There are two natural ways to say that a map $f \colon U \to F$ is $\Ck{k}$. The one we adopted
@@ -13,8 +13,9 @@ structure of the higher differentials: if $f$ is $\Ck{k+r}$, then $\dd^{(k)} f$ 
 $\Ck{r}$, and for each $x$ the map $\dd^{(k)} f(x; \cdot)$ is continuous, symmetric and
 $k$-linear. We first define the iterated differentials and Bastiani's notion, and prove a
 formula (the slice lemma) relating the iterated differentials of $f$ to those of $\dd f$; this
-formula is the bridge between the two definitions. The last section deals with regularity and
-symmetry. Our reference is \cite[\S1.3]{GN26}.
+formula is the bridge between the two definitions. We then deal with regularity and symmetry, and
+the last section collects the rules of calculus used in practice: the product rule, Taylor's
+formula and the second-order chain rule. Our reference is \cite[\S1.3]{GN26}.
 
 \section{Iterated differentials}
 
@@ -155,550 +156,151 @@ the result depends linearly on each direction.
   Theorem~\ref{thm:iterated-regular}.
 \end{remark}
 
-\section{Superposition operators}
-\label{sec:pushforward}
 
-\begin{theorem}[Superposition operators are smooth {\cite[Prop.~1.7.1]{GN26}}]
-  \label{thm:pushforward}
-  \lean{LocallyConvex.Analysis.valuedIn, LocallyConvex.Analysis.isOpen_valuedIn,
-    LocallyConvex.Analysis.pushforward, LocallyConvex.Analysis.pushforward_apply,
-    LocallyConvex.Analysis.continuousOn_pushforward, LocallyConvex.Analysis.prodCLM,
-    LocallyConvex.Analysis.prodCLM_apply, LocallyConvex.Analysis.hasDirDerivAt_pushforward,
-    LocallyConvex.Analysis.contDiffMBOn_pushforward,
-    LocallyConvex.Analysis.smoothMBOn_pushforward}
+\section{Rules of calculus}
+\label{sec:rules}
+
+With the chain rule (Theorem~\ref{thm:chain-rule}) and the structure of the higher
+differentials (Chapter~\ref{chap:higher}) at hand, we can now derive the remaining rules of
+calculus that are used in practice. All of them are classical in the Banach setting, and their
+statements are the familiar ones; what has to be checked is that the proofs survive without
+norms. In each case the argument either reduces to the chain rule or, through a continuous
+linear functional, to the calculus of real functions of one variable.
+
+We begin with continuous bilinear maps and the product rule. We then compute the derivatives
+of a map along a line, which leads to Taylor's formula in a weak form, valid without any
+completeness assumption on $F$. The section closes with the chain rule for second
+differentials. The references are the results of \cite{GN26} quoted in each proof.
+
+\subsection{Bilinear maps and the product rule}
+
+\begin{theorem}[Bilinear maps]
+  \label{thm:bilinear}
+  \lean{LocallyConvex.Analysis.hasDirDerivAt_bilin, LocallyConvex.Analysis.contDiffMBOn_bilin}
   \leanok
-  Let $K$ be a compact Hausdorff space, $E$, $F$ locally convex spaces and $g \colon E \to F$
-  of class $C^k$ on an open set $U \subseteq E$. With the compact-open topologies, the map
-  $C(K, g) \colon C(K, U) \to C(K, F)$, $\gamma \mapsto g \circ \gamma$, is of class $C^k$, with
-  $\dd C(K, g)(\gamma, \eta) = (x \mapsto \dd g(\gamma(x), \eta(x)))$.
+  \uses{def:ck, thm:partials}
+  Let $\beta \colon A \times B \to F$ be continuous and bilinear. Then $\beta$ is $\Ck{k}$ for
+  every $k$, with $\dd \beta\bigl((a, b), (h, w)\bigr) = \beta(a, w) + \beta(h, b)$.
 \end{theorem}
 
 \begin{proof}
   \leanok
-  Continuity follows from the continuity of the evaluation $C(K, E) \times K \to E$. For the
-  derivative, the difference quotients of $g$ extend continuously to $t = 0$ (Glöckner's lemma),
-  and the tube lemma over the compact space $K$ gives convergence in the compact-open topology.
-  The derivative is the superposition operator of $\dd g$ on
-  $C(K, E \times E) \cong C(K, E) \times C(K, E)$, and the theorem follows by induction on $k$.
+  The difference quotient of $\beta$ at $(a,b)$ in the direction $(h,w)$ is
+  $\beta(a, w) + \beta(h, b) + t\,\beta(h, w)$, and letting $t \to 0$ gives the formula. The
+  differential is therefore a sum of continuous bilinear maps composed with continuous linear
+  maps, and induction on $k$ completes the proof. This is \cite[1.2.3 and 1.3.5]{GN26}.
 \end{proof}
 
-\section{The compact-open \texorpdfstring{$\Ck{k}$}{Ck} topology}
-\label{sec:ck-topology}
+Note that continuity of $\beta$ means joint continuity on $A \times B$. This cannot be
+weakened to separate continuity: for $b = 0$ and $h = 0$ the differential above reduces to
+$\beta(a, w)$, which must be jointly continuous in $(a, w)$.
 
-Let $E$, $F$ be locally convex spaces, $U \subseteq E$ open and $k \in \N$. In Lean, an element
-of $\Ck{k}(U, F)$ is a map $E \to F$ that is $\Ck{k}$ on $U$ and vanishes outside $U$; this does
-not change the mathematics and makes the family of differentials below point-separating.
-
-\begin{definition}[The compact-open $\Ck{k}$ topology {\cite[Def.~1.7.10]{GN26}}]
-  \label{def:ck-topology}
-  \lean{LocallyConvex.Analysis.contDiffMBSubmodule, LocallyConvex.Analysis.ContDiffMBMap,
-    LocallyConvex.Analysis.ContDiffMBMap.iteratedD,
-    LocallyConvex.Analysis.ContDiffMBMap.iteratedDL,
-    LocallyConvex.Analysis.ContDiffMBMap.toPi,
-    LocallyConvex.Analysis.ContDiffMBMap.instTopologicalSpace,
-    LocallyConvex.Analysis.ContDiffMBMap.instIsTopologicalAddGroup,
-    LocallyConvex.Analysis.ContDiffMBMap.instContinuousSMulReal,
-    LocallyConvex.Analysis.ContDiffMBMap.instLocallyConvexSpaceReal,
-    LocallyConvex.Analysis.ContDiffMBMap.instT2Space,
-    LocallyConvex.Analysis.ContDiffMBMap.continuous_iff}
+\begin{corollary}[Product rule]
+  \label{cor:product}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.bilin, LocallyConvex.Analysis.ContDiffMBOn.dMB_bilin}
   \leanok
-  \uses{def:ck, def:iterated, thm:ck-iff-bastiani}
-  The compact-open $\Ck{k}$ topology on $\Ck{k}(U, F)$ is the initial topology with respect to
-  the linear maps $\dd^{(j)} \colon \Ck{k}(U, F) \to C(U \times E^j, F)$,
-  $\gamma \mapsto \dd^{(j)}\gamma$, for $j \leq k$, where $C(U \times E^j, F)$ carries the
-  compact-open topology. It makes $\Ck{k}(U, F)$ a locally convex Hausdorff topological vector
-  space.
-\end{definition}
-
-\begin{lemma}[{\cite[Lemma~1.7.15]{GN26}}, embedding part]
-  \label{lem:ck-embedding}
-  \lean{LocallyConvex.Analysis.ContDiffMBMap.isEmbedding_toPi}
-  \leanok
-  \uses{def:ck-topology}
-  The map $\Ck{k}(U, F) \to \prod_{j \leq k} C(U \times E^j, F)$,
-  $\gamma \mapsto (\dd^{(j)}\gamma)_{j \leq k}$, is a linear topological embedding.
-\end{lemma}
-
-\begin{proof}
-  \leanok
-  This holds by definition of the topology; injectivity comes from $\dd^{(0)}\gamma = \gamma$.
-\end{proof}
-
-\begin{lemma}[Limits of differentiable maps]
-  \label{lem:limit-differentiable}
-  \lean{LocallyConvex.Analysis.hasDirDerivAt_of_tendsto}
-  \leanok
-  \uses{lem:mean-value-inclusion}
-  Let $U \subseteq E$ be open, $y \in E$, and let $(g_i)$ be a net of maps $E \to F$ converging
-  pointwise on $U$ to $g$, such that each $g_i$ has directional derivatives $D_i(z)$ in the
-  direction $y$ at all $z \in U$, with $D_i$ continuous on $U$. Suppose that $D_i \to D$ in the
-  compact-open sense on $U$ (for every compact $K \subseteq U$ and open $O \supseteq D(K)$,
-  eventually $D_i(K) \subseteq O$), with $D$ continuous on $U$. Then $g$ has directional
-  derivative $D(x)$ in the direction $y$ at every $x \in U$.
-\end{lemma}
-
-\begin{proof}
-  \leanok
-  Let $W$ be a closed convex neighborhood of $D(x)$. For $|s| \leq \delta$, $D(x + sy)$ lies in
-  the interior of $W$, hence so does $D_i(x + sy)$ for $i$ large. By the mean value inclusion,
-  $t^{-1}(g_i(x + ty) - g_i(x)) \in W$ for $0 < |t| \leq \delta$, and letting $i \to \infty$ the
-  same holds for $g$, since $W$ is closed. Glöckner and Neeb use instead their Exercise~1.1.13(b),
-  whose hint goes through weak integrals; no completeness is needed here.
-\end{proof}
-
-\begin{lemma}[{\cite[Lemma~1.7.15]{GN26}}, closed image]
-  \label{lem:ck-closed-image}
-  \lean{LocallyConvex.Analysis.ContDiffMBMap.extendPi,
-    LocallyConvex.Analysis.ContDiffMBMap.isClosed_range_toPi}
-  \leanok
-  \uses{lem:ck-embedding, lem:limit-differentiable, thm:ck-iff-bastiani}
-  The image of $\Ck{k}(U, F)$ in $\prod_{j \leq k} C(U \times E^j, F)$ is closed.
-\end{lemma}
-
-\begin{proof}
-  \leanok
-  Let $h = (h_j)$ be in the closure of the image and $f := h_0$. By induction on $j$ and
-  Lemma~\ref{lem:limit-differentiable}, applied along the filter of $\gamma$ with
-  $(\dd^{(j)}\gamma)_j$ close to $h$, the iterated directional derivatives of $f$ exist and
-  $\dd^{(j)} f = h_j$. By Bastiani's characterization (Theorem~\ref{thm:ck-iff-bastiani}), $f$
-  is $\Ck{k}$.
-\end{proof}
-
-\begin{proposition}[Linear operations {\cite[Prop.~1.7.11, Cor.~1.7.13, 1.7.14]{GN26}}]
-  \label{prop:ck-linear-operations}
-  \lean{LocallyConvex.Analysis.ContDiffMBMap.ofLECLM,
-    LocallyConvex.Analysis.ContDiffMBMap.compRightCLM,
-    LocallyConvex.Analysis.ContDiffMBMap.compLeftCLM,
-    LocallyConvex.Analysis.ContDiffMBMap.prodMkCLM,
-    LocallyConvex.Analysis.ContDiffMBMap.prodEquiv}
-  \leanok
-  \uses{def:ck-topology, thm:chain-rule, lem:prod}
-  The following maps are continuous and linear: the inclusion
-  $\Ck{l}(U, F) \to \Ck{k}(U, F)$ for $k \leq l$; the pullback $\gamma \mapsto \gamma \circ L$,
-  $\Ck{k}(U, F) \to \Ck{k}(L^{-1}(U), F)$, along a continuous linear map $L \colon E_1 \to E$;
-  the postcomposition $\gamma \mapsto g \circ \gamma$ with a continuous linear map $g \colon F
-  \to G$. Moreover $\Ck{k}(U, F \times G) \cong \Ck{k}(U, F) \times \Ck{k}(U, G)$ as
-  topological vector spaces.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  In each case $\dd^{(j)}$ of the image is obtained from $\dd^{(j)}$ of the argument by pre- or
-  postcomposition with a continuous map, or by pairing, and these operations are continuous in
-  the compact-open topology (for pairing one restricts to compact subsets of $U \times E^j$,
-  which are locally compact).
-\end{proof}
-
-\begin{lemma}[The differentials of $\dd\gamma$]
-  \label{lem:iterated-d}
-  \lean{LocallyConvex.Analysis.ContDiffMBOn.iteratedDMB_dMB}
-  \leanok
-  \uses{thm:schwarz, thm:iterated-regular, lem:slice}
-  Let $\gamma \colon U \to F$ be $\Ck{k+1}$ and $j \leq k$. For $x \in U$ and
-  $a, v_1, \dots, v_j, w_1, \dots, w_j \in E$,
+  \uses{thm:bilinear, thm:chain-rule, lem:prod}
+  If $f \colon U \to A$ and $g \colon U \to B$ are $\Ck{k}$ and $\beta$ is continuous and
+  bilinear, then $x \mapsto \beta(f(x), g(x))$ is $\Ck{k}$ and
   \[
-    \dd^{(j)}(\dd\gamma)\bigl((x, a); (v_1, w_1), \dots, (v_j, w_j)\bigr)
-      = \dd^{(j+1)}\gamma(x; a, v_1, \dots, v_j)
-        + \sum_{i=1}^{j} \dd^{(j)}\gamma(x; v_1, \dots, v_{i-1}, w_i, v_{i+1}, \dots, v_j).
+    \dd\bigl(\beta(f, g)\bigr)(x)(h) = \beta\bigl(f(x), \dd g(x)(h)\bigr)
+      + \beta\bigl(\dd f(x)(h), g(x)\bigr).
   \]
-\end{lemma}
-
-\begin{proof}
-  \leanok
-  Induction on $j$. In the inductive step, the first summand is differentiated in the direction
-  $(v_{j+1}, 0)$ by definition of $\dd^{(j+2)}\gamma$, and in the direction $(0, w_{j+1})$ by
-  linearity of $\dd^{(j+1)}\gamma(x; \cdot)$ in its first argument; Schwarz's theorem moves
-  $w_{j+1}$ to the last slot. The other summands depend only on $x$.
-\end{proof}
-
-\begin{proposition}[The differential is continuous]
-  \label{prop:ck-differential}
-  \lean{LocallyConvex.Analysis.ContDiffMBMap.dMap, LocallyConvex.Analysis.ContDiffMBMap.dCLM,
-    LocallyConvex.Analysis.ContDiffMBMap.iteratedD_dMap,
-    LocallyConvex.Analysis.ContDiffMBMap.iteratedD_succ_eq,
-    LocallyConvex.Analysis.ContDiffMBMap.continuous_of_continuous_dMap}
-  \leanok
-  \uses{lem:iterated-d, prop:ck-linear-operations}
-  The map $\dd \colon \Ck{k+1}(U, F) \to \Ck{k}(U \times E, F)$, $\gamma \mapsto \dd\gamma$, is
-  continuous and linear, and the topology of $\Ck{k+1}(U, F)$ is initial with respect to
-  $\gamma \mapsto \gamma \in C(U, F)$ and $\dd$.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  Continuity of $\dd$ follows from Lemma~\ref{lem:iterated-d}. Conversely,
-  $\dd^{(j+1)}\gamma(x; y_0, \dots, y_j) = \dd^{(j)}(\dd\gamma)((x, y_0); (y_1, 0), \dots,
-  (y_j, 0))$ (Lemma~\ref{lem:slice}), so each $\dd^{(j+1)}$ is $\dd^{(j)} \circ \dd$ followed by
-  a precomposition.
-\end{proof}
-
-\begin{theorem}[Superposition operators are continuous {\cite[Prop.~1.7.12, Cor.~1.7.13]{GN26}}]
-  \label{thm:ck-superposition}
-  \lean{LocallyConvex.Analysis.ContDiffMBMap.compGraph,
-    LocallyConvex.Analysis.ContDiffMBMap.dMap_compGraph,
-    LocallyConvex.Analysis.ContDiffMBMap.continuous_compGraph,
-    LocallyConvex.Analysis.ContDiffMBMap.compLeftOfContDiff,
-    LocallyConvex.Analysis.ContDiffMBMap.continuous_compLeftOfContDiff,
-    LocallyConvex.Analysis.ContinuousMap.continuous_comp_graph}
-  \leanok
-  \uses{prop:ck-differential, prop:ck-linear-operations, thm:chain-rule}
-  Let $Z$, $E$, $F$ be locally convex spaces, $U \subseteq Z$ open, $r \in \N$ and
-  $f \colon Z \times E \to F$ of class $\Ck{r}$ on $U \times E$. Then
-  $f_* \colon \Ck{r}(U, E) \to \Ck{r}(U, F)$, $\gamma \mapsto f \circ (\mathrm{id}_U, \gamma)$,
-  is continuous. In particular, for $g \colon E \to F$ of class $\Ck{k}$, the map
-  $\gamma \mapsto g \circ \gamma$, $\Ck{k}(U, E) \to \Ck{k}(U, F)$, is continuous.
-\end{theorem}
-
-\begin{proof}
-  \leanok
-  Glöckner and Neeb use Faà di Bruno's formula. We argue by induction on $r$ instead. For
-  $r = 0$ this is the continuity of $\gamma \mapsto f \circ (\mathrm{id}, \gamma)$ on $C(U, E)$,
-  which follows by restricting to compact subsets. By the chain rule,
-  $\dd(f_*\gamma)(x, v) = \dd f((x, \gamma(x)), (v, \dd\gamma(x, v)))$, that is,
-  $\dd(f_*\gamma) = (\dd f)_*(\gamma \circ \mathrm{pr}_1, \dd\gamma)$ with
-  $(\gamma \circ \mathrm{pr}_1, \dd\gamma) \in \Ck{r-1}(U \times Z, E \times E)$ depending
-  continuously on $\gamma$ (Propositions~\ref{prop:ck-linear-operations}
-  and~\ref{prop:ck-differential}). The induction hypothesis and
-  Proposition~\ref{prop:ck-differential} conclude.
-\end{proof}
-
-\begin{proposition}[Pullbacks {\cite[Prop.~1.7.11]{GN26}}]
-  \label{prop:ck-pullback}
-  \lean{LocallyConvex.Analysis.ContDiffMBMap.compRightOfContDiff,
-    LocallyConvex.Analysis.ContDiffMBMap.dMap_compRightOfContDiff,
-    LocallyConvex.Analysis.ContDiffMBMap.continuous_compRightOfContDiff,
-    LocallyConvex.Analysis.ContDiffMBMap.compRightOfContDiffCLM}
-  \leanok
-  \uses{prop:ck-differential, thm:chain-rule}
-  Let $E_1$, $E_2$, $F$ be locally convex spaces, $U \subseteq E_1$ and $V \subseteq E_2$ open,
-  and $f \colon E_1 \to E_2$ of class $\Ck{r}$ on $U$ with $f(U) \subseteq V$. Then
-  $f^* \colon \Ck{r}(V, F) \to \Ck{r}(U, F)$, $\gamma \mapsto \gamma \circ f$, is continuous and
-  linear.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  Glöckner and Neeb use Faà di Bruno's formula; we argue by induction on $r$, as for
-  Theorem~\ref{thm:ck-superposition}. For $r = 0$, $f^*$ is a precomposition. By the chain rule,
-  $\dd(\gamma \circ f)(x, v) = \dd\gamma(f(x), \dd f(x, v))$, so $\dd(f^*\gamma) = g^*(\dd\gamma)$
-  with $g(x, v) = (f(x), \dd f(x, v))$ of class $\Ck{r-1}$ on $U \times E_1$, and
-  Proposition~\ref{prop:ck-differential} and the induction hypothesis conclude.
-\end{proof}
-
-\begin{theorem}[The space $\Ck{\infty}(U, F)$ {\cite[Def.~1.7.10, 1.7.11--1.7.15]{GN26}}]
-  \label{thm:smooth-space}
-  \lean{LocallyConvex.Analysis.smoothMBSubmodule, LocallyConvex.Analysis.SmoothMBMap,
-    LocallyConvex.Analysis.SmoothMBMap.toCk, LocallyConvex.Analysis.SmoothMBMap.toPi,
-    LocallyConvex.Analysis.SmoothMBMap.ofForall,
-    LocallyConvex.Analysis.SmoothMBMap.instLocallyConvexSpaceReal,
-    LocallyConvex.Analysis.SmoothMBMap.instT2Space,
-    LocallyConvex.Analysis.SmoothMBMap.continuous_iff,
-    LocallyConvex.Analysis.SmoothMBMap.isEmbedding_toPi,
-    LocallyConvex.Analysis.SmoothMBMap.isClosed_range_toPi,
-    LocallyConvex.Analysis.SmoothMBMap.compRightCLM,
-    LocallyConvex.Analysis.SmoothMBMap.compLeftCLM,
-    LocallyConvex.Analysis.SmoothMBMap.prodEquiv,
-    LocallyConvex.Analysis.SmoothMBMap.dCLM,
-    LocallyConvex.Analysis.SmoothMBMap.compRightOfContDiffCLM,
-    LocallyConvex.Analysis.SmoothMBMap.continuous_compGraph,
-    LocallyConvex.Analysis.SmoothMBMap.continuous_compLeftOfContDiff}
-  \leanok
-  \uses{def:ck-topology, lem:ck-closed-image, prop:ck-linear-operations, prop:ck-differential,
-    prop:ck-pullback, thm:ck-superposition}
-  The space $\Ck{\infty}(U, F)$ of smooth maps, with the initial topology with respect to all
-  the $\dd^{(j)}$, $j \in \N$ (equivalently, with respect to the inclusions into the
-  $\Ck{k}(U, F)$), is a locally convex Hausdorff space; it embeds in
-  $\prod_{j \in \N} C(U \times E^j, F)$ with closed image, and the results above
-  (pullbacks, superposition operators, products, the differential) hold for $k = \infty$.
-\end{theorem}
-
-\begin{proof}
-  \leanok
-  Everything follows from the finite orders, since a map into $\Ck{\infty}(U, F)$ is continuous
-  if and only if its compositions with the inclusions into the $\Ck{k}(U, F)$ are. For the
-  closed image, the truncations of a point of the closure lie in the closed images of the
-  $\Ck{k}(U, F)$, and their preimages all have the same underlying map.
-\end{proof}
-
-\section{\texorpdfstring{$\Ck{k,\ell}$}{Ckl} maps and the exponential law}
-\label{sec:exponential-law}
-
-Let $E_1$, $E_2$, $F$ be locally convex spaces, $U \subseteq E_1$ and $V \subseteq E_2$ open,
-and $k, \ell \in \N$.
-
-\begin{definition}[$\Ck{k,\ell}$ maps {\cite[Def.~1.7.17]{GN26}}]
-  \label{def:ckl}
-  \lean{LocallyConvex.Analysis.iteratedDMB₂, LocallyConvex.Analysis.ContDiffMBOn₂,
-    LocallyConvex.Analysis.contDiffMBOn₂_iff}
-  \leanok
-  \uses{def:iterated, thm:ck-iff-bastiani}
-  A map $f \colon U \times V \to F$ is $\Ck{k,\ell}$ if the mixed differentials
-  \[
-    \dd^{(i,j)} f(x, y; v_1, \dots, v_i; w_1, \dots, w_j)
-      = (D_{(v_i,0)} \cdots D_{(v_1,0)} D_{(0,w_j)} \cdots D_{(0,w_1)} f)(x, y)
-  \]
-  exist for $i \leq k$, $j \leq \ell$ and are continuous on $U \times V \times E_1^i \times E_2^j$.
-  Equivalently (by Theorem~\ref{thm:ck-iff-bastiani}), the maps $f(x, \cdot)$ are $\Ck{\ell}$,
-  the maps $x \mapsto \dd^{(0,j)} f(x, y; w)$ are $\Ck{k}$, and the $\dd^{(i,j)} f$ are
-  continuous.
-\end{definition}
-
-\begin{lemma}[Mixed partial derivatives commute, cf.\ {\cite[Lemma~1.3.16]{GN26}}]
-  \label{lem:mixed-partials}
-  \lean{LocallyConvex.Analysis.eventually_forall_quotient_mem,
-    LocallyConvex.Analysis.hasDirDerivAt_comm}
-  \leanok
-  \uses{lem:limit-differentiable}
-  Let $W$ be open and let $g$ have directional derivatives $A$ in the direction $a$ and $B$ in
-  the direction $b$ on $W$, with $B$ continuous and with continuous directional derivatives $M$
-  in the direction $a$. Then $A$ has directional derivative $M$ in the direction $b$.
-\end{lemma}
-
-\begin{proof}
-  \leanok
-  The difference quotients $r^{-1}(g(z + ra) - g(z))$ converge pointwise to $A$ as $r \to 0$,
-  and their derivatives in the direction $b$, $r^{-1}(B(z + ra) - B(z))$, converge to $M$
-  uniformly on compact sets. Apply Lemma~\ref{lem:limit-differentiable}. Glöckner and Neeb
-  differentiate a weak integral in a completion instead; no completeness is needed here.
-\end{proof}
-
-\begin{proposition}[{\cite[Prop.~1.7.21, Cor.~1.7.22]{GN26}}, the case used below]
-  \label{prop:ckl-schwarz}
-  \lean{LocallyConvex.Analysis.ContDiffMBOn₂.hasDirDerivAt_left,
-    LocallyConvex.Analysis.ContDiffMBOn₂.hasDirDerivAt_right,
-    LocallyConvex.Analysis.ContDiffMBOn₂.iteratedDMB_right,
-    LocallyConvex.Analysis.ContDiffMBOn₂.contDiffMBOn_right_iteratedDMB₂}
-  \leanok
-  \uses{def:ckl, lem:mixed-partials}
-  If $f$ is $\Ck{k,\ell}$, $i \leq k$, $x \in U$ and $v \in E_1^i$, then
-  $y \mapsto \dd^{(i,0)} f(x, y; v)$ is $\Ck{\ell}$ on $V$ with $j$-th differential
-  $\dd^{(i,j)} f(x, \cdot; v; \cdot)$.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  By induction on $i$, Lemma~\ref{lem:mixed-partials} moves one derivative in the second
-  variable past the derivatives in the first variable.
-\end{proof}
-
-\begin{proposition}[Schwarz theorem for $\Ck{k,\ell}$ maps {\cite[Prop.~1.7.21]{GN26}}]
-  \label{prop:ckl-schwarz-general}
-  \lean{LocallyConvex.Analysis.ContDiffMBOn₂.iteratedDMB_dirOf,
-    LocallyConvex.Analysis.ContDiffMBOn₂.hasDirDerivAt_dirOf,
-    LocallyConvex.Analysis.ContDiffMBOn₂.iteratedDMB₂_perm_left,
-    LocallyConvex.Analysis.ContDiffMBOn₂.iteratedDMB₂_perm_right,
-    LocallyConvex.Analysis.ContDiffMBOn₂.iteratedDMB_append_perm}
-  \leanok
-  \uses{prop:ckl-schwarz}
-  Let $f$ be $\Ck{k,\ell}$, $i \leq k$, $j \leq \ell$, $v \in E_1^i$, $w \in E_2^j$ and
-  $\pi$ a permutation of $\{1, \ldots, i + j\}$. The iterated directional derivative of $f$ along
-  $(v_1, 0), \ldots, (v_i, 0), (0, w_1), \ldots, (0, w_j)$, taken in the order prescribed by
-  $\pi$, exists at every point of $U \times V$ and equals $\dd^{(i,j)} f(x, y; v; w)$, which is
-  symmetric in $v$ and in $w$.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  By induction on the number of directions: the last one is either of the form $(v, 0)$, handled
-  by the definition of $\dd^{(i,j)} f$, or $(0, w)$, handled by Proposition~\ref{prop:ckl-schwarz}.
-  The symmetry in $v$ is the symmetry of the differentials of $x \mapsto \dd^{(0,j)} f(x, y; w)$;
-  the symmetry in $w$ follows from Proposition~\ref{prop:ckl-schwarz}.
-\end{proof}
-
-\begin{definition}[The space $\Ck{k,\ell}(U \times V, F)$ {\cite[Def.~1.7.17]{GN26}}]
-  \label{def:ckl-topology}
-  \lean{LocallyConvex.Analysis.ContDiffMBOn₂.add, LocallyConvex.Analysis.ContDiffMBOn₂.const_smul,
-    LocallyConvex.Analysis.contDiffMBSubmodule₂, LocallyConvex.Analysis.ContDiffMBMap₂,
-    LocallyConvex.Analysis.ContDiffMBMap₂.iteratedD₂,
-    LocallyConvex.Analysis.ContDiffMBMap₂.iteratedDL₂, LocallyConvex.Analysis.ContDiffMBMap₂.toPi,
-    LocallyConvex.Analysis.ContDiffMBMap₂.instLocallyConvexSpaceReal,
-    LocallyConvex.Analysis.ContDiffMBMap₂.instT2Space,
-    LocallyConvex.Analysis.ContDiffMBMap₂.isEmbedding_toPi,
-    LocallyConvex.Analysis.ContDiffMBMap₂.continuous_iff}
-  \leanok
-  \uses{def:ckl, def:ck-topology}
-  $\Ck{k,\ell}(U \times V, F)$ carries the initial topology with respect to the linear maps
-  $\dd^{(i,j)} \colon \Ck{k,\ell}(U \times V, F) \to C(U \times V \times E_1^i \times E_2^j, F)$,
-  $i \leq k$, $j \leq \ell$ (compact-open topology on the right). It is a locally convex
-  Hausdorff space.
-\end{definition}
-
-\begin{proposition}[{\cite[Prop.~1.7.33(a)]{GN26}}]
-  \label{prop:ckl-inclusion}
-  \lean{LocallyConvex.Analysis.iteratedDMB_slice₂, LocallyConvex.Analysis.iteratedDMB_iteratedDMB,
-    LocallyConvex.Analysis.iteratedDMB₂_eq_iteratedDMB,
-    LocallyConvex.Analysis.ContDiffMBOn.contDiffMBOn₂, LocallyConvex.Analysis.Opens.prod,
-    LocallyConvex.Analysis.ContDiffMBMap₂.ofContDiffMBMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.ofContDiffMBMapCLM}
-  \leanok
-  \uses{def:ckl-topology, thm:iterated-regular}
-  Every $\Ck{k+\ell}$ map on $U \times V$ is $\Ck{k,\ell}$, with
-  $\dd^{(i,j)} f(x, y; v; w) = \dd^{(j+i)} f((x, y); (0, w_1), \dots, (0, w_j), (v_1, 0), \dots,
-  (v_i, 0))$, and the inclusion $\Ck{k+\ell}(U \times V, F) \to \Ck{k,\ell}(U \times V, F)$ is
-  continuous and linear.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  The formula is an identity between iterated limits; the right hand side is continuous and
-  depends continuously on $f$.
-\end{proof}
-
-\begin{theorem}[Exponential law {\cite[Thm.~1.7.30]{GN26}}]
-  \label{thm:exponential-law}
-  \lean{LocallyConvex.Analysis.ContinuousMap.continuous_eval_comp_restrict,
-    LocallyConvex.Analysis.ContDiffMBMap₂.partialMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.derivMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.hasDirDerivAt_derivMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.iteratedDMB_partialMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.contDiffMBOn_partialMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.curry,
-    LocallyConvex.Analysis.ContDiffMBMap₂.iteratedD_iteratedD_curry,
-    LocallyConvex.Analysis.ContDiffMBMap₂.continuous_curry,
-    LocallyConvex.Analysis.ContDiffMBMap₂.isEmbedding_curry,
-    LocallyConvex.Analysis.ContDiffMBMap₂.curryCLM,
-    LocallyConvex.Analysis.ContDiffMBMap₂.uncurry,
-    LocallyConvex.Analysis.ContDiffMBMap₂.curryEquiv}
-  \leanok
-  \uses{prop:ckl-schwarz, def:ckl-topology, lem:mixed-partials, thm:ck-iff-bastiani}
-  For $f \in \Ck{k,\ell}(U \times V, F)$, the map $f^\vee \colon U \to \Ck{\ell}(V, F)$,
-  $x \mapsto f(x, \cdot)$, is $\Ck{k}$, with
-  $\dd^{(j)}(\dd^{(i)} f^\vee(x; v))(y; w) = \dd^{(i,j)} f(x, y; v; w)$, and
-  $\Phi \colon \Ck{k,\ell}(U \times V, F) \to \Ck{k}(U, \Ck{\ell}(V, F))$, $f \mapsto f^\vee$, is
-  linear and a topological embedding. If $E_2$ is locally compact (for nonempty open $V$, this
-  is the same as $V$ being locally compact), $\Phi$ is an isomorphism of topological vector
-  spaces, with inverse $g \mapsto ((x, y) \mapsto g(x)(y))$.
-\end{theorem}
-
-\begin{proof}
-  \leanok
-  The candidate for $\dd^{(i)} f^\vee(x; v)$ is $y \mapsto \dd^{(i,0)} f(x, y; v)$, which lies in
-  $\Ck{\ell}(V, F)$ by Proposition~\ref{prop:ckl-schwarz}. The difference quotients of
-  $x \mapsto \dd^{(i,j)} f(x, \cdot; v; \cdot)$ converge uniformly on compact sets, so the
-  derivative exists in $\Ck{\ell}(V, F)$, and Bastiani's characterization shows that $f^\vee$ is
-  $\Ck{k}$. Both $\Phi$ and the $\dd^{(i,j)}$ are recovered from each other by evaluations at
-  points of compact sets, which are jointly continuous; hence $\Phi$ is an embedding. If $E_2$
-  is locally compact, $V \times E_2^j$ is locally compact, so for $g \in \Ck{k}(U, \Ck{\ell}(V, F))$
-  the map $(x, y, v, w) \mapsto \dd^{(j)}(\dd^{(i)} g(x; v))(y; w)$ is continuous; it is the
-  mixed differential $\dd^{(i,j)}$ of $(x, y) \mapsto g(x)(y)$, which is therefore $\Ck{k,\ell}$.
-  Glöckner and Neeb use the evaluation map and a chain rule for $\Ck{r,s}$ maps (with Faà di
-  Bruno's formula) instead.
-\end{proof}
-
-\begin{proposition}[{\cite[Prop.~1.7.33(b)]{GN26}}]
-  \label{prop:ckk-ck}
-  \lean{LocallyConvex.Analysis.iteratedDMB_finset_sum, LocallyConvex.Analysis.splitD₁,
-    LocallyConvex.Analysis.splitD₂, LocallyConvex.Analysis.splitD,
-    LocallyConvex.Analysis.iteratedDMB₂_splitD₁, LocallyConvex.Analysis.iteratedDMB₂_splitD₂,
-    LocallyConvex.Analysis.contDiffMBOn₂_splitD,
-    LocallyConvex.Analysis.ContDiffMBOn₂.contDiffMBOn_one,
-    LocallyConvex.Analysis.ContDiffMBOn₂.contDiffMBOn_prod,
-    LocallyConvex.Analysis.ContDiffMBOn₂.congr,
-    LocallyConvex.Analysis.ContDiffMBMap₂.splitDMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.continuous_splitDMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.toContDiffMBMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.continuous_toContDiffMBMap,
-    LocallyConvex.Analysis.ContDiffMBMap₂.toContDiffMBMapCLM}
-  \leanok
-  \uses{def:ckl-topology, prop:ckl-schwarz, lem:iterated-d, prop:ck-differential,
-    thm:partials}
-  Every $\Ck{k,k}$ map on $U \times V$ is $\Ck{k}$, and the inclusion
-  $\Ck{k,k}(U \times V, F) \to \Ck{k}(U \times V, F)$ is continuous and linear.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  Induction on $k$. By the rule on partial differentials, a $\Ck{k+1,k+1}$ map $f$ is $\Ck{1}$
-  with $\dd f((x, y), (a, b)) = \dd^{(1,0)} f(x, y; a) + \dd^{(0,1)} f(x, y; b)$. As a function of
-  $((x, a), (y, b))$, the right hand side is $\Ck{k,k}$ on $(U \times E_1) \times (V \times E_2)$:
-  its mixed differentials are explicit sums of mixed differentials of $f$, by
-  Lemma~\ref{lem:iterated-d} and Proposition~\ref{prop:ckl-schwarz}. The induction hypothesis
-  gives that $\dd f$ is $\Ck{k}$, and also, with Proposition~\ref{prop:ck-differential}, the
-  continuity of the inclusion. Glöckner and Neeb prove instead the explicit formula of
-  Proposition~\ref{prop:ckk-formula} for $\dd^{(m)} f$.
-\end{proof}
-
-\begin{proposition}[{\cite[Prop.~1.7.33(b), (1.108)]{GN26}}]
-  \label{prop:ckk-formula}
-  \lean{LocallyConvex.Analysis.ContDiffMBOn₂.iteratedDMB_eq_sum}
-  \leanok
-  \uses{prop:ckk-ck, prop:ckl-schwarz-general}
-  If $f$ is $\Ck{m,m}$, $(x, y) \in U \times V$ and $w \in (E_1 \times E_2)^m$, then
-  \[
-    \dd^{(m)} f(x, y; w) = \sum_{I \subseteq \{1, \ldots, m\}}
-      \dd^{(|I|, m - |I|)} f\bigl(x, y; (w_{i,1})_{i \in I}; (w_{j,2})_{j \notin I}\bigr),
-  \]
-  with the indices in increasing order.
-\end{proposition}
-
-\begin{proof}
-  \leanok
-  By Proposition~\ref{prop:ckk-ck}, $\dd^{(m)} f(x, y; \cdot)$ is multilinear; expand it along
-  $w_a = (w_{a,1}, 0) + (0, w_{a,2})$ and apply Proposition~\ref{prop:ckl-schwarz-general} to each
-  term.
-\end{proof}
-
-\begin{corollary}[$\Ck{\infty} = \Ck{\infty,\infty}$ {\cite[Cor.~1.7.34]{GN26}}]
-  \label{cor:smooth-smooth2}
-  \lean{LocallyConvex.Analysis.smoothMBOn_prod_iff, LocallyConvex.Analysis.smoothMBSubmodule₂,
-    LocallyConvex.Analysis.SmoothMBMap₂, LocallyConvex.Analysis.SmoothMBMap₂.toCk₂,
-    LocallyConvex.Analysis.SmoothMBMap₂.toPi,
-    LocallyConvex.Analysis.SmoothMBMap₂.instLocallyConvexSpaceReal,
-    LocallyConvex.Analysis.SmoothMBMap₂.continuous_iff,
-    LocallyConvex.Analysis.SmoothMBMap₂.equivSmooth}
-  \leanok
-  \uses{prop:ckk-ck, prop:ckl-inclusion, thm:smooth-space}
-  A map on $U \times V$ is smooth if and only if it is $\Ck{k,\ell}$ for all $k, \ell$, and
-  $\Ck{\infty}(U \times V, F) = \Ck{\infty,\infty}(U \times V, F)$ as locally convex spaces.
 \end{corollary}
 
 \begin{proof}
   \leanok
-  Combine Propositions~\ref{prop:ckl-inclusion} and~\ref{prop:ckk-ck}.
+  It is immediate from the chain rule applied to $\beta \circ (f, g)$, together with
+  Theorem~\ref{thm:bilinear}.
 \end{proof}
 
-\begin{lemma}[$\Ck{k}$ maps into $\Ck{\infty}(V, F)$]
-  \label{lem:ck-into-smooth}
-  \lean{LocallyConvex.Analysis.SmoothMBMap.continuousOn_iff,
-    LocallyConvex.Analysis.SmoothMBMap.contDiffMBOn_iff,
-    LocallyConvex.Analysis.SmoothMBMap.smoothMBOn_iff}
+\begin{example}
+  Let $\beta \colon E \times E \to F$ be continuous and bilinear, and let
+  $q(x) = \beta(x, x)$. Taking $f = g = \mathrm{id}_E$ in Corollary~\ref{cor:product}, we
+  obtain that $q$ is smooth, with $\dd q(x)(h) = \beta(x, h) + \beta(h, x)$. When $\beta$ is
+  symmetric this is the familiar $2\beta(x, h)$.
+\end{example}
+
+\subsection{Taylor's formula}
+
+To pass from the differentials of $f$ to the values of $f$ we restrict $f$ to a line and
+compose with a continuous linear functional. The resulting real function of one variable is
+as regular as $f$, and its derivatives are the iterated differentials of $f$ along the line.
+
+\begin{lemma}[Derivatives along a line]
+  \label{lem:line}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.hasDerivAt_iteratedDMB_line, LocallyConvex.Analysis.ContDiffMBOn.continuousOn_iteratedDMB_line}
   \leanok
-  \uses{thm:smooth-space}
-  A map $g \colon W \to \Ck{\infty}(V, F)$ is $\Ck{k}$ if and only if its compositions with the
-  inclusions $\Ck{\infty}(V, F) \to \Ck{\ell}(V, F)$ are $\Ck{k}$, for all $\ell$.
+  \uses{thm:iterated-regular}
+  Let $f$ be $\Ck{k}$ on $U$, $j < k$ and $\psi$ a continuous linear functional on $F$. Then
+  the real function $s \mapsto \psi\bigl(\dd^{(j)} f(x + sh; h, \dots, h)\bigr)$ has derivative
+  $\psi\bigl(\dd^{(j+1)} f(x + sh; h, \dots, h)\bigr)$ wherever $x + sh \in U$.
 \end{lemma}
 
 \begin{proof}
   \leanok
-  Induction on $k$. The derivatives of the compositions have the same underlying maps, hence
-  define a candidate in $\Ck{\infty}(V, F)$, and the topology of $\Ck{\infty}(V, F)$ is initial
-  with respect to the inclusions.
+  By the chain rule along the line $s \mapsto (x + sh, h, \dots, h)$, whose derivative is
+  $(h, 0, \dots, 0)$.
 \end{proof}
 
-\begin{theorem}[Exponential law for smooth maps {\cite[Cor.~1.7.35, Rem.~1.7.31(b)]{GN26}}]
-  \label{thm:smooth-exponential-law}
-  \lean{LocallyConvex.Analysis.SmoothMBMap.toCk₂, LocallyConvex.Analysis.SmoothMBMap.partialMap,
-    LocallyConvex.Analysis.SmoothMBMap.smoothMBOn_partialMap,
-    LocallyConvex.Analysis.SmoothMBMap.curry,
-    LocallyConvex.Analysis.SmoothMBMap.iteratedD_iteratedD_curry,
-    LocallyConvex.Analysis.SmoothMBMap.continuous_curry,
-    LocallyConvex.Analysis.SmoothMBMap.isEmbedding_curry,
-    LocallyConvex.Analysis.SmoothMBMap.curryCLM, LocallyConvex.Analysis.SmoothMBMap.uncurry,
-    LocallyConvex.Analysis.SmoothMBMap.curryEquiv,
-    LocallyConvex.Analysis.SmoothMBMap.smoothMBOn_iff_smoothMBOn_uncurry}
+\begin{theorem}[Taylor's formula, weak form]
+  \label{thm:taylor}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.taylor}
   \leanok
-  \uses{thm:exponential-law, lem:ck-into-smooth, cor:smooth-smooth2, prop:ckk-ck}
-  For $f \in \Ck{\infty}(U \times V, F)$, $f^\vee \colon U \to \Ck{\infty}(V, F)$ is smooth, and
-  $\Phi \colon \Ck{\infty}(U \times V, F) \to \Ck{\infty}(U, \Ck{\infty}(V, F))$,
-  $f \mapsto f^\vee$, is linear and a topological embedding. If $E_2$ is locally compact, $\Phi$
-  is an isomorphism of topological vector spaces, and a map $g \colon U \to \Ck{\infty}(V, F)$ is
-  smooth if and only if $(x, y) \mapsto g(x)(y)$ is smooth.
+  \uses{lem:line}
+  Let $f$ be $\Ck{k+1}$ on a set containing the segment $[x, x+h]$. For every continuous linear
+  functional $\psi$ on $F$,
+  \[
+    \psi\bigl(f(x + h)\bigr) = \sum_{j=0}^{k} \frac{1}{j!}\,
+      \psi\bigl(\dd^{(j)} f(x; h, \dots, h)\bigr)
+      + \int_0^1 \frac{(1-t)^k}{k!}\,
+      \psi\bigl(\dd^{(k+1)} f(x + th; h, \dots, h)\bigr)\, dt .
+  \]
 \end{theorem}
 
 \begin{proof}
   \leanok
-  Smoothness of $f^\vee$ follows from Theorem~\ref{thm:exponential-law} and
-  Lemma~\ref{lem:ck-into-smooth}. The embedding is proved as in
-  Theorem~\ref{thm:exponential-law}, using that the topology of $\Ck{\infty}(U \times V, F)$ is
-  the $\Ck{\infty,\infty}$ topology (Corollary~\ref{cor:smooth-smooth2}).
+  We apply Taylor's formula with integral remainder to the real function
+  $s \mapsto \psi(f(x + sh))$, whose derivatives are given by Lemma~\ref{lem:line}. Compare
+  \cite[1.6.1 and 1.6.14]{GN26}, where the formula is stated for the integrals in $F$; the weak form
+  needs no completeness of $F$.
+\end{proof}
+
+\begin{remark}
+  The remainder in Theorem~\ref{thm:taylor} is a real integral, one for each functional $\psi$.
+  Writing it as a vector of $F$ requires the weak integral of
+  $t \mapsto \frac{(1-t)^k}{k!}\,\dd^{(k+1)} f(x + th; h, \dots, h)$ to exist, which in general
+  depends on a completeness property of $F$ (Chapters~\ref{chap:integrals}
+  and~\ref{chap:completeness}). Since continuous linear functionals separate points, the weak
+  form determines $f(x + h)$ all the same.
+\end{remark}
+
+\subsection{The second-order chain rule}
+
+\begin{theorem}[Second-order chain rule]
+  \label{thm:chain-second}
+  \lean{LocallyConvex.Analysis.dMB_dMB_comp}
+  \leanok
+  \uses{thm:chain-rule}
+  Let $\tau \colon U \to V$ and $g \colon V \to F$ be $\Ck{2}$, with $U \subseteq E$ and
+  $V \subseteq E'$ open. For $y \in U$ and $a, b \in E$,
+  \[
+    \dd^{(2)} (g \circ \tau)(y; a, b)
+      = \dd^{(2)} g\bigl(\tau y; \dd\tau(y)(a), \dd\tau(y)(b)\bigr)
+        + \dd g(\tau y)\bigl(\dd^{(2)} \tau(y; a, b)\bigr).
+  \]
+\end{theorem}
+
+The first term is what one would guess by applying the chain rule twice naively; the second
+involves the second differential of $\tau$, and vanishes when $\tau$ is the restriction of a continuous
+linear map, since then $\dd\tau(y)(b)$ does not depend on $y$.
+
+\begin{proof}
+  \leanok
+  On $U \times E$, the first-order chain rule gives $\dd(g \circ \tau) = \dd g \circ \Phi$ with
+  $\Phi(y', b') = (\tau y', \dd\tau(y')(b'))$. We differentiate this once more with the
+  first-order chain rule. The derivative of $\Phi$ at $(y, b)$ in the direction $(a, 0)$ is
+  $(\dd\tau(y)(a), \dd^{(2)}\tau(y; a, b))$. Splitting it as
+  $(\dd\tau(y)(a), 0) + (0, \dd^{(2)}\tau(y; a, b))$, the first term gives $\dd^{(2)} g$, and
+  the second gives $\dd g$, because $\dd g(\tau y)$ is linear.
 \end{proof}
