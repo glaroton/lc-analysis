@@ -304,3 +304,35 @@ linear map, since then $\dd\tau(y)(b)$ does not depend on $y$.
   $(\dd\tau(y)(a), 0) + (0, \dd^{(2)}\tau(y; a, b))$, the first term gives $\dd^{(2)} g$, and
   the second gives $\dd g$, because $\dd g(\tau y)$ is linear.
 \end{proof}
+
+\subsection{Operations on \texorpdfstring{$\Ck{k}$}{Ck} maps}
+
+\begin{proposition}[Operations]
+  \label{prop:operations}
+  \lean{LocallyConvex.Analysis.hasDirDerivAt_pi, LocallyConvex.Analysis.HasDirDerivAt.sum,
+    LocallyConvex.Analysis.HasDirDerivAt.clm_apply, LocallyConvex.Analysis.HasDirDerivAt.smul_fun,
+    LocallyConvex.Analysis.contDiffMBOn_pi, LocallyConvex.Analysis.ContDiffMBOn.const_smul,
+    LocallyConvex.Analysis.ContDiffMBOn.sub, LocallyConvex.Analysis.ContDiffMBOn.smul_fun,
+    LocallyConvex.Analysis.ContDiffMBOn.prodMap, LocallyConvex.Analysis.SmoothMBOn.prodMap,
+    LocallyConvex.Analysis.ContDiffMBOn.codRestrict,
+    LocallyConvex.Analysis.contDiffMBOn_of_isClosedEmbedding,
+    LocallyConvex.Analysis.dMB_eq_comp_of_eventuallyEq, LocallyConvex.Analysis.dMB_comp_affine,
+    LocallyConvex.Analysis.SmoothMBOn.dMB_dir, LocallyConvex.Analysis.dMB_eq_fderiv,
+    LocallyConvex.Analysis.dMB_dMB_eq_fderiv_fderiv}
+  \leanok
+  \uses{def:ck, thm:chain-rule, thm:bilinear}
+  Directional derivatives and $\Ck{k}$ maps behave as expected under the elementary operations:
+  maps into products are differentiated componentwise, and finite sums, multiples, differences,
+  products $f \cdot g$ of a real function with a vector-valued one, and products of maps
+  $(x, y) \mapsto (g(x), h(y))$ of $\Ck{k}$ maps are $\Ck{k}$. A $\Ck{k}$ map with values in a
+  closed subspace is $\Ck{k}$ into the subspace \cite[compare Lemma~1.3.19]{GN26}. The
+  differential depends only on the germ of the map, and on normed spaces the first and second
+  Michal--Bastiani differentials of $\Ck{1}$ and $\Ck{2}$ maps are the Fréchet derivatives.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  Each statement reduces to the chain rule and continuous linear maps, or to the product rule
+  for the continuous bilinear map $(t, v) \mapsto tv$; the closed subspace case uses that
+  difference quotients stay in the subspace.
+\end{proof}

@@ -5,6 +5,7 @@ Authors: glaroton
 -/
 module
 
+public import LocallyConvexAnalysis.MappingSpace.CkSuperposition
 public import LocallyConvexAnalysis.Calculus.ExponentialLaw
 
 /-!
@@ -43,6 +44,15 @@ law for smooth maps.
   ([GN26, Remark 1.7.31(b)], smooth case).
 * `SmoothMBMap.contDiffMBOn_iff`: a map into `C^∞(V, F)` is `C^k` if and only if its
   compositions with the inclusions `C^∞(V, F) → C^ℓ(V, F)` are.
+* `ContDiffMBOn₂.mono`, `ContDiffMBOn₂.of_local`: being `C^{k,ℓ}` on open sets is local.
+* `ContDiffMBOn₂.exists_curry`, `contDiffMBOn₂_of_curry`: the exponential law in the form of maps
+  on open sets; uncurrying needs `E₂` to be locally compact.
+* `ContDiffMBOn₂.comp_prodMap`: `γ ∘ f ∘ (α × β)` is `C^{k,ℓ}` if `f` is, `α` is `C^k`, `β` is
+  `C^ℓ` and `γ` is smooth (compare Propositions 1.7.26 and 1.7.28). Glöckner–Neeb compute the
+  mixed differentials with Faà di Bruno's formula; here the chain rule is reduced to the
+  exponential law: `f` is curried, the pullback along `β` is continuous linear (Proposition
+  1.7.11), superposition by `γ` is smooth (`ContDiffMBMap.contDiffMBOn_compLeftOn`), and the
+  result is uncurried. This needs `E₂` to be locally compact. We do not claim this argument is new.
 
 ## Implementation notes
 
@@ -994,5 +1004,113 @@ end LocallyCompact
 end SmoothMBMap
 
 end SmoothExp
+
+/-! ### Locality, currying and a chain rule for `C^{k,ℓ}` maps on open sets -/
+
+section CklOperations
+
+variable {E₁ E₂ F : Type u}
+  [AddCommGroup E₁] [Module ℝ E₁] [TopologicalSpace E₁] [IsTopologicalAddGroup E₁]
+  [ContinuousSMul ℝ E₁] [LocallyConvexSpace ℝ E₁] [T2Space E₁]
+  [AddCommGroup E₂] [Module ℝ E₂] [TopologicalSpace E₂] [IsTopologicalAddGroup E₂]
+  [ContinuousSMul ℝ E₂] [LocallyConvexSpace ℝ E₂] [T2Space E₂]
+  [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousSMul ℝ F] [LocallyConvexSpace ℝ F] [T2Space F]
+  {k ℓ : ℕ} {f : E₁ × E₂ → F} {U : Set E₁} {V : Set E₂}
+
+omit [IsTopologicalAddGroup F] [LocallyConvexSpace ℝ F] [T2Space F] in
+/-- `C^{k,ℓ}` maps on `U × V` are `C^{k,ℓ}` on smaller products. -/
+theorem ContDiffMBOn₂.mono (hf : ContDiffMBOn₂ k ℓ f U V) {U' : Set E₁} {V' : Set E₂}
+    (hU : U' ⊆ U) (hV : V' ⊆ V) : ContDiffMBOn₂ k ℓ f U' V' where
+  contDiffMBOn_right x hx := (hf.contDiffMBOn_right x (hU hx)).mono hV
+  contDiffMBOn_left j hj y hy w := (hf.contDiffMBOn_left j hj y (hV hy) w).mono hU
+  continuousOn i hi j hj := (hf.continuousOn i hi j hj).mono
+    (prod_mono (prod_mono hU hV) subset_rfl)
+
+omit [IsTopologicalAddGroup F] [LocallyConvexSpace ℝ F] [T2Space F] in
+/-- **Being `C^{k,ℓ}` is local**: a map is `C^{k,ℓ}` on `U × V` (open) if every point of `U × V`
+lies in a product of open sets on which it is `C^{k,ℓ}`. -/
+theorem ContDiffMBOn₂.of_local (hU : IsOpen U) (hV : IsOpen V)
+    (h : ∀ x ∈ U, ∀ y ∈ V, ∃ U' V', IsOpen U' ∧ IsOpen V' ∧ x ∈ U' ∧ y ∈ V' ∧
+      ContDiffMBOn₂ k ℓ f U' V') : ContDiffMBOn₂ k ℓ f U V where
+  contDiffMBOn_right x hx := ContDiffMBOn.of_local hV fun y hy ↦ by
+    obtain ⟨U', V', -, hV', hxU', hyV', hf⟩ := h x hx y hy
+    exact ⟨V', hV', hyV', (hf.contDiffMBOn_right x hxU').mono inter_subset_right⟩
+  contDiffMBOn_left j hj y hy w := ContDiffMBOn.of_local hU fun x hx ↦ by
+    obtain ⟨U', V', hU', -, hxU', hyV', hf⟩ := h x hx y hy
+    exact ⟨U', hU', hxU', (hf.contDiffMBOn_left j hj y hyV' w).mono inter_subset_right⟩
+  continuousOn i hi j hj := by
+    intro q hq
+    obtain ⟨U', V', hU', hV', hxU', hyV', hf⟩ := h q.1.1 hq.1.1 q.1.2 hq.1.2
+    have hn : ((U' ×ˢ V' : Set (E₁ × E₂)) ×ˢ (univ : Set ((Fin i → E₁) × (Fin j → E₂)))) ∈ 𝓝 q :=
+      ((hU'.prod hV').prod isOpen_univ).mem_nhds ⟨⟨hxU', hyV'⟩, mem_univ _⟩
+    exact ((hf.continuousOn i hi j hj).continuousAt hn).continuousWithinAt
+
+/-- **Currying** (Glöckner–Neeb, Theorem 1.7.30): if `f` is `C^{k,ℓ}` on `U × V`, then
+`x ↦ f(x, ·) ∈ C^ℓ(V, F)` is `C^k` on `U`. -/
+theorem ContDiffMBOn₂.exists_curry (hU : IsOpen U) (hV : IsOpen V) (hf : ContDiffMBOn₂ k ℓ f U V) :
+    ∃ Ψ : E₁ → ContDiffMBMap F ℓ ⟨V, hV⟩, ContDiffMBOn k Ψ U ∧
+      ∀ x ∈ U, ∀ y ∈ V, Ψ x y = f (x, y) := by
+  classical
+  let f' : ContDiffMBMap₂ F k ℓ ⟨U, hU⟩ ⟨V, hV⟩ :=
+    ContDiffMBMap₂.mk ((U ×ˢ V).indicator f)
+      (hf.congr hU hV fun _ hp ↦ (indicator_of_mem hp f).symm) fun _ hp ↦ indicator_of_notMem hp f
+  exact ⟨ContDiffMBMap₂.partialMap f', ContDiffMBMap₂.contDiffMBOn_partialMap f',
+    fun x hx y hy ↦ indicator_of_mem (show (x, y) ∈ U ×ˢ V from ⟨hx, hy⟩) f⟩
+
+/-- **Uncurrying** (Glöckner–Neeb, Theorem 1.7.30(a)): if `E₂` is locally compact and
+`Ψ : E₁ → C^ℓ(V, F)` is `C^k` on `U`, then `(x, y) ↦ Ψ(x)(y)` is `C^{k,ℓ}` on `U × V`. -/
+theorem contDiffMBOn₂_of_curry [LocallyCompactSpace E₂] (hU : IsOpen U) {V : Opens E₂}
+    {Ψ : E₁ → ContDiffMBMap F ℓ V} (hΨ : ContDiffMBOn k Ψ U) :
+    ContDiffMBOn₂ k ℓ (fun p ↦ Ψ p.1 p.2) U V := by
+  classical
+  let g : ContDiffMBMap (ContDiffMBMap F ℓ V) k ⟨U, hU⟩ :=
+    ContDiffMBMap.mk (U.indicator Ψ)
+      (ContDiffMBOn.congr_of_isOpen hU (fun _ hx ↦ (indicator_of_mem hx Ψ).symm) hΨ)
+      fun _ hx ↦ indicator_of_notMem hx Ψ
+  refine (ContDiffMBMap₂.uncurry g).contDiffMBOn₂.congr hU V.isOpen fun p hp ↦ ?_
+  change g p.1 p.2 = Ψ p.1 p.2
+  change (U.indicator Ψ p.1) p.2 = _
+  rw [indicator_of_mem hp.1]
+
+/-- **A chain rule for `C^{k,ℓ}` maps** (compare Glöckner–Neeb, Propositions 1.7.26 and 1.7.28):
+if `f` is `C^{k,ℓ}` on `U × V`, `α` is `C^k` on `U'` with `α(U') ⊆ U`, `β` is `C^ℓ` on `V'` with
+`β(V') ⊆ V`, and `γ` is smooth on an open set `O` containing the values `f(α x, β y)`, then
+`(x, y) ↦ γ(f(α x, β y))` is `C^{k,ℓ}` on `U' × V'`. The second variable ranges in a locally
+compact space.
+
+Glöckner–Neeb prove the chain rule with Faà di Bruno's formula. Here it is reduced to the
+exponential law: `x ↦ f(α x, ·)` is `C^k` into `C^ℓ(V, F)`, pulling back by `β` is continuous
+linear (Proposition 1.7.11) and superposition by `γ` is smooth
+(`ContDiffMBMap.contDiffMBOn_compLeftOn`); uncurrying needs the local compactness. We do not claim
+this argument is new. -/
+theorem ContDiffMBOn₂.comp_prodMap {E₁' E₂' F' : Type u}
+    [AddCommGroup E₁'] [Module ℝ E₁'] [TopologicalSpace E₁'] [IsTopologicalAddGroup E₁']
+    [ContinuousSMul ℝ E₁'] [LocallyConvexSpace ℝ E₁'] [T2Space E₁']
+    [AddCommGroup E₂'] [Module ℝ E₂'] [TopologicalSpace E₂'] [IsTopologicalAddGroup E₂']
+    [ContinuousSMul ℝ E₂'] [LocallyConvexSpace ℝ E₂'] [T2Space E₂'] [LocallyCompactSpace E₂']
+    [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
+    [ContinuousSMul ℝ F'] [LocallyConvexSpace ℝ F'] [T2Space F']
+    (hU : IsOpen U) (hV : IsOpen V) (hf : ContDiffMBOn₂ k ℓ f U V)
+    {U' : Set E₁'} {V' : Set E₂'} (hU' : IsOpen U') (hV' : IsOpen V')
+    {α : E₁' → E₁} {β : E₂' → E₂} (hα : ContDiffMBOn k α U') (hβ : ContDiffMBOn ℓ β V')
+    (hαU : MapsTo α U' U) (hβV : MapsTo β V' V) {γ : F → F'} {O : Set F} (hO : IsOpen O)
+    (hγ : SmoothMBOn γ O) (hfO : ∀ x ∈ U', ∀ y ∈ V', f (α x, β y) ∈ O) :
+    ContDiffMBOn₂ k ℓ (fun p ↦ γ (f (α p.1, β p.2))) U' V' := by
+  obtain ⟨Ψ, hΨ, hΨf⟩ := hf.exists_curry hU hV
+  let P : ContDiffMBMap F ℓ ⟨V, hV⟩ →L[ℝ] ContDiffMBMap F ℓ ⟨V', hV'⟩ :=
+    ContDiffMBMap.compRightOfContDiffCLM (U := ⟨V', hV'⟩) (V := ⟨V, hV⟩) hβ hβV
+  have hP : ∀ x ∈ U', ∀ y ∈ V', P (Ψ (α x)) y = f (α x, β y) := fun x hx y hy ↦ by
+    change ContDiffMBMap.compRightOfContDiff hβ hβV (Ψ (α x)) y = _
+    rw [ContDiffMBMap.compRightOfContDiff_apply hβ hβV _ hy, hΨf _ (hαU hx) _ (hβV hy)]
+  have h1 : ContDiffMBOn k (fun x ↦ P (Ψ (α x))) U' :=
+    LocallyConvex.Analysis.ContDiffMBOn.clm_comp' P hU' (ContDiffMBOn.comp hU' hU hΨ hα hαU)
+  have h2 := ContDiffMBMap.contDiffMBOn_compLeftOn ℓ (U := ⟨V', hV'⟩) hO hγ hU' h1
+    fun x hx y hy ↦ by rw [hP x hx y hy]; exact hfO x hx y hy
+  refine (contDiffMBOn₂_of_curry hU' h2).congr hU' hV' fun p hp ↦ ?_
+  rw [ContDiffMBMap.compLeftOn_apply hO (hγ ℓ) (fun y hy ↦ by
+    rw [hP p.1 hp.1 y hy]; exact hfO p.1 hp.1 y hy) hp.2, hP p.1 hp.1 p.2 hp.2]
+
+end CklOperations
 
 end LocallyConvex.Analysis

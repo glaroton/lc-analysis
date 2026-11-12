@@ -163,6 +163,7 @@ calculus. Whether that import can be removed has not been checked; if it can, bo
 |---|---|---|---|---|
 | `MichalBastiani` | Directional derivatives, `C^k` maps, chain rule | see [The central design question](#the-central-design-question) | F (core) | – |
 | `Higher`, `Rules` | Higher differentials, product rule, Taylor's formula | — | F | – |
+| `Operations` | Sums, products, multiples, differences, products of maps, closed subspaces, locality of the differential, comparison with Fréchet derivatives | — | F | – |
 | `MBFrechet` | Michal–Bastiani `C^{k+1}` implies Fréchet `C^k` on normed spaces | — | F (bridge) | – |
 | `Integral/Basic`, `Integral/Existence`, `Integral/FundamentalTheorem` | Weak integrals, existence, fundamental theorem | — | F; `SeqComplete`, `MackeyComplete`: N | – |
 | `MackeyLipschitz` | Mackey completeness through Lipschitz curves | — | F | – |

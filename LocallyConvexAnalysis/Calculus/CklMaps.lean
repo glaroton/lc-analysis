@@ -335,14 +335,6 @@ theorem iteratedDMB_const_zero {E : Type*} [AddCommGroup E] [Module ℝ E] [Topo
     exact (show HasDirDerivAt (fun _ : E ↦ (0 : F)) p.1 (p.2 (Fin.last j)) 0 by
       simp only [HasDirDerivAt, sub_self, smul_zero]; exact tendsto_const_nhds).dMB_eq
 
-/-- Multiples of `C^k` maps are `C^k`. -/
-theorem ContDiffMBOn.const_smul' {E : Type u} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
-    [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] [T2Space E]
-    {r : ℕ} {f : E → F} {W : Set E} (hW : IsOpen W) (hf : ContDiffMBOn r f W) (c : ℝ) :
-    ContDiffMBOn r (fun x ↦ c • f x) W := by
-  exact ContDiffMBOn.comp hW isOpen_univ ((c • ContinuousLinearMap.id ℝ F).contDiffMBOn r univ) hf
-    (mapsTo_univ _ _)
-
 omit [LocallyConvexSpace ℝ F] in
 /-- Mixed differentials of a sum. -/
 theorem ContDiffMBOn₂.iteratedDMB₂_add (hU : IsOpen U) (hV : IsOpen V) {f g : E₁ × E₂ → F}
@@ -391,11 +383,11 @@ theorem ContDiffMBOn₂.add (hU : IsOpen U) (hV : IsOpen V) {f g : E₁ × E₂ 
 /-- Multiples of `C^{k,ℓ}` maps are `C^{k,ℓ}`. -/
 theorem ContDiffMBOn₂.const_smul (hU : IsOpen U) (hV : IsOpen V) {f : E₁ × E₂ → F}
     (hf : ContDiffMBOn₂ k ℓ f U V) (c : ℝ) : ContDiffMBOn₂ k ℓ (fun p ↦ c • f p) U V where
-  contDiffMBOn_right x hx := (hf.contDiffMBOn_right x hx).const_smul' hV c
+  contDiffMBOn_right x hx := (hf.contDiffMBOn_right x hx).const_smul hV c
   contDiffMBOn_left j hj y hy w :=
     ContDiffMBOn.congr_of_isOpen hU (fun x' hx' ↦ (iteratedDMB_const_smul hV
       (hf.contDiffMBOn_right x' hx') c hj hy w).symm)
-      ((hf.contDiffMBOn_left j hj y hy w).const_smul' hU c)
+      ((hf.contDiffMBOn_left j hj y hy w).const_smul hU c)
   continuousOn i hi j hj :=
     ((hf.continuousOn i hi j hj).const_smul c).congr fun p hp ↦
       hf.iteratedDMB₂_const_smul hU hV c hi hj hp.1.1 hp.1.2 p.2.1 p.2.2

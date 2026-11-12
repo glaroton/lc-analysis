@@ -44,6 +44,7 @@ public import LocallyConvexAnalysis.Calculus.MackeyLipschitz
 public import LocallyConvexAnalysis.Calculus.MichalBastiani
 public import LocallyConvexAnalysis.Calculus.OperatorValued
 public import LocallyConvexAnalysis.Calculus.Rules
+public import LocallyConvexAnalysis.Calculus.Operations
 public import LocallyConvexAnalysis.Calculus.SmoothExponentialLaw
 public import LocallyConvexAnalysis.Complex.NewlanderNirenberg
 public import LocallyConvexAnalysis.Complex.Nijenhuis

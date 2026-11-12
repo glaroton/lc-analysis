@@ -5,7 +5,7 @@ Authors: glaroton
 -/
 module
 
-public import LocallyConvexAnalysis.Calculus.Higher
+public import LocallyConvexAnalysis.Calculus.Operations
 public import Mathlib.Topology.ContinuousMap.LocallyConvex
 
 /-!
@@ -136,15 +136,6 @@ theorem HasDirDerivAt.comp_fst {E' : Type*} [AddCommGroup E'] [Module ℝ E'] {g
     {x h : E} {y : F} (hg : HasDirDerivAt g x h y) (a b : E') :
     HasDirDerivAt (fun p : E × E' ↦ g p.1) (x, a) (h, b) y := by
   simpa [HasDirDerivAt] using hg
-
-omit [TopologicalSpace E] in
-/-- Directional derivatives of finite sums. -/
-theorem HasDirDerivAt.sum [IsTopologicalAddGroup F] {ι : Type*}
-    (s : Finset ι) {g : ι → E → F} {x h : E} {y : ι → F}
-    (hg : ∀ i ∈ s, HasDirDerivAt (g i) x h (y i)) :
-    HasDirDerivAt (fun z ↦ ∑ i ∈ s, g i z) x h (∑ i ∈ s, y i) :=
-  (tendsto_finsetSum s hg).congr fun t ↦ by
-    simp only [← Finset.sum_sub_distrib, Finset.smul_sum]
 
 end Identities
 

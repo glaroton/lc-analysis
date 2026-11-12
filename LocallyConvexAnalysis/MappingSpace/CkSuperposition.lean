@@ -33,9 +33,6 @@ that the manifolds of `C^ℓ` maps need (`LocallyConvexManifolds.MappingSpaceCk`
   `Y`, the restrictions `C(Y, F) → ∏_C C(C, F)` to the compact subsets form a closed embedding.
 * `isEmbedding_restrictPieces`, `isClosed_range_restrictPieces`: the same for the restrictions
   `C(L, G) → ∏_b C(L_b, G)` to the pieces of a finite cover of `L` by compact sets.
-* `contDiffMBOn_pi`, `contDiffMBOn_of_isClosedEmbedding`: `C^k` maps into a product are the maps
-  with `C^k` components, and a map into a closed subspace is `C^k` as soon as it is `C^k` into
-  the ambient space.
 
 ## Implementation notes
 
@@ -73,64 +70,6 @@ noncomputable section
 namespace LocallyConvex.Analysis
 
 universe u
-
-/-! ### Maps into products and closed subspaces -/
-
-section Calculus
-
-variable {V : Type u} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V] [IsTopologicalAddGroup V]
-  [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V]
-
-/-- **`C^k` maps into a product** are the maps whose components are `C^k`. -/
-theorem contDiffMBOn_pi {ι : Type*} {Y : ι → Type*} [∀ a, AddCommGroup (Y a)]
-    [∀ a, Module ℝ (Y a)] [∀ a, TopologicalSpace (Y a)] [∀ a, T2Space (Y a)]
-    {k : ℕ} {F : V → ∀ a, Y a} {W : Set V} (hW : IsOpen W)
-    (h : ∀ a, ContDiffMBOn k (fun x ↦ F x a) W) : ContDiffMBOn k F W := by
-  induction k generalizing V with
-  | zero => exact continuousOn_pi.2 h
-  | succ k ih =>
-    have hd : ∀ x ∈ W, ∀ v, HasDirDerivAt F x v (fun a ↦ dMB (fun x ↦ F x a) (x, v)) := by
-      intro x hx v
-      exact tendsto_pi_nhds.2 fun a ↦ (h a).2.1 x hx v
-    have hdeq : ∀ p ∈ W ×ˢ (univ : Set V), dMB F p = fun a ↦ dMB (fun x ↦ F x a) p :=
-      fun p hp ↦ (hd p.1 hp.1 p.2).dMB_eq
-    refine ⟨continuousOn_pi.2 fun a ↦ (h a).continuousOn, fun x hx v ↦ ?_, ?_⟩
-    · rw [hdeq (x, v) ⟨hx, mem_univ v⟩]
-      exact hd x hx v
-    · refine ContDiffMBOn.congr_of_isOpen (hW.prod isOpen_univ) (fun p hp ↦ (hdeq p hp).symm) ?_
-      exact ih (hW.prod isOpen_univ) fun a ↦ (h a).2.2
-
-/-- **`C^k` maps into a closed subspace**: if `ι : X → Y` is a continuous linear topological
-embedding with closed range and `ι ∘ h` is `C^k`, then `h` is `C^k`. -/
-theorem contDiffMBOn_of_isClosedEmbedding {X Y : Type*} [AddCommGroup X] [Module ℝ X]
-    [TopologicalSpace X]
-    [T2Space X] [AddCommGroup Y] [Module ℝ Y] [TopologicalSpace Y]
-    [T2Space Y] (ι : X →L[ℝ] Y)
-    (hι : Topology.IsEmbedding ι) (hcl : IsClosed (range ι)) {k : ℕ} {h : V → X} {W : Set V}
-    (hW : IsOpen W) (hh : ContDiffMBOn k (fun x ↦ ι (h x)) W) : ContDiffMBOn k h W := by
-  induction k generalizing V with
-  | zero => exact hι.isInducing.continuousOn_iff.2 hh
-  | succ k ih =>
-    have hmem : ∀ x ∈ W, ∀ v, dMB (fun x ↦ ι (h x)) (x, v) ∈ range ι := by
-      intro x hx v
-      refine hcl.mem_of_tendsto (hh.2.1 x hx v) (Eventually.of_forall fun t ↦ ?_)
-      exact ⟨t⁻¹ • (h (x + t • v) - h x), by simp⟩
-    choose! D hD using hmem
-    have hd : ∀ x ∈ W, ∀ v, HasDirDerivAt h x v (D x v) := by
-      intro x hx v
-      rw [HasDirDerivAt, hι.tendsto_nhds_iff, hD x hx v]
-      refine (hh.2.1 x hx v).congr fun t ↦ ?_
-      simp
-    have hdeq : ∀ p ∈ W ×ˢ (univ : Set V), ι (dMB h p) = dMB (fun x ↦ ι (h x)) p := fun p hp ↦ by
-      rw [(hd p.1 hp.1 p.2).dMB_eq]
-      exact hD p.1 hp.1 p.2
-    refine ⟨hι.isInducing.continuousOn_iff.2 hh.continuousOn, fun x hx v ↦ ?_, ?_⟩
-    · rw [(hd x hx v).dMB_eq]
-      exact hd x hx v
-    · exact ih (hW.prod isOpen_univ) (ContDiffMBOn.congr_of_isOpen (hW.prod isOpen_univ)
-        (fun p hp ↦ (hdeq p hp).symm) hh.2.2)
-
-end Calculus
 
 /-! ### Restriction to a finite cover by compact sets -/
 

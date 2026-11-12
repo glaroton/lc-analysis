@@ -235,6 +235,11 @@ theorem RealAnalyticOn.comp_clm {g : E' → F} {V : Set E'} (hg : RealAnalyticOn
     (L : E →L[ℝ] E') : RealAnalyticOn (fun x ↦ g (L x)) (L ⁻¹' V) :=
   hg.comp (L.realAnalyticOn _) fun _ hx ↦ hx
 
+/-- Precomposition with a continuous linear map, on a set `U ⊆ L⁻¹(V)`. -/
+theorem RealAnalyticOn.comp_clm_of_mapsTo {g : E' → F} {V : Set E'} (hg : RealAnalyticOn g V)
+    (L : E →L[ℝ] E') {U : Set E} (hUV : MapsTo L U V) : RealAnalyticOn (fun x ↦ g (L x)) U :=
+  (hg.comp_clm L).mono hUV
+
 /-- **Pairs of real analytic maps are real analytic**: if `f₁`, `g₁` are complex analytic
 extensions of `f`, `g`, then `(f₁, g₁)`, read in `(F × G)_ℂ ≅ F_ℂ × G_ℂ`, extends `(f, g)`. -/
 theorem RealAnalyticOn.prodMk {g : E → G} (hf : RealAnalyticOn f U) (hg : RealAnalyticOn g U) :
