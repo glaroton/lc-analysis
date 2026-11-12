@@ -1,0 +1,329 @@
+\chapter{Krein spaces}
+
+Indefinite inner product spaces after Bognár \cite{Bog74}: ortho-complemented subspaces of a Krein
+space (Chapter~V), the majorant topology and the intrinsic dimension (Chapter~IV), and continuous
+families of Krein spaces. This is the linear analysis behind the pseudo-Riemannian metrics of
+infinite index (Krein type) in lc-manifolds; it was moved here from lc-manifolds on 2026-11-10.
+
+\section{Ortho-complemented subspaces}
+
+\begin{definition}[Krein spaces, fundamental symmetries, ortho-complemented subspaces]
+  \label{def:kr-krein}
+  \lean{LocallyConvex.Analysis.IntrinsicallyComplete,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition, LocallyConvex.Analysis.KreinDecomposition,
+    LocallyConvex.Analysis.IsKreinSpace, LocallyConvex.Analysis.FundamentalSymmetry,
+    LocallyConvex.Analysis.FundamentalSymmetry.form,
+    LocallyConvex.Analysis.FundamentalSymmetry.orth,
+    LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented}
+  \leanok
+  Following \cite[\S I.11, \S III.8, \S V.1]{Bog74}, a subspace $L$ of a space with a Hermitian form
+  $[\cdot, \cdot]$ is a \emph{Krein space} if it admits a fundamental decomposition
+  $L = L_+ \oplus L_-$, a $[\cdot, \cdot]$-orthogonal direct sum with $[\cdot, \cdot]$ positive
+  definite on $L_+$ and negative definite on $L_-$, whose components are \emph{intrinsically
+  complete}: complete for the norms $\sqrt{[x, x]}$ on $L_+$ and $\sqrt{-[x, x]}$ on $L_-$. No
+  topology enters. The ambient space is a Hilbert space $H$ over $\mathbb{R}$ or $\mathbb{C}$ with a
+  \emph{fundamental symmetry} $J$, a self-adjoint involution, and $[x, y] = \langle Jx, y\rangle$;
+  every Krein space is of this form \cite[Corollary~V.1.2]{Bog74}. A subspace $L \subseteq H$ is
+  \emph{ortho-complemented} if $L + L^{[\perp]} = H$ \cite[\S I.9, p.~18]{Bog74}
+  (\emph{projectively complete} in \cite[Definition~1.7.8]{AI89}).
+\end{definition}
+
+\begin{theorem}[Ortho-complemented subspaces of a Krein space {\cite[Theorem~V.3.4]{Bog74}}]
+  \label{thm:kr-krein-subspace}
+  \lean{LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented.isClosed,
+    LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented.eq_zero,
+    LocallyConvex.Analysis.FundamentalSymmetry.gram,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_bijective_gram,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_exists_projector,
+    LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented.eq_of_projector,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_of_kreinDecomposition,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_projector_of_kreinDecomposition,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_spectral_projection,
+    LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented.isKreinSpace,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_isClosed_and_isKreinSpace,
+    LocallyConvex.Analysis.FundamentalSymmetry.isKreinSpace_top}
+  \leanok
+  \uses{def:kr-krein}
+  Let $H$ be a Hilbert space with a fundamental symmetry $J$, and $L \subseteq H$ a subspace.
+  \begin{enumerate}
+    \item If $L$ is ortho-complemented, it is closed and nondegenerate
+      \cite[Corollaries~III.2.5 and I.9.5]{Bog74}.
+    \item $L$ is ortho-complemented if and only if there is a continuous $J$-orthogonal projector
+      $Q$ onto $L$, i.e.\ $[Qw, t] = [w, t]$ for $t \in L$; such a projector is unique. For closed
+      $L$ this happens if and only if the Gram operator $G_L = P_L J|_L$ is bijective.
+    \item A closed subspace which is a Krein space with the restricted form is ortho-complemented.
+    \item A subspace is ortho-complemented if and only if it is closed and a Krein space (over
+      $\mathbb{R}$ and $\mathbb{C}$).
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Items 1 and 2 use no completeness beyond the orthogonal projection onto $L$. For 3, Bognár goes
+  through Hilbert majorants and majorant topologies \cite[Theorem~V.1.3]{Bog74}; here the closed
+  graph theorem shows that the intrinsic norms dominate the norm of $H$, and the Riesz
+  representation theorem in $L_+$ and $L_-$ produces the $J$-orthogonal projection, the route
+  c $\Rightarrow$ d $\Rightarrow$ a of \cite[Theorem~1.7.16]{AI89}. For 4, $L_\pm$ are the
+  spectral subspaces of $G_L$ for $(0, \infty)$ and $(-\infty, 0)$, obtained from the continuous
+  functional calculus in the C$^*$-algebra $\Lin(L)$; they are closed with $\pm[x, x] \ge c\|x\|^2$,
+  hence intrinsically complete. Over $\mathbb{R}$ the continuous functional calculus is applied to
+  the complexification $G_{\mathbb{C}}$ of $G_L$ on $L \times L$: its spectral projection $P$
+  commutes with $G_{\mathbb{C}}$, hence with every operator commuting with $G_{\mathbb{C}}$; the
+  conjugate $CPC$ (for the conjugation $C(x, y) = (x, -y)$) is an idempotent commuting with $P$ with
+  the same sign bounds, so $CPC = P$ and $P$ restricts to a real projection on $L$. We do not claim
+  this argument is new.
+\end{proof}
+
+
+
+\begin{proposition}[Positive definite subspaces]
+  \label{prop:kr-krein-posdef}
+  \lean{LocallyConvex.Analysis.IntrinsicallyComplete.exists_lower_bound,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_uniformlyPositive_of_posDef,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_intrinsicallyComplete_of_posDef,
+    LocallyConvex.Analysis.FundamentalSymmetry.not_isOrthoComplemented_of_posDef}
+  \leanok
+  \uses{thm:kr-krein-subspace}
+  A positive definite subspace $L$ of the Krein space $H$ is ortho-complemented if and only if it is
+  closed and intrinsically complete, if and only if it is closed and uniformly positive:
+  $[x, x] \ge c\|x\|^2$ on $L$ for some $c > 0$. A closed positive definite subspace which is not
+  uniformly positive is nondegenerate and decomposable ($L = L \oplus 0$) but neither intrinsically
+  complete, nor a Krein space, nor ortho-complemented.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  A Krein decomposition of a positive definite $L$ has $L_- = 0$, so Theorem~\ref{thm:kr-krein-subspace}
+  gives the first equivalence. If $L$ is closed and intrinsically complete, the identity of $L$
+  onto its intrinsic Hilbert space is continuous ($[x, x] \le \|J\|\|x\|^2$) and bijective
+  between complete spaces, so its inverse is bounded by the open mapping theorem; the converse is a
+  Cauchy sequence argument. Uses the completeness of $H$.
+\end{proof}
+
+\begin{example}[{\cite[Example~V.3.3]{Bog74}}]
+  \label{ex:kr-bognar}
+  \lean{LocallyConvex.Analysis.Counterexamples.BognarKrein.J, LocallyConvex.Analysis.Counterexamples.BognarKrein.L,
+    LocallyConvex.Analysis.Counterexamples.BognarKrein.re_form_of_mem,
+    LocallyConvex.Analysis.Counterexamples.BognarKrein.bognar_example}
+  \leanok
+  \uses{prop:kr-krein-posdef}
+  On $\ell^2$ (over $\mathbb{R}$ or $\mathbb{C}$) let $J x = (s_i x_i)$ with $s_i = -1$ for even
+  and $s_i = 1$ for odd $i$, and
+  $L = \{x \mid x_{2k+1} = \tfrac{2k+2}{2k+1}\, x_{2k}\}$, the subspace of
+  \cite[Example~I.9.7, pp.~19--20]{Bog74}. Then $L$ is closed, positive definite, nondegenerate and
+  decomposable, but not intrinsically complete, not a Krein space, and not ortho-complemented.
+\end{example}
+
+\begin{proof}
+  \leanok
+  For $x \in L$, $[x, x] = \sum_k (d_k^2 - 1)|x_{2k}|^2$ with $d_k = \tfrac{2k+2}{2k+1}$, which is
+  positive for $x \ne 0$, while $d_k^2 - 1 \le 3/(2k+1) \to 0$; apply
+  Proposition~\ref{prop:kr-krein-posdef}. Bognár exhibits instead an intrinsic Cauchy sequence
+  whose would-be limit is not in $\ell^2$.
+\end{proof}
+
+\begin{lemma}[Sign decomposition of a self-adjoint operator]
+  \label{lem:kr-sign-decomposition}
+  \lean{LocallyConvex.Analysis.FundamentalSymmetry.exists_restrict_of_conj,
+    LocallyConvex.Analysis.FundamentalSymmetry.apply_eq_zero_of_re_inner_eq_zero,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_posPart_negPart,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_sign_decomposition}
+  \leanok
+  Let $G$ be a bounded self-adjoint operator on a real or complex Hilbert space $E$. Then
+  $G = G^+ - G^-$ with $G^\pm$ positive and $G^+ G^- = G^- G^+ = 0$, and
+  $E = N_0 \oplus N_+ \oplus N_-$ with $N_0 = \ker G$, $N_+ = (\ker G^+)^\perp$,
+  $N_- = (\ker G^-)^\perp$; the three components and the sums of any two of them are closed,
+  $\langle Gx, x\rangle$ is positive definite on $N_+$ and negative definite on $N_-$, and
+  $\langle G N_+, N_-\rangle = 0$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Over $\mathbb{C}$, $G^\pm$ are the positive and negative parts from the continuous functional
+  calculus. Over $\mathbb{R}$, take those of the complexification $G_{\mathbb{C}}$; $C G_{\mathbb{C}}^\pm C$
+  is again a decomposition of $G_{\mathbb{C}}$ into positive operators with product $0$, so it
+  equals $G_{\mathbb{C}}^\pm$ by uniqueness, and $G_{\mathbb{C}}^\pm$ restrict to $E$. Since
+  $G^+ G^- = 0$, $G^- y \in \ker G^+$, so $\langle y, G^- y\rangle = 0$ for $y \in N_+$, whence
+  $G^- y = 0$ (a positive operator vanishes where its quadratic form does): $N_+ \subseteq \ker G^-$,
+  and likewise $N_- \subseteq \ker G^+$. On $N_+$, $\langle Gx, x\rangle = \langle G^+x, x\rangle > 0$
+  for $x \ne 0$, since $G^+ x = 0$ would put $x$ in $\ker G^+ \cap N_+ = 0$. Decomposing along
+  $\ker G^+$ and then $\ker G^-$ gives $E = N_0 + N_+ + N_-$, with $N_0 + N_+ = \ker G^-$,
+  $N_0 + N_- = \ker G^+$, $N_+ + N_- = N_0^\perp$. These are the spectral subspaces of $G$ for
+  $\{0\}$, $(0, \infty)$, $(-\infty, 0)$, but no spectral measure is used.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem~V.3.1]{Bog74}}]
+  \label{thm:kr-krein-v31}
+  \lean{LocallyConvex.Analysis.FundamentalSymmetry.exists_fundamentalDecomposition_of_isClosed,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_algFundamentalDecomposition_of_isClosed}
+  \leanok
+  \uses{lem:kr-sign-decomposition, thm:kr-krein-subspace}
+  Every closed subspace $L$ of the Krein space $H$ has a fundamental decomposition
+  $L = L^0 \dotplus L_+ \dotplus L_-$ \cite[\S I.11, p.~24]{Bog74} ($L^0$ the isotropic part, $L_+$
+  positive definite, $L_-$ negative definite, mutually orthogonal) whose three components and the
+  sums of any two of them are closed. In particular a closed nondegenerate subspace has a
+  fundamental decomposition $L = L_+ \oplus L_-$ with closed components.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Apply Lemma~\ref{lem:kr-sign-decomposition} to the Gram operator $G_L$ on the Hilbert space $L$;
+  $\ker G_L$ is the isotropic part of $L$. Bognár deduces the theorem from his Theorem~IV.5.2
+  (p.~89), whose proof uses the spectral function of the Gram operator; since $0$ may lie in the
+  spectrum of $G_L$, the corresponding spectral projections are not continuous functions of $G_L$,
+  and Lemma~\ref{lem:kr-sign-decomposition} replaces them.
+\end{proof}
+
+\begin{theorem}[{\cite[Theorem~V.3.5]{Bog74}}]
+  \label{thm:kr-krein-v35}
+  \lean{LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented.sup,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition.isClosed_pos,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_pos_bound_of_top,
+    LocallyConvex.Analysis.FundamentalSymmetry.exists_neg_bound_of_top,
+    LocallyConvex.Analysis.FundamentalSymmetry.IsOrthoComplemented.exists_algFundamentalDecomposition_top,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_of_algFundamentalDecomposition,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_algFundamentalDecomposition,
+    LocallyConvex.Analysis.FundamentalSymmetry.isOrthoComplemented_iff_isClosed_nondegenerate}
+  \leanok
+  \uses{thm:kr-krein-subspace, prop:kr-krein-posdef, thm:kr-krein-v31}
+  A subspace $L$ of the Krein space $H$ is ortho-complemented if and only if it is closed,
+  nondegenerate, and every fundamental decomposition $L = L_+ \oplus L_-$ extends to a
+  fundamental decomposition $H = H_+ \oplus H_-$ with $L_+ \subseteq H_+$ and $L_- \subseteq H_-$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  ``Only if'': $L$ is closed and nondegenerate by Theorem~\ref{thm:kr-krein-subspace}, and
+  $L^{[\perp]}$ is ortho-complemented, hence a Krein space with a decomposition
+  $M_+ \oplus M_-$; $H_\pm = L_\pm + M_\pm$, as in Bognár. ``If'': $L$ has a fundamental
+  decomposition by Theorem~\ref{thm:kr-krein-v31}. Every fundamental decomposition of $H$ has
+  uniformly definite components (they are ortho-complemented and definite,
+  Proposition~\ref{prop:kr-krein-posdef}); $L_+ = L \cap L_-^{[\perp]}$ is closed and, inside
+  $H_+$, uniformly positive, hence ortho-complemented; likewise $L_-$; and an orthogonal sum of
+  ortho-complemented subspaces is ortho-complemented \cite[Lemma~I.9.2]{Bog74}. Bognár instead
+  ortho-complements $L_+$ inside the Hilbert space $(H_+, [\cdot, \cdot])$. We do not claim this
+  argument is new.
+\end{proof}
+
+\section{The majorant topology}
+
+\begin{definition}[$J$-inner product of a fundamental decomposition]
+  \label{def:kr-jinner}
+  \lean{LocallyConvex.Analysis.AlgFundamentalDecomposition.projPos,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition.sym,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition.jInner,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition.JSpace}
+  \leanok
+  \uses{def:kr-krein}
+  For a fundamental decomposition $E = E_+ \oplus E_-$ of a Hermitian form $B$, with projections
+  $P_\pm$ and fundamental symmetry $J = P_+ - P_-$, the \emph{$J$-inner product}
+  $[x, y]_J = B(Jx, y) = B(P_+ x, P_+ y) - B(P_- x, P_- y)$ is positive definite. Its norm defines
+  the \emph{decomposition majorant} \cite[\S IV.5--6]{Bog74}.
+\end{definition}
+
+\begin{theorem}[All decomposition majorants coincide {\cite[Theorem~IV.6.4, Corollary~IV.6.3, Theorem~IV.7.2]{Bog74}}]
+  \label{thm:kr-majorant}
+  \lean{LocallyConvex.Analysis.AlgFundamentalDecomposition.exists_jInner_bounds,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition.continuous_sym,
+    LocallyConvex.Analysis.AlgFundamentalDecomposition.toKreinDecomposition,
+    LocallyConvex.Analysis.KreinDecomposition.completeSpace,
+    LocallyConvex.Analysis.KreinDecomposition.exists_jInner_bounds,
+    LocallyConvex.Analysis.KreinDecomposition.ofAlg}
+  \leanok
+  \uses{def:kr-jinner}
+  Let $(E, B)$ be a Krein space and $K$ a Krein decomposition. Then $E$ with $[\cdot, \cdot]_K$ is
+  a Hilbert space, every fundamental decomposition $D$ of $(E, B)$ has a $J$-norm equivalent to
+  that of $K$, and $D$ is a Krein decomposition. On a Hilbert space with $B = \langle G \cdot,
+  \cdot\rangle$, $G$ invertible and self-adjoint, every fundamental decomposition has closed
+  components, a continuous fundamental symmetry, and a $J$-norm equivalent to the norm.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  $E_\pm = E_\mp^{[\perp]}$ is closed, so $J$ is continuous by the closed graph theorem. The
+  operator $U = GJ$ is self-adjoint, positive ($\langle Ux, x\rangle = [x, x]_J$) and invertible,
+  so $\|Ux\|^2 \le \|U\|\langle Ux, x\rangle$ (Cauchy--Schwarz for the positive form) and
+  $\|x\| \le \|U^{-1}\|\|Ux\|$ give $c\|x\|^2 \le [x, x]_J \le \|U\|\|x\|^2$. The algebraic case
+  is reduced to this one on the Hilbert space of $K$, whose Gram operator is $J_K$. Bognár proves
+  Theorem~6.4 for an arbitrary Hilbert majorant by an iteration; for Krein spaces the positivity and
+  invertibility of $GJ$ suffice. We do not claim this argument is new.
+\end{proof}
+
+\section{The intrinsic dimension}
+
+\begin{theorem}[Rank of positivity and of negativity {\cite[Lemma~IV.7.1, Corollary~IV.7.4]{Bog74}}]
+  \label{thm:kr-intrinsic-dim}
+  \lean{LocallyConvex.Analysis.denseSpanDim, LocallyConvex.Analysis.intrinsicDim,
+    ContinuousLinearEquiv.denseSpanDim_eq,
+    LocallyConvex.Analysis.KreinDecomposition.posEquiv,
+    LocallyConvex.Analysis.KreinDecomposition.intrinsicDim_pos_eq,
+    LocallyConvex.Analysis.KreinDecomposition.intrinsicDim_neg_eq}
+  \leanok
+  \uses{thm:kr-majorant}
+  The \emph{dense-span dimension} of a topological vector space is the least cardinality of a set
+  with dense span; the \emph{intrinsic dimension} of a definite subspace is its dense-span
+  dimension for the intrinsic norm. For two fundamental decompositions of a Krein space,
+  $P_{1+} \colon E_{2+} \to E_{1+}$ is an isomorphism of topological vector spaces, so the
+  intrinsic dimensions of $E_+$ and of $E_-$ (the index) do not depend on the decomposition.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  For $x \in E_{2+}$, $B(x, x) = B(P_{1+}x, P_{1+}x) + B(P_{1-}x, P_{1-}x) \le B(P_{1+}x, P_{1+}x)$,
+  so $P_{1+}$ is bounded below; it is bounded by Theorem~\ref{thm:kr-majorant}. Its range is closed,
+  and its orthogonal in $E_{1+}$ lies in $E_{2+}^{[\perp]} = E_{2-}$, hence is zero. Bognár deduces
+  Corollary~7.4 from his Lemma~7.3 instead.
+\end{proof}
+
+\begin{theorem}[Dense-span dimension and Hilbert dimension]
+  \label{thm:kr-hilbert-dim}
+  \lean{Orthonormal.cardinal_le_denseSpanDim, Orthonormal.denseSpanDim_eq,
+    HilbertBasis.denseSpanDim_eq,
+    LocallyConvex.Analysis.KreinDecomposition.intrinsicDim_pos_eq_card,
+    LocallyConvex.Analysis.KreinDecomposition.exists_hilbertBasis_pos,
+    LocallyConvex.Analysis.KreinDecomposition.intrinsicDim_neg_eq_card}
+  \leanok
+  \uses{thm:kr-intrinsic-dim}
+  In an inner product space, no orthonormal family is larger than a set with dense span. Hence the
+  dense-span dimension of an inner product space is the cardinality of any orthonormal family with
+  dense span; in particular all Hilbert bases of a Hilbert space have the same cardinality, and the
+  ranks of positivity and of negativity of a Krein space are the Hilbert dimensions of $E_+$ and
+  $E_-$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Let $(v_i)$ be orthonormal and $s$ have dense span. Each $v_i$ has a nonzero inner product with
+  some element of $s$, otherwise $v_i$ would be orthogonal to the closure of the span of $s$. If
+  $s$ is infinite, each element of $s$ has nonzero inner products with countably many $v_i$ only
+  (Bessel's inequality), so the index set has cardinality at most $|s| \cdot \aleph_0 = |s|$. If
+  $s$ is finite, its span is closed, hence everything, and the $v_i$ are linearly independent.
+\end{proof}
+
+\section{Continuous families of Krein spaces}
+
+\begin{theorem}[Continuous spectral projections and local constancy of the index]
+  \label{thm:kr-perturbation}
+  \lean{LocallyConvex.Analysis.continuous_cfc_posInd,
+    LocallyConvex.Analysis.exists_continuous_spectral_projection,
+    LocallyConvex.Analysis.continuousLinearEquiv_ker_of_norm_sub_lt_one,
+    LocallyConvex.Analysis.index, LocallyConvex.Analysis.index_eq,
+    LocallyConvex.Analysis.isLocallyConstant_index}
+  \leanok
+  \uses{thm:kr-intrinsic-dim, thm:kr-krein-subspace}
+  Let $G(x)$ be a norm-continuous family of invertible self-adjoint operators on a real or complex
+  Hilbert space. The spectral projections of $G(x)$ onto the positive part depend continuously on
+  $x$, so fundamental decompositions of $(H, \langle G(x)\cdot, \cdot\rangle)$ can be chosen
+  continuously; and the index of any choice of fundamental decompositions is a locally constant
+  function of $x$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Over $\mathbb{C}$ the projection is $\chi_{(0,\infty)}(G(x))$, and the continuous functional
+  calculus is continuous in the operator when the spectra stay in a fixed open set on which the
+  function is continuous (upper hemicontinuity of the spectrum); over $\mathbb{R}$ use the
+  complexification. If $P$, $Q$ are orthogonal projections with $\|P - Q\| < 1$, then
+  $v \mapsto v - Qv$ is an isomorphism $\ker P \cong \ker Q$. The index is computed on the
+  spectral decomposition, where the intrinsic norm on $\ker P$ is equivalent to the norm.
+\end{proof}

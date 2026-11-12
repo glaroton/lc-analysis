@@ -1,0 +1,1028 @@
+\chapter{Analytic maps}
+\label{chap:analytic}
+
+This chapter is a plan, and its statements become formal one by one. We follow the treatment of
+Glöckner and Neeb \cite[Ch.~2]{GN26}, which builds on Bochnak and Siciak \cite{BS71a, BS71b} and
+on Glöckner \cite[§2]{Glo02}. The point of this approach is that \emph{no completeness of the
+target space is needed} for the basic theory. Bochnak and Siciak assume throughout that the target
+space $F$ is sequentially complete; Glöckner removes this hypothesis by working in the completion
+$\widetilde F$ and coming back to $F$ through the derivatives, which lie in $F$
+\cite[Prop.~2.4, Lemma~2.5]{Glo02}.
+
+\section{Continuous homogeneous polynomials}
+
+\begin{definition}[Continuous homogeneous polynomials]
+  \label{def:hom-poly}
+  \lean{LocallyConvex.Analysis.IsContHomPoly}
+  \leanok
+  Let $E$, $F$ be topological vector spaces over $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$ and
+  $k \in \mathbb{N}_0$. A map $p \colon E \to F$ is a \emph{continuous homogeneous polynomial of
+  degree $k$} if $p(x) = A(x, \dots, x)$ for some continuous $k$-linear map
+  $A \colon E^k \to F$.
+\end{definition}
+
+Replacing $A$ by its symmetrization we may take $A$ symmetric, and then $A$ is determined by $p$:
+
+\begin{theorem}[Polarization; Mazur--Orlicz {\cite[Theorem~A]{BS71a}}]
+  \label{thm:polarization}
+  \lean{MultilinearMap.polarization, MultilinearMap.continuous_of_isSymm_of_continuous_diag,
+    LocallyConvex.Analysis.isContHomPoly_iff_continuous}
+  \leanok
+  If $A$ is symmetric and $k$-linear, then for $x_1, \dots, x_k \in E$
+  \[
+    \sum_{\varepsilon \in \{\pm 1\}^k} \varepsilon_1 \cdots \varepsilon_k \,
+    A\Bigl(\sum_j \varepsilon_j x_j, \dots, \sum_j \varepsilon_j x_j\Bigr)
+    = 2^k k! \, A(x_1, \dots, x_k).
+  \]
+  In particular, if $x \mapsto A(x, \dots, x)$ is continuous, then $A$ is continuous.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Expand $A(\sum_j \varepsilon_j x_j, \dots)$ by multilinearity over all maps
+  $r \colon \{1, \dots, k\} \to \{1, \dots, k\}$. The sign sum
+  $\sum_\varepsilon \prod_j \varepsilon_j^{1 + |r^{-1}(j)|}$ is $2^k$ if $r$ is a bijection and
+  $0$ otherwise, and $A(x_{r(1)}, \dots, x_{r(k)}) = A(x_1, \dots, x_k)$ for bijective $r$ by
+  symmetry. The continuity statement follows because the left hand side is a finite combination of
+  values of $x \mapsto A(x, \dots, x)$. No completeness, local convexity or Hausdorff property is
+  used.
+\end{proof}
+
+\section{One complex variable}
+
+Let $F$ be a complex locally convex space, not necessarily complete, and $U \subseteq \mathbb{C}$
+open. A map $f \colon U \to F$ is \emph{complex analytic} if around every point it is a power
+series $f(z_0 + z) = \sum_n z^n a_n$ with $a_n \in F$, converging pointwise on a disc
+\cite[Rem.~2.1.3]{GN26}.
+
+\begin{theorem}[Power series in incomplete spaces]
+  \label{thm:one-var-power-series}
+  \lean{LocallyConvex.Analysis.HasPowerSeriesOnDisc.continuousOn, LocallyConvex.Analysis.CAnalyticOn.cAnalyticOn_cDeriv,
+    LocallyConvex.Analysis.HasPowerSeriesOnDisc.hasWeakIntegral, LocallyConvex.Analysis.HasPowerSeriesOnDisc.seminorm_coeff_le,
+    LocallyConvex.Analysis.CAnalyticOn.hasPowerSeriesOnDisc}
+  \leanok
+  A complex analytic $f \colon U \to F$ is continuous, its complex derivative exists and is
+  complex analytic. The Cauchy integrals
+  $\int_0^{2\pi} e^{-int} f(z_0 + \rho e^{it})\, dt = 2\pi \rho^n a_n$ exist as weak integrals in
+  $F$, the Cauchy estimates $q(a_n) \le \rho^{-n} \sup_{|\zeta| = \rho} q(f(z_0 + \zeta))$ hold
+  for every continuous seminorm $q$, and the Taylor series of $f$ at $z_0$ converges to $f$ in $F$
+  on every disc whose closure lies in $U$ (\cite[Cor.~2.1.8, Lemma~2.1.10]{GN26}).
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  No completion is used. Every sum and integral that appears has its value already in $F$ (a value
+  of $f$, a coefficient, a derivative), and convergence is checked seminorm by seminorm against a
+  geometric majorant. Scalar estimates are transferred to $F$ by the Hahn--Banach theorem: if
+  $|\ell(v)| \le B$ for every continuous linear $\ell$ with $|\ell| \le q$, then $q(v) \le B$.
+\end{proof}
+
+\begin{theorem}[Complex analytic $=$ real smooth with complex linear differential]
+  \label{thm:one-var-iff}
+  \lean{LocallyConvex.Analysis.cAnalyticOn_iff_smoothMBOn}
+  \leanok
+  \uses{thm:one-var-power-series}
+  $f \colon U \to F$ is complex analytic if and only if it is $C^\infty$ in the real
+  Michal--Bastiani sense and $\dd f(z)(w) = w\, \dd f(z)(1)$ for all $z \in U$, $w \in \mathbb{C}$
+  \cite[Cor.~2.1.9]{GN26}.
+\end{theorem}
+
+\begin{remark}
+  Glöckner and Neeb prove the one variable characterizations with $C^1$ in place of $C^\infty$
+  under Mackey completeness \cite[Prop.~2.1.6]{GN26}, and Corollary~2.1.9 without completeness
+  through the completion $\widetilde F$. Here the smooth version is proved without completeness
+  and without the completion: smoothness provides all the Taylor coefficients
+  $\frac{1}{n!}\dd^{(n)} f(z)(1, \dots, 1)$ in $F$. For a single power series on a disc, the
+  derivative at a point other than the center is only known to exist when the differentiated
+  series converges in $F$; whether this can fail in an incomplete space we have not settled.
+\end{remark}
+
+\section{Complex analytic maps}
+
+\begin{definition}[Complex analytic maps {\cite[Def.~2.1.2]{GN26}, \cite[Def.~5.6]{BS71b}}]
+  \label{def:complex-analytic}
+  \lean{LocallyConvex.Analysis.ComplexAnalyticOn}
+  \leanok
+  Let $E$, $F$ be complex locally convex spaces and $U \subseteq E$ open. A map
+  $f \colon U \to F$ is \emph{complex analytic} if it is continuous and for every $x \in U$ there
+  are continuous homogeneous polynomials $p_k$ of degree $k$ such that
+  $f(x + y) = \sum_{k \ge 0} p_k(y)$, as a pointwise limit, for all $y$ in a $0$-neighborhood $Y$
+  with $x + Y \subseteq U$.
+\end{definition}
+
+\begin{definition}[Gâteaux analytic maps {\cite[Def.~2.1.11]{GN26}}]
+  \label{def:gateaux-analytic}
+  \lean{LocallyConvex.Analysis.GateauxAnalyticOn}
+  \leanok
+  $f$ is \emph{Gâteaux analytic} if $z \mapsto f(x + z y)$ is complex analytic (locally a power
+  series with coefficients in $F$) on $\{z \in \mathbb{C} : x + zy \in U\}$, for all $x \in U$,
+  $y \in E$.
+\end{definition}
+
+\begin{theorem}[Characterizations of complex analyticity {\cite[Thm.~2.1.12]{GN26}}]
+  \label{thm:complex-analytic-iff}
+  \lean{LocallyConvex.Analysis.tfae_complexAnalyticOn, LocallyConvex.Analysis.ComplexAnalyticOn.smoothMBOn,
+    LocallyConvex.Analysis.ComplexAnalyticOn.dMB, LocallyConvex.Analysis.ContDiffCMBOn,
+    LocallyConvex.Analysis.ContDiffCMBOn.contDiffMBOn,
+    LocallyConvex.Analysis.ComplexAnalyticOn.contDiffCMBOn,
+    LocallyConvex.Analysis.tfae_complexAnalyticOn_smoothCMBOn,
+    LocallyConvex.Analysis.complexAnalyticOn_of_contDiffMBOn_one_of_mackey,
+    LocallyConvex.Analysis.tfae_complexAnalyticOn_of_mackey,
+    LocallyConvex.Analysis.contDiffCMBOn_iff,
+    LocallyConvex.Analysis.smoothCMBOn_iff_holomorphicOn}
+  \leanok
+  \uses{thm:one-var-iff, thm:polarization}
+  For $f \colon U \to F$ the following are equivalent:
+  \begin{enumerate}
+    \item $f$ is $C^\infty$ (in the real Michal--Bastiani sense) and $\dd f(x) \colon E \to F$ is
+      complex linear for each $x \in U$;
+    \item $f$ is continuous and Gâteaux analytic;
+    \item $f$ is complex analytic;
+    \item $f$ is $C^\infty_{\mathbb{C}}$, with complex difference quotients
+      $t^{-1}(f(x + ty) - f(x))$, $t \in \mathbb{C}$.
+  \end{enumerate}
+  If $F$ is Mackey complete, they are also equivalent to: $f$ is $C^1_{\mathbb{C}}$; $f$ is $C^1$
+  and $\dd f(x)$ is complex linear for each $x \in U$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  The equivalence of (1)--(4) is formalized without any completeness of $F$ and without the
+  completion. (4) $\Rightarrow$ (1): complex difference quotients restrict to real ones, and
+  substituting $t \mapsto ct$ gives complex homogeneity. (3) $\Rightarrow$ (4): the complex
+  derivative of $z \mapsto f(x + zy)$ at $0$ is $\dd f(x, y)$, and $\dd f$ is again complex
+  analytic. For Mackey complete $F$, a $C^1$ map with complex linear differentials is weakly
+  holomorphic along lines, hence Gâteaux analytic by the weak-to-strong theorem. For every
+  $k \geq 1$, $C^k_{\mathbb{C}}$ maps are the $C^k$ maps with complex linear differentials
+  \cite[Lemma~1.4.17]{GN26}: writing $t = su$ with $s = |t|$ and $|u| = 1$, the real difference
+  quotients converge to $\dd f(x, uy)$ uniformly on the unit circle, and the second differential
+  is complex linear in the direction by symmetry. (3) $\Rightarrow$ (2) restricts
+  the expansion to lines. (1) $\Rightarrow$ (3): the Taylor polynomials
+  $\frac{1}{n!}\dd^{(n)} f(x)(y, \dots, y)$ are continuous homogeneous polynomials over
+  $\mathbb{C}$ (complex multilinearity of the higher differentials from homogeneity and symmetry),
+  and the one variable Taylor expansion along $z \mapsto f(x + zy)$ gives the series on a balanced
+  $Y$ with $x + 2Y \subseteq U$. (2) $\Rightarrow$ (1): $\dd f$ is a locally uniform limit of
+  difference quotients, by seminorm estimates of Taylor remainders along lines; it is Gâteaux
+  analytic on $U \times E$ by a two variable Osgood lemma, and a discrete polarization over roots of
+  unity writes its Taylor coefficients as finite combinations of coefficients of $f$ along lines,
+  so they lie in $F$. Induction on $k$ gives smoothness.
+\end{proof}
+
+\begin{theorem}[Holomorphic maps between complex normed spaces]
+  \label{thm:banach-holomorphic}
+  \lean{DifferentiableOn.gateauxAnalyticOn, DifferentiableOn.complexAnalyticOn,
+    LocallyConvex.Analysis.ComplexAnalyticOn.differentiableOn,
+    LocallyConvex.Analysis.complexAnalyticOn_iff_differentiableOn,
+    TendstoLocallyUniformlyOn.differentiableOn_complex,
+    DifferentiableOn.contDiffOn_one_complex}
+  \leanok
+  \uses{thm:complex-analytic-iff}
+  Let $E$, $F$ be complex normed spaces and $U \subseteq E$ open. A complex analytic map
+  $f \colon U \to F$ is complex Fréchet differentiable; if $F$ is complete, the converse holds. In
+  particular, if $F$ is complete, a locally uniform limit of complex differentiable maps on $U$ is
+  complex differentiable. If $F$ is complete, complex differentiable maps on $U$ are $\Ck{1}$
+  over $\mathbb{C}$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  A complex analytic map is real Fréchet smooth (Theorem~\ref{thm:complex-analytic-iff} and
+  Proposition~2.3.17 of \cite{GN26}), with complex linear derivative. Conversely, along each
+  complex line a complex differentiable map is holomorphic in one variable, hence complex analytic
+  along lines; being continuous, it is complex analytic by Theorem~\ref{thm:complex-analytic-iff}.
+  For limits, the restrictions to complex lines are locally uniform limits of holomorphic functions
+  of one variable, which are holomorphic, and the limit is continuous.
+\end{proof}
+
+\begin{remark}
+  A word of caution on the hypotheses. No completeness is needed for the equivalence of (1)--(3):
+  in the proof of (2) $\Rightarrow$ (1), the Cauchy integral
+  $\dd f(x, y) = \frac{1}{2\pi i} \oint_{|\zeta| = 1} f(x + \zeta y)\, \zeta^{-2}\, d\zeta$ is a
+  weak integral which exists in $F$, because along the line it is a coefficient of a power series
+  with coefficients in $F$. Completeness only enters when one starts from a $C^1$ map, whose
+  higher derivatives are a priori only in the completion. Since (1) is stated with the real
+  calculus, we do not need a separate complex Michal--Bastiani calculus: a complex $C^k$ map is
+  the same as a real $C^k$ map with complex linear differentials.
+\end{remark}
+
+\section{Real analytic maps}
+
+\begin{definition}[Complexification {\cite[Def.~2.2.1]{GN26}}]
+  \label{def:complexification}
+  \lean{LocallyConvex.Analysis.Complexification}
+  \leanok
+  For a real topological vector space $E$, $E_{\mathbb{C}} := E \times E$ with the product
+  topology and $(x + iy)(u, v) := (xu - yv, xv + yu)$. It is locally convex if $E$ is, and
+  $E = E \times \{0\}$.
+\end{definition}
+
+\begin{definition}[Real analytic maps; Milnor {\cite{Mil84}}, {\cite[Def.~2.3]{Glo02}},
+  {\cite[Def.~2.2.2]{GN26}}]
+  \label{def:real-analytic}
+  \lean{LocallyConvex.Analysis.RealAnalyticOn}
+  \leanok
+  \uses{def:complexification, def:complex-analytic}
+  Let $E$, $F$ be real locally convex spaces and $U \subseteq E$ open. A map $f \colon U \to F$ is
+  \emph{real analytic} if it extends to a complex analytic map $V \to F_{\mathbb{C}}$ on an open
+  neighborhood $V$ of $U$ in $E_{\mathbb{C}}$.
+\end{definition}
+
+\begin{definition}[Analytic maps in the sense of Bochnak and Siciak {\cite[Def.~5.6]{BS71b}}]
+  \label{def:bs-analytic}
+  \lean{LocallyConvex.Analysis.BSAnalyticOn}
+  \leanok
+  \uses{def:hom-poly}
+  $f \colon U \to F$ is \emph{BS analytic} if it is continuous and for every $x \in U$ there are
+  continuous homogeneous polynomials $p_k$ of degree $k$ such that
+  $f(x + y) = \sum_{k \ge 0} p_k(y)$, as a pointwise limit, for all $y$ in a $0$-neighborhood.
+  Over $\mathbb{C}$ this is Definition~\ref{def:complex-analytic}.
+\end{definition}
+
+Compositions of complex analytic maps are complex analytic: by
+Theorem~\ref{thm:complex-analytic-iff} this is the chain rule of the real Michal--Bastiani
+calculus, and no completeness is involved. In the same way complex analyticity is a local
+property.
+
+\begin{lemma}[Locality {\cite[Lemma~2.2.3]{GN26}}]
+  \label{lem:real-analytic-local}
+  \lean{LocallyConvex.Analysis.RealAnalyticOn.of_local, LocallyConvex.Analysis.Complexification.eqOn_box_inter}
+  \leanok
+  \uses{def:real-analytic}
+  If every point of $U$ has a neighborhood $W$ such that $f|_{U \cap W}$ is real analytic, then
+  $f$ is real analytic.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Each $x \in U$ has a convex open $0$-neighborhood $C_x$ with $x + C_x \subseteq U$ and a
+  complex analytic extension $g_x$ of $f$ on the convex set $B_x := (x + C_x) + i C_x$. Two such
+  extensions agree on $B_x \cap B_y$. Glöckner and Neeb deduce this from the identity theorem in
+  $E_{\mathbb{C}}$ \cite[Thm.~2.1.16(c)]{GN26}. We use one variable instead: for $a + ib \in B_x
+  \cap B_y$, the set $D$ of $z \in \mathbb{C}$ with $a + zb \in B_x \cap B_y$ is convex and
+  contains $0$, $i$ and a real interval around $0$, on which $g_x(a + zb) = f(a + zb) =
+  g_y(a + zb)$. For each continuous complex linear functional $\lambda$, the holomorphic
+  functions $\lambda \circ g_x(a + zb)$ and $\lambda \circ g_y(a + zb)$ on $D$ then agree, by the
+  one variable identity theorem, in particular at $z = i$; and functionals separate points.
+  The extensions glue to a complex analytic map on $\bigcup_x B_x$.
+\end{proof}
+
+\begin{theorem}[Basic properties {\cite[Prop.~2.2.4, Lemmas~2.2.5, 2.2.6]{GN26}}]
+  \label{thm:real-analytic-basic}
+  \lean{LocallyConvex.Analysis.RealAnalyticOn.comp, LocallyConvex.Analysis.RealAnalyticOn.smoothMBOn,
+    LocallyConvex.Analysis.RealAnalyticOn.iteratedDMB_ext, LocallyConvex.Analysis.RealAnalyticOn.exists_taylor,
+    LocallyConvex.Analysis.RealAnalyticOn.bsAnalyticOn}
+  \leanok
+  \uses{def:real-analytic, def:bs-analytic, thm:complex-analytic-iff}
+  Compositions of real analytic maps are real analytic. Real analytic maps are smooth, and
+  $\dd^{(k)} f(x, y_1, \dots, y_k) = \dd^{(k)} g(x, y_1, \dots, y_k)$ for any complex analytic
+  extension $g$, $x \in U$ and $y_i \in E$. A real analytic map is locally the sum of its Taylor
+  series $\sum_k \frac{1}{k!} \dd^{(k)} f(x)(y, \dots, y)$; in particular it is BS analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Composition: compose the extensions, after shrinking the domain of the inner one. Smoothness:
+  $f = \mathrm{Re} \circ g \circ \iota$ on $U$, with $\iota \colon E \to E_{\mathbb{C}}$ and
+  $\mathrm{Re} \colon F_{\mathbb{C}} \to F$ continuous and real linear (Glöckner and Neeb argue
+  instead that $F$ is closed in $F_{\mathbb{C}}$). The derivatives of $g \circ \iota$ at $x$ are
+  those of $g$ in real directions, by an identity between difference quotients. The Taylor
+  expansion is that of $g$ (Theorem~\ref{thm:complex-analytic-iff}), restricted to real points.
+\end{proof}
+
+\begin{proposition}[Operations on analytic maps]
+  \label{prop:analytic-operations}
+  \lean{LocallyConvex.Analysis.ComplexAnalyticOn.prodMk, LocallyConvex.Analysis.ComplexAnalyticOn.add,
+    LocallyConvex.Analysis.ComplexAnalyticOn.sum, LocallyConvex.Analysis.ComplexAnalyticOn.bilin,
+    LocallyConvex.Analysis.RealAnalyticOn.prodMk, LocallyConvex.Analysis.RealAnalyticOn.add,
+    LocallyConvex.Analysis.RealAnalyticOn.sum, LocallyConvex.Analysis.RealAnalyticOn.clm_comp,
+    LocallyConvex.Analysis.RealAnalyticOn.comp_clm, LocallyConvex.Analysis.RealAnalyticOn.bilin}
+  \leanok
+  \uses{def:real-analytic, thm:complex-analytic-iff, thm:real-analytic-basic}
+  Pairs, sums, scalar multiples and finite sums of complex (resp.\ real) analytic maps are
+  complex (resp.\ real) analytic, and so is $x \mapsto \beta(f(x), g(x))$ for a jointly
+  continuous complex (resp.\ real) bilinear map $\beta$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  In the complex case, by Theorem~\ref{thm:complex-analytic-iff} it suffices to see that the maps
+  are smooth with complex linear differentials, which follows from the rules of
+  Chapter~\ref{chap:rules}. In the real case, $(E \times F)_{\mathbb{C}} \cong E_{\mathbb{C}}
+  \times F_{\mathbb{C}}$ as complex locally convex spaces, so the pair of two complex analytic
+  extensions extends the pair; for $\beta$ use its complexification
+  $\beta_{\mathbb{C}}(a + ia', b + ib') = \beta(a, b) - \beta(a', b') + i(\beta(a, b') +
+  \beta(a', b))$, which is jointly continuous and complex bilinear.
+\end{proof}
+
+\begin{theorem}[The differential of a real analytic map]
+  \label{thm:real-analytic-dMB}
+  \lean{LocallyConvex.Analysis.RealAnalyticOn.dMB}
+  \leanok
+  \uses{def:real-analytic, thm:real-analytic-basic, prop:analytic-operations}
+  If $f \colon U \to F$ is real analytic on an open set $U \subseteq E$, then
+  $\dd f \colon U \times E \to F$ is real analytic. (Glöckner and Neeb use this, for $r = \omega$,
+  in \cite[Lemma~3.3.8(d)]{GN26}; the complex case is \cite[Lemma~2.6]{Glo02}.)
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Let $g$ be a complex analytic extension of $f$ on $V \subseteq E_{\mathbb{C}}$. Then $\dd g$ is
+  complex analytic on $V \times E_{\mathbb{C}}$ (Theorem~\ref{thm:complex-analytic-iff}), and
+  composed with $(E \times E)_{\mathbb{C}} \cong E_{\mathbb{C}} \times E_{\mathbb{C}}$ it extends
+  $\dd f$, since $\dd g(x, y) = \dd f(x, y)$ for $x \in U$, $y \in E$
+  (Theorem~\ref{thm:real-analytic-basic}).
+\end{proof}
+
+\begin{proposition}[Complex analytic maps are real analytic {\cite[Prop.~2.2.11]{GN26}}]
+  \label{prop:complex-real-analytic}
+  \lean{LocallyConvex.Analysis.ComplexAnalyticOn.realAnalyticOn}
+  \leanok
+  \uses{def:real-analytic, thm:complex-analytic-iff}
+  Let $E$, $F$ be complex locally convex spaces. Every complex analytic map $f \colon U \to F$
+  is real analytic, as a map between the underlying real spaces.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  Let $\pi_\pm(u + iv) := u \pm J v$ on $E_{\mathbb{C}} = E \oplus iE$, where $J$ is
+  multiplication by $i$ in $E$, and $\alpha(y) := \frac12 (y - i J y)$,
+  $\beta(y) := \frac12 (y + i J y)$ from $F$ to $F_{\mathbb{C}}$. Then $\pi_+$ and $\alpha$ are
+  complex linear, $\pi_-$ and $\beta$ conjugate linear, and
+  $g := \alpha \circ f \circ \pi_+ + \beta \circ f \circ \pi_-$ is smooth on
+  $\pi_+^{-1}(U) \cap \pi_-^{-1}(U)$ with complex linear differentials, hence complex analytic
+  by Theorem~\ref{thm:complex-analytic-iff}. Since $\pi_\pm(x) = x$ and
+  $\alpha(y) + \beta(y) = y$ for real points, $g$ extends $f$. This is the extension of Glöckner
+  and Neeb, $\psi^{-1} \circ (f \times \bar f) \circ \varphi$, written without the conjugate
+  spaces $\bar E$, $\bar F$.
+\end{proof}
+
+\begin{lemma}[A complex norm on the complexification]
+  \label{lem:normed-complexification}
+  \lean{LocallyConvex.Analysis.NormedComplexification,
+    LocallyConvex.Analysis.NormedComplexification.instNormedSpace,
+    LocallyConvex.Analysis.NormedComplexification.instCompleteSpace,
+    LocallyConvex.Analysis.NormedComplexification.norm_le,
+    LocallyConvex.Analysis.NormedComplexification.norm_ofRealCLM,
+    LocallyConvex.Analysis.NormedComplexification.toNormed,
+    LocallyConvex.Analysis.NormedComplexification.ofNormed}
+  \leanok
+  \uses{def:complexification}
+  Let $E$ be a real normed space. Then
+  $\|u + iv\|_{\mathbb{C}} := \sup_{|w| = 1} \|\mathrm{Re}(w(u + iv))\|$ is a complex norm on
+  $E_{\mathbb{C}}$ with $\max(\|u\|, \|v\|) \le \|u + iv\|_{\mathbb{C}} \le \|u\| + \|v\|$; it
+  extends the norm of $E$, defines the product topology, and is complete if $E$ is.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The norm is induced by the injective map $p \mapsto (w \mapsto \mathrm{Re}(wp))$ into
+  $C(S^1, E)$, and $\mathrm{Re}(w c p) = |c| \,\mathrm{Re}(w (c/|c|) p)$ gives
+  $\|cp\|_{\mathbb{C}} \le |c| \|p\|_{\mathbb{C}}$. The bounds follow from $w = 1$, $w = -i$ and
+  $|\mathrm{Re}\,w|, |\mathrm{Im}\,w| \le 1$. This is Taylor's complexification of the norm,
+  the smallest reasonable complexification norm (Muñoz, Sarantopoulos and Tonge, Studia Math.
+  134 (1999), Proposition~3);
+  Glöckner and Neeb use the largest complex norm extending $\|\cdot\|$ instead
+  \cite[Exercise~2.3.7]{GN26}.
+\end{proof}
+
+Continuous linear maps and constants are real analytic.
+
+\begin{theorem}[Inversion in continuous inverse algebras {\cite[Cor.~1.3.8, Ex.~2.1.15, Lemmas~2.2.14, 2.2.17, Prop.~2.2.13]{GN26}}]
+  \label{thm:cia-inversion}
+  \lean{LocallyConvex.Analysis.ContinuousInverseAlgebra, LocallyConvex.Analysis.NormedRing.continuousInverseAlgebra,
+    LocallyConvex.Analysis.hasDirDerivAt_inverse, LocallyConvex.Analysis.smoothMBOn_inverse,
+    LocallyConvex.Analysis.complexAnalyticOn_inverse, LocallyConvex.Analysis.isOpen_units_of_mem_nhds_one,
+    LocallyConvex.Analysis.continuousOn_inverse_of_continuousAt_one,
+    LocallyConvex.Analysis.Complexification.continuousInverseAlgebra, LocallyConvex.Analysis.realAnalyticOn_inverse}
+  \leanok
+  \uses{def:real-analytic, thm:complex-analytic-iff}
+  Let $A$ be a continuous inverse algebra: a unital locally convex algebra whose unit group $A^\times$
+  is open, with inversion $\iota$ continuous on it (complete normed algebras are examples). Then
+  $\iota$ is smooth with $\dd\iota(x, h) = -x^{-1} h x^{-1}$; it is complex analytic if $A$ is
+  complex, and real analytic if $A$ is real. No completeness is assumed.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  From $\iota(x + th) - \iota(x) = -t\, \iota(x + th) h \iota(x)$ we get the derivative, and
+  $\dd\iota(x, h) = -\iota(x) h \iota(x)$ is $C^k$ when $\iota$ is (product rule), so $\iota$ is smooth.
+  In the complex case $\dd\iota(x, \cdot)$ is complex linear, hence $\iota$ is complex analytic by
+  Theorem~\ref{thm:complex-analytic-iff}. For real $A$, the complexification $A_{\mathbb{C}}$ with
+  $(x_1 + iy_1)(x_2 + iy_2) = (x_1x_2 - y_1y_2) + i(x_1y_2 + y_1x_2)$ is a complex continuous
+  inverse algebra: near $1$, $(a + ib)^{-1} = (1 + c^2)^{-1}(1 - ic)a^{-1}$ with $c = a^{-1}b$
+  depends continuously on $(a, b)$, and units forming a neighbourhood of $1$, with inversion
+  continuous at $1$, suffice by translation. Inversion in $A_{\mathbb{C}}$ extends $\iota$.
+\end{proof}
+
+\begin{theorem}[Identity theorems {\cite[Thms.~2.1.16, 2.2.8]{GN26}}]
+  \label{thm:identity}
+  \lean{LocallyConvex.Analysis.eqOn_of_hasLocalTaylor, LocallyConvex.Analysis.ComplexAnalyticOn.eqOn_of_iteratedDMB,
+    LocallyConvex.Analysis.ComplexAnalyticOn.eqOn_of_eqOn_open, LocallyConvex.Analysis.ComplexAnalyticOn.eqOn_of_eqOn_real,
+    LocallyConvex.Analysis.RealAnalyticOn.eqOn_of_iteratedDMB, LocallyConvex.Analysis.RealAnalyticOn.eqOn_of_eqOn_open,
+    LocallyConvex.Analysis.ComplexAnalyticOn.eqOn_of_eqOn_ofReal}
+  \leanok
+  \uses{thm:complex-analytic-iff, thm:real-analytic-basic}
+  Let $U$ be open and connected, and $f$, $g$ complex (resp.\ real) analytic on $U$. Then $f = g$
+  if (a) they agree on a nonempty open subset, or (b) $\dd^{(n)} f(x, y, \dots, y) =
+  \dd^{(n)} g(x, y, \dots, y)$ for all $n$, $y$ and some $x \in U$, or, in the complex case,
+  (c) they agree on $(x + H) \cap U$ for a real subspace $H$ with $H + iH = E$. In particular, two
+  complex analytic maps on a connected open subset of $E_{\mathbb{C}}$ which agree at its real
+  points agree. No completeness is needed.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  The set of points near which $f = g$ is open; it contains $x$ under (b), by the Taylor
+  expansions (Theorems~\ref{thm:complex-analytic-iff} and~\ref{thm:real-analytic-basic}); it is
+  relatively closed in $U$, since the differentials are continuous and vanish on it. Glöckner and
+  Neeb treat the real case through a complex extension; the real Taylor expansion suffices.
+  (a) implies (b). Under (c), for $y \in H$ the functions $z \mapsto \ell(f(x + zy))$ and
+  $\ell(g(x + zy))$ agree on a real interval, hence near $0$ by the one variable identity theorem,
+  so the differentials agree on the diagonal of $H^n$; real polarization and complex
+  multilinearity give (b).
+\end{proof}
+
+\begin{proposition}[Complex extensions with values in a complex space {\cite[Prop.~2.2.12]{GN26}}]
+  \label{prop:complex-target}
+  \lean{LocallyConvex.Analysis.complexifyFold, LocallyConvex.Analysis.RealAnalyticOn.exists_complexAnalytic_extension}
+  \leanok
+  \uses{def:real-analytic}
+  A real analytic map $f \colon U \to F$ into a complex locally convex space extends to a complex
+  analytic map $V \to F$ on an open set $V \subseteq E_{\mathbb{C}}$ containing $U$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  Compose an extension $V \to F_{\mathbb{C}}$ with the complex linear map
+  $F_{\mathbb{C}} \to F$, $v + iw \mapsto v + iw$.
+\end{proof}
+
+\begin{theorem}[Analytic operator-valued maps]
+  \label{thm:analytic-operator-valued}
+  \lean{LocallyConvex.Analysis.dMB_apply_of_unc_clm,
+    LocallyConvex.Analysis.complexAnalyticOn_of_unc_clm_of_dMB_smul,
+    LocallyConvex.Analysis.clmComplexPart,
+    LocallyConvex.Analysis.clmComplexPart_restrictScalars,
+    LocallyConvex.Analysis.ComplexAnalyticOn.of_unc_clm,
+    LocallyConvex.Analysis.clmToComplexification,
+    LocallyConvex.Analysis.hasDirDerivAt_ext_unc_clm,
+    LocallyConvex.Analysis.RealAnalyticOn.of_unc_clm,
+    LocallyConvex.Analysis.RealAnalyticOn.of_unc_clm₂}
+  \leanok
+  \uses{thm:operator-valued, thm:complex-analytic-iff, def:real-analytic,
+    thm:real-analytic-dMB, lem:normed-complexification}
+  Let $F_1$, $F_2$ be normed spaces and $g \colon E \to \Lin(F_1, F_2)$, with $\Lin(F_1, F_2)$
+  carrying the operator norm.
+  \begin{enumerate}
+    \item If $E$ is a complex locally convex space, $F_1$, $F_2$ are complex, $U \subseteq E$ is
+      open and $(y, \xi) \mapsto g(y)\xi$ is complex analytic on $U \times F_1$, then
+      $g \colon U \to \Lin_{\mathbb{C}}(F_1, F_2)$ is complex analytic.
+    \item If $E$ is a real locally convex space, $F_1$, $F_2$ are real, $U \subseteq E$ is any
+      subset and $(y, \xi) \mapsto g(y)\xi$ is real analytic on $U \times F_1$, then
+      $g \colon U \to \Lin(F_1, F_2)$ is real analytic. Iterating, if
+      $(y, \xi, \eta) \mapsto \Omega(y)\xi\eta$ is real analytic on $U \times F_1 \times F_2$,
+      then $y \mapsto \Omega(y) \in \Lin(F_1, \Lin(F_2, F_3))$ is real analytic (e.g.\ the local
+      representatives of a differential $2$-form).
+  \end{enumerate}
+  No completeness is assumed.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  \emph{Core step.} Let $Z$ be complex locally convex, $F_1$ real normed, $F_2$ complex normed
+  and $K \colon Z \to \Lin_{\mathbb{R}}(F_1, F_2)$ such that $\hat K(z, \xi) = K(z)\xi$ is smooth
+  on $U \times F_1$ with $\partial_{(ch, 0)}\hat K = c\, \partial_{(h, 0)}\hat K$ for
+  $c \in \mathbb{C}$. By Theorem~\ref{thm:operator-valued}, $K$ is smooth for the operator norm and
+  $\dd K(z, h)\xi = \partial_{(h, 0)} \hat K(z, \xi)$, so $\dd K(z, \cdot)$ is complex linear and
+  $K$ is complex analytic by Theorem~\ref{thm:complex-analytic-iff}.
+
+  (1) Apply the core step to $g(y)$ viewed as a real operator, and compose with the continuous
+  complex linear projection $P T = \frac12(T - iTi)$ of $\Lin_{\mathbb{R}}(F_1, F_2)$ onto
+  $\Lin_{\mathbb{C}}(F_1, F_2)$, which fixes complex linear operators.
+
+  (2) Let $H$ be a complex analytic extension of $\hat g$ on $V \subseteq (E \times F_1)_{\mathbb{C}}$.
+  Since $V$ need not contain $W \times F_1$ for an open $W \ni y$, we use the differential of $H$
+  at $\xi = 0$: $K(z)\xi := \dd H((z, 0), (0, \xi))$ for $z \in W := \{z \mid (z, 0) \in V\}$ and
+  $\xi \in F_1$. Then $K(z) \in \Lin_{\mathbb{R}}(F_1, (F_2)_{\mathbb{C}})$, with the norm of
+  Lemma~\ref{lem:normed-complexification}, and the core step applies since $\dd H$ is complex
+  analytic (Theorem~\ref{thm:real-analytic-dMB}). For $y \in U$ the line $t \mapsto (y, t\xi)$
+  consists of real points, where $H$ agrees with $\hat g$, so $K(y)\xi = g(y)\xi + i0$. The map
+  $\Lin_{\mathbb{R}}(F_1, (F_2)_{\mathbb{C}}) \to \Lin(F_1, F_2)_{\mathbb{C}}$,
+  $T \mapsto \mathrm{Re} \circ T + i\, \mathrm{Im} \circ T$, is continuous and complex linear, and
+  carries $K$ to a complex analytic extension of $g$. The bilinear statement follows by applying
+  (2) to $(y, \xi) \mapsto \Omega(y)\xi$ and then to $\Omega$. We do not claim this argument is
+  new.
+\end{proof}
+
+\begin{remark}[Two notions of real analyticity]
+  Real analytic maps are BS analytic (Theorem~\ref{thm:real-analytic-basic}). The converse holds
+  when $E$ is a Fréchet space \cite[Rem.~2.2.7]{GN26}, and more generally when $E_{\mathbb{C}}$ is
+  a Baire space \cite[Thm.~7.1]{BS71b}, \cite[2.9]{Glo02}; see Theorem~\ref{thm:bs-71}. For BS analyticity, closedness under
+  composition is only known when the spaces are Baire \cite[Thm.~7.3]{BS71b}; this is why the
+  theory of analytic manifolds and Lie groups uses Milnor's definition.
+\end{remark}
+
+\section{Series of homogeneous polynomials}
+
+Where does the sum of a series $\sum_n p_n$ of continuous homogeneous polynomials, converging
+pointwise on an open set, define an analytic map? Bochnak and Siciak \cite[\S5]{BS71b} assume
+$F$ sequentially complete; the results below use no completeness of $F$.
+
+\begin{lemma}[Moving the centre of a bound]
+  \label{lem:hom-poly-shift}
+  \lean{LocallyConvex.Analysis.IsContHomPoly.seminorm_le_of_shift}
+  \leanok
+  \uses{def:hom-poly}
+  Let $p$ be a continuous homogeneous polynomial of degree $n$ between complex vector spaces,
+  $q$ a seminorm on $F$ and $W \subseteq E$ balanced. If $q(p(c + w)) \le M$ for $w \in W$, then
+  $q(p(w)) \le M$ for $w \in W$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  With $\omega = e^{2\pi i/(n+1)}$, expanding the symmetric $n$-linear map gives
+  $\sum_{j \le n} p(\omega^j c + w) = (n+1)\, p(w)$, and
+  $p(\omega^j c + w) = \omega^{jn} p(c + \omega^{-j} w)$ with $\omega^{-j} w \in W$. Over
+  $\mathbb{R}$ or $\mathbb{C}$, \cite[Lemma~2 (ii)]{BS71a} gives the bound on $(2e)^{-1} W$.
+\end{proof}
+
+\begin{proposition}[Normal convergence at zero {\cite[Prop.~5.2]{BS71b}}]
+  \label{prop:bs-baire}
+  \lean{LocallyConvex.Analysis.exists_nhds_geometric_bound, LocallyConvex.Analysis.continuousAt_zero_of_tendsto_sum}
+  \leanok
+  \uses{lem:hom-poly-shift}
+  Let $E$ be a complex Baire space and $p_n$ continuous homogeneous polynomials of degree $n$
+  such that $\sum_n p_n(a)$ converges for $a$ in an absorbing set. For every continuous
+  seminorm $q$ on $F$ and every $\theta > 0$ there are a $0$-neighbourhood $W$ and $C$ with
+  $q(p_n(w)) \le C \theta^n$ for all $n$ and $w \in W$. If the series converges on a
+  $0$-neighbourhood, its sum is continuous at $0$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  The closed sets $\{x : q(p_n(x)) \le N k^n \text{ for all } n\}$ cover $E$, so one of them has
+  an interior point $x_0$; Lemma~\ref{lem:hom-poly-shift} moves the bound from $x_0 + B$ to
+  the balanced core $B$, and homogeneity rescales it. Continuity at $0$ follows from the
+  geometric tail estimate and the continuity of the partial sums.
+\end{proof}
+
+\begin{remark}[Counterexamples]
+  \label{rem:bs-counterexamples}
+  \lean{LocallyConvex.Analysis.not_continuousAt_bsSum, LocallyConvex.Analysis.not_baireSpace_finSeq,
+    LocallyConvex.Analysis.hasPowerSeriesOnDisc_geomFun, LocallyConvex.Analysis.not_cAnalyticOn_geomFun,
+    LocallyConvex.Analysis.not_mackeyComplete_geomSpan}
+  \leanok
+  \emph{$E$ not Baire} \cite[Counterexample~5.1]{BS71b}: on the finitely supported sequences
+  with the norm of $\ell^2$, $\sum_n (n x_n)^n$ converges everywhere, but its sum is not
+  continuous at $0$. \emph{$F$ not complete, one variable}: in
+  $F = \operatorname{span}\{e_n, (z^n)_n : |z| < 1\} \subseteq \ell^2$, the power series
+  $\sum_n z^n e_n$ converges on the unit disc, but its sum has no complex derivative at $1/2$,
+  since $\sum_n n 2^{1-n} e_n \notin F$. A disc of convergence need not be a disc of analyticity.
+  The partial sums of $\sum_n n 2^{1-n} e_n$ are Mackey--Cauchy in $F$, so $F$ is not Mackey
+  complete (Definition~\ref{def:mackey-complete}).
+\end{remark}
+
+\begin{lemma}[Hartogs' lemma]
+  \label{lem:hartogs}
+  \lean{LocallyConvex.Analysis.posLog_le_circleAverage, LocallyConvex.Analysis.ofReal_le_lintegral_ball,
+    LocallyConvex.Analysis.hartogs_lemma}
+  \leanok
+  Let $g_n \colon \mathbb{C} \to F$ be continuous with $\ell \circ g_n$ entire for every
+  continuous functional $\ell$, and $q$ a continuous seminorm. If $q(g_n) \le e^{nB}$ on a closed
+  disc $\bar D(z_0, R)$ and $(q(g_n(z)))_n$ is bounded at every point of the disc, then for every
+  $\varepsilon > 0$ we have $q(g_n) \le e^{n\varepsilon}$ on $\bar D(z_0, R/2)$ for $n$ large.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The functions $v_n = n^{-1} \log^+ q(g_n)$ satisfy the sub-mean value inequality on circles:
+  by Hahn--Banach $q(g_n(z)) = |\ell(g_n(z))|$ for a functional $\ell \le q$, and Jensen's formula
+  gives $\log |\ell g_n(z)| \le$ the circle average of $\log |\ell \circ g_n|$. Integrating in
+  polar coordinates, $\pi s^2 v_n(z) \le \int_{B(z,s)} v_n \le \int_{B(z_0,R)} v_n$ for
+  $|z - z_0| \le s = R/2$. Since $0 \le v_n \le B$ and $v_n \to 0$ pointwise, dominated
+  convergence makes the right-hand side small.
+\end{proof}
+
+Bochnak and Siciak use instead Siciak's polynomial lemma \cite[\S4]{BS71b}, which rests on
+potential theory (Siciak's extremal function, Fekete points); only lines are needed here.
+
+\begin{proposition}[Bounds along lines {\cite[Prop.~4.1]{BS71b}}]
+  \label{prop:bs-lines}
+  \lean{LocallyConvex.Analysis.exists_line_geometric_bound, LocallyConvex.Analysis.exists_compact_geometric_bound}
+  \leanok
+  \uses{lem:hartogs, lem:hom-poly-shift}
+  If $\sum_n p_n$ converges pointwise on an open set $H$, then for every compact set
+  $K \subseteq \mathbb{C}$ with $x + K y \subseteq H$ there is $\theta < 1$ such that for every
+  continuous seminorm $q$ there is $C$ with $q(p_n(x + z y)) \le C \theta^n$ for $z \in K$. The
+  ratio $\theta$ does not depend on $q$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  Near $z_0$, choose $\lambda > 1$ with $\lambda(x + z y) \in H$ on a disc. Then
+  $g_n(z) = p_n(\lambda(x + zy))$ is pointwise bounded; Baire's theorem in $\mathbb{C}$ gives a
+  small disc where it is uniformly bounded, and the Cauchy estimates for polynomials (by discrete
+  Fourier inversion over roots of unity) give the Bernstein--Walsh bound
+  $q(g_n) \le e^{nB}$ on the whole disc. Hartogs' lemma with $\varepsilon < \log \lambda$ gives
+  $q(p_n(x + zy)) = \lambda^{-n} q(g_n(z)) \le (e^{\varepsilon}/\lambda)^n$ for large $n$.
+  Only the constant and the threshold depend on $q$: $\lambda$ depends on $H$ along the line and
+  $\varepsilon = \tfrac12 \log \lambda$. Cover $K$ by finitely many discs.
+\end{proof}
+
+\begin{theorem}[Pointwise limits of polynomials {\cite[Thm.~2]{BS71a}}]
+  \label{thm:bs-limits}
+  \lean{LocallyConvex.Analysis.isContHomPoly_of_tendsto}
+  \leanok
+  \uses{lem:hom-poly-shift}
+  Over a Baire space, a pointwise limit of continuous homogeneous polynomials of degree $k$ is a
+  continuous homogeneous polynomial of degree $k$. No completeness of $F$ is needed.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  The multilinear map is the limit of the polarizations. By Baire and
+  Lemma~\ref{lem:hom-poly-shift} the limit $P$ is bounded on a balanced $0$-neighbourhood; the
+  Cauchy estimates for $t \mapsto P(x_0 + t h)$ then give continuity at every $x_0$.
+\end{proof}
+
+\begin{theorem}[Bochnak--Siciak {\cite[Thms.~5.1, 5.2]{BS71b}}]
+  \label{thm:bs-52}
+  \lean{LocallyConvex.Analysis.complexAnalyticOn_of_tendsto_sum, LocallyConvex.Analysis.gateauxAnalyticOn_of_tendsto,
+    LocallyConvex.Analysis.continuousOn_of_tendsto, LocallyConvex.Analysis.MackeyComplete.exists_hasSum_of_geometric}
+  \leanok
+  \uses{prop:bs-lines, thm:bs-limits, prop:bs-baire, thm:complex-analytic-iff,
+    def:mackey-complete}
+  Let $E$ be a complex locally convex Baire space and $F$ a Mackey complete complex locally
+  convex space (for instance a sequentially complete one). If a series $\sum_n p_n$ of continuous homogeneous polynomials converges on an
+  open set $H$, then its sum is complex analytic on $H$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  By Proposition~\ref{prop:bs-lines} the series converges locally uniformly with geometric rate
+  on every complex line, so the sum is Gâteaux analytic, with Taylor coefficients
+  $T_k(h) = \sum_n (\text{coefficient of } t^k \text{ in } p_n(x + th))$. These series have
+  geometric bounds $C_q \theta^n$ with $\theta$ independent of $q$, so their partial sums are
+  Mackey--Cauchy and the $T_k(h)$ lie in $F$. By Theorem~\ref{thm:bs-limits} each $T_k$ is a continuous homogeneous
+  polynomial, and $f(x + h) = \sum_k T_k(h)$ near $h = 0$, so $f$ is continuous at $x$ by
+  Proposition~\ref{prop:bs-baire}. Theorem~\ref{thm:complex-analytic-iff} concludes.
+\end{proof}
+
+Both hypotheses are needed (Remark~\ref{rem:bs-counterexamples}). Bochnak and Siciak assume
+$F$ sequentially complete; Mackey completeness is strictly weaker.
+
+\section{Series of real homogeneous polynomials}
+
+Let $E$, $F$ be real locally convex spaces. A continuous real $n$-linear map $A$ extends to a
+continuous complex $n$-linear map
+$A_{\mathbb{C}}(z_1, \dots, z_n) = \sum_{S \subseteq \{1, \dots, n\}} i^{|S|} A(w_S)$, where
+$(w_S)_j = \operatorname{Im} z_j$ for $j \in S$ and $\operatorname{Re} z_j$ otherwise; the
+diagonal of $A_{\mathbb{C}}$ is the complexification $p_{\mathbb{C}}$ of the homogeneous
+polynomial $p$ of $A$.
+
+\begin{lemma}[Complexification of polynomials]
+  \label{lem:complexify-poly}
+  \lean{ContinuousMultilinearMap.complexify, ContinuousMultilinearMap.complexify_apply_ofReal,
+    LocallyConvex.Analysis.IsContHomPoly.complexify, LocallyConvex.Analysis.IsContHomPoly.isContHomPoly_complexify,
+    LocallyConvex.Analysis.IsContHomPoly.complexify_ofReal}
+  \leanok
+  \uses{def:hom-poly, def:complexification}
+  $A_{\mathbb{C}}$ is complex multilinear and continuous, and extends $A$. Hence $p_{\mathbb{C}}$
+  is a continuous complex homogeneous polynomial of degree $n$ on $E_{\mathbb{C}}$ with
+  $p_{\mathbb{C}}(x) = p(x)$ for $x \in E$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Real multilinearity and continuity are clear. In the $j$-th slot,
+  $A_{\mathbb{C}}(\dots, u, \dots) = R(\operatorname{Re} u) + i R(\operatorname{Im} u)$ with $R$ real
+  linear (pair $S \not\ni j$ with $S \cup \{j\}$), which commutes with multiplication by $i$.
+\end{proof}
+
+\begin{lemma}[Forward differences]
+  \label{lem:fwd-diff}
+  \lean{LocallyConvex.Analysis.IsContHomPoly.sum_fwdDiff, LocallyConvex.Analysis.IsContHomPoly.factorial_mul_seminorm_le,
+    LocallyConvex.Analysis.exists_plane_bound}
+  \leanok
+  \uses{def:hom-poly}
+  For a homogeneous polynomial $p$ of degree $n$ and any $c$, $v$,
+  $\sum_{j=0}^n (-1)^{n-j} \binom{n}{j} p(c + jv) = n!\, p(v)$. Consequently, if
+  $(q(p_n(sx + ty)))_n$ is bounded at each point of the square $|s|, |t| < 2$, then
+  $q(p_n(sx + ty)) \le M K^n$ for $|s|, |t| \le 1$, with $M$, $K$ depending on $q$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The identity is the $n$-th forward difference of $t \mapsto p(c + tv)$. Baire's theorem in
+  $\mathbb{R}^2$ gives a disc $B(c, \rho)$ in the $(s, t)$-plane where $q \circ p_n \le m$ for
+  all $n$; the identity bounds $q(p_n(v)) \le 2^n m / n!$ for $|v| < \rho/(n+1)$, and
+  homogeneity and $(n+1)^n / n! \le e^{n+1}$ give the claim.
+\end{proof}
+
+The key observation replaces Siciak's polynomial lemma. For $x, y \in E$, the complex line
+$\lambda \mapsto (x + iy) + \tfrac{\lambda}{2}(x - iy)$ meets the complex multiples of real
+vectors on the circle $|\lambda| = 2$:
+\[
+  (x + iy) + e^{i\theta}(x - iy) = 2 e^{i\theta/2} \big(\cos(\theta/2) x + \sin(\theta/2) y\big).
+\]
+On this circle $p_{\mathbb{C}}$ is therefore determined by the values of $p$ at real points:
+$\|p_{\mathbb{C}}(\cdots)\| = 2^n \|p(\cos(\theta/2) x + \sin(\theta/2) y)\|$.
+
+\begin{lemma}[Jensen's inequality on the auxiliary line]
+  \label{lem:jensen-aux-line}
+  \lean{LocallyConvex.Analysis.mk_add_circleMap_smul_auxDir, LocallyConvex.Analysis.posLog_le_integral_circle,
+    LocallyConvex.Analysis.posLog_seminorm_le_integral_circle, LocallyConvex.Analysis.exists_clm_eq_seminorm_real}
+  \leanok
+  \uses{lem:complexify-poly, lem:hartogs}
+  Let $p$ be a continuous real homogeneous polynomial of degree $n$, $q$ a continuous seminorm on
+  $F$ and $\kappa > 0$. If $v$ is the real or the imaginary part of $p_{\mathbb{C}}(x + iy)$, then
+  \[
+    \log^+ \frac{q(v)}{\kappa^n} \le \frac{1}{2\pi} \int_0^{2\pi}
+      \log^+ \Big( \big(\tfrac{2}{\kappa}\big)^n q\big(p(\cos(\theta/2) x + \sin(\theta/2) y)\big)
+      \Big) \, d\theta .
+  \]
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Take a real functional $\varphi$ with $\varphi(v) = q(v)$ and $|\varphi| \le q$ (Hahn--Banach)
+  and its complexification $\varphi_{\mathbb{C}}$, so that $q(v) \le |\varphi_{\mathbb{C}}(p_{\mathbb{C}}(x
+  + iy))|$. Apply the sub-mean value inequality for $\log^+$ of the polynomial
+  $\lambda \mapsto \kappa^{-n} \varphi_{\mathbb{C}}(p_{\mathbb{C}}((x + iy) + \tfrac{\lambda}{2}(x - iy)))$
+  on the circle $|\lambda| = 2$, and the identity above.
+\end{proof}
+
+\begin{proposition}[Bochnak--Siciak {\cite[Prop.~5.4]{BS71b}}]
+  \label{prop:bs-54}
+  \lean{LocallyConvex.Analysis.exists_geometric_of_circle, LocallyConvex.Analysis.exists_nhds_complexify_geometric,
+    LocallyConvex.Analysis.exists_nhds_hasSum_complexify, LocallyConvex.Analysis.Complexification.mackeyComplete}
+  \leanok
+  \uses{lem:fwd-diff, lem:jensen-aux-line, def:mackey-complete}
+  Let $\sum_n p_n$ be a series of continuous real homogeneous polynomials such that
+  $(q(p_n(y)))_n$ is bounded for every continuous seminorm $q$ and every $y$ in a
+  $0$-neighborhood $Y$. Then there is a $0$-neighborhood $Z$ in $E_{\mathbb{C}}$ such that
+  $q(\operatorname{Re} p_{n,\mathbb{C}}(z)), q(\operatorname{Im} p_{n,\mathbb{C}}(z)) \le C (9/10)^n$
+  for $z \in Z$, with $C$ depending on $z$ and $q$ only. If $F$ is Mackey complete, the
+  complexified series converges on $Z$. No Baire assumption on $E$ is needed.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  Choose a continuous seminorm $N$ and $r > 0$ with $\{N < r\} \subseteq Y$, and let $Z$ be the
+  set of $x + iy$ with $N(x), N(y) < r/5$. Then $sx + ty \in Y$ for $|s|, |t| < 2$, and
+  $\tfrac52(\cos(\theta/2) x + \sin(\theta/2) y) \in Y$. Apply Lemma~\ref{lem:jensen-aux-line}
+  with $\kappa = 4/5$: the functions
+  $f_n(\theta) = \frac1n \log^+ \big((5/2)^n q(p_n(\cos(\theta/2) x + \sin(\theta/2) y))\big)$ tend
+  to $0$ pointwise, and are bounded uniformly by Lemma~\ref{lem:fwd-diff}. By dominated
+  convergence their averages tend to $0$, so $q(v_n) \le (4/5)^n (9/8)^n = (9/10)^n$ for large
+  $n$. The ratio does not depend on $q$, so the partial sums are Mackey--Cauchy in
+  $F_{\mathbb{C}}$, which is Mackey complete with $F$.
+\end{proof}
+
+Bochnak and Siciak prove Proposition~\ref{prop:bs-54} with Siciak's polynomial lemma for a real
+segment \cite[\S4]{BS71b}: a family of polynomials which is pointwise bounded on $[-1, 1]$ is
+bounded by $M \omega^n$ on a neighborhood of $[-1, 1]$ depending only on $\omega > 1$. Its
+proof needs potential theory (extremal functions of increasing unions of compact sets). The
+auxiliary line avoids it: the homogeneity of $p_n$ in two real variables brings the complex
+points into play.
+
+\begin{theorem}[Bochnak--Siciak {\cite[Thm.~7.1]{BS71b}}]
+  \label{thm:bs-71}
+  \lean{LocallyConvex.Analysis.realAnalyticOn_of_bsAnalyticOn, LocallyConvex.Analysis.realAnalyticOn_iff_bsAnalyticOn,
+    LocallyConvex.Analysis.ComplexAnalyticOn.comp_sub_const, LocallyConvex.Analysis.Complexification.baireSpace}
+  \leanok
+  \uses{prop:bs-54, thm:bs-52, lem:real-analytic-local, def:real-analytic, def:bs-analytic}
+  Let $E$ be a real locally convex space such that $E_{\mathbb{C}} = E \times E$ is a Baire space
+  (e.g. a Fréchet space) and $F$ a Mackey complete real locally convex space. Then a map
+  $f \colon U \to F$ is real analytic if and only if it is BS analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Around $a \in U$, the BS series converges on a $0$-neighborhood, so its terms are bounded
+  there. By Proposition~\ref{prop:bs-54} the complexified series converges on a
+  $0$-neighborhood $Z$ of $E_{\mathbb{C}}$, and its sum is complex analytic on the interior of $Z$
+  by Theorem~\ref{thm:bs-52}. Translated to $a$, it extends $f$ near $a$; Lemma~\ref{lem:real-analytic-local}
+  glues the local extensions. The converse is Theorem~\ref{thm:real-analytic-basic}.
+\end{proof}
+
+\section{Separately holomorphic maps}
+
+Hartogs' theorem asserts that a function of two complex variables which is holomorphic in each
+variable separately is continuous, hence holomorphic; no continuity is assumed. We prove the
+continuity for maps with values in a complex locally convex space $F$, without completeness,
+following Mujica \cite[\S36]{Muj86} one continuous seminorm $q$ at a time: continuity in $F$ is
+continuity for every $q$.
+
+\begin{lemma}[Baire's theorem for separately continuous maps {\cite[Lemma~36.2]{Muj86}}]
+  \label{lem:sep-baire}
+  \lean{LocallyConvex.Analysis.exists_ball_seminorm_bound}
+  \leanok
+  If $g(\zeta, \sigma)$ is continuous in $\zeta \in B(a, R)$ and in $\sigma \in \bar B(c, S)$
+  separately, then $q \circ g$ is bounded on $B(b, \rho) \times \bar B(c, S)$ for some ball
+  $B(b, \rho) \subseteq B(a, R)$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The closed sets $\{\zeta : q(g(\zeta, \sigma)) \le m \text{ for } \sigma \in \bar B(c, S)\}$
+  cover $B(a, R)$.
+\end{proof}
+
+\begin{lemma}[Weakly holomorphic maps and seminorms]
+  \label{lem:weak-seminorm}
+  \lean{LocallyConvex.Analysis.posLog_le_circleAverage_of_dominated, LocallyConvex.Analysis.seminorm_sub_le_of_dominated,
+    LocallyConvex.Analysis.hartogs_lemma_real, LocallyConvex.Analysis.differentiableOn_iteratedDeriv_of_bound,
+    LocallyConvex.Analysis.tendsto_seminorm_sub_of_hasSum}
+  \leanok
+  \uses{lem:hartogs}
+  Let $A \colon B(c, 3r) \to F$ be such that $\ell \circ A$ is holomorphic for every continuous
+  functional $\ell$ with $|\ell| \le q$, and $q \circ A \le M$. Then $A$ is $q$-Lipschitz on
+  $\bar B(c, r)$ with constant $M/r$, and $\log^+ q(A)$ has the sub-mean value property. Hartogs'
+  lemma (Lemma~\ref{lem:hartogs}) holds for nonnegative continuous functions on a disc with the
+  sub-mean value property.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Hahn--Banach reduces both statements to the functionals $\ell$ dominated by $q$: the Cauchy
+  estimate for $(\ell \circ A)'$, and Jensen's inequality for $\ell \circ A$ with $\ell$
+  attaining $q$ at the centre. For Hartogs' lemma, extend the functions continuously to
+  $\mathbb{C}$ (Tietze) and argue as before.
+\end{proof}
+
+\begin{theorem}[Hartogs {\cite[Lemma~36.3, Thm.~36.1]{Muj86}}]
+  \label{thm:hartogs-separate}
+  \lean{LocallyConvex.Analysis.hartogs_continuousAt, LocallyConvex.Analysis.continuousOn_of_separately}
+  \leanok
+  \uses{lem:sep-baire, lem:weak-seminorm}
+  Let $U \subseteq \mathbb{C}^2$ be open and $g \colon U \to F$ complex analytic in each variable
+  separately. Then $g$ is continuous. No completeness of $F$ is needed.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Fix $q$ and a bidisc of radius $4R$ about $(a, c)$ in $U$. By Lemma~\ref{lem:sep-baire},
+  $q(g) \le m$ on $B(b, \rho) \times \bar B(c, 3R)$ with $|b - a| < R$. Let $A_k(\sigma)$ be the
+  Taylor coefficients of $g(\cdot, \sigma)$ at $b$. The Cauchy estimates on a small circle give
+  $q(A_k) \le m/r_0^k$; on the circle of radius $2R$, $(2R)^k q(A_k(\sigma)) $ is bounded for each
+  $\sigma$. For $\ell$ dominated by $q$, $\ell \circ A_k$ is holomorphic by Osgood's lemma, so
+  Lemma~\ref{lem:weak-seminorm} applies to $v_k = k^{-1} \log^+((2R)^k q(A_k))$: eventually
+  $q(A_k(\sigma)) \le (2/(3R))^k$ for $|\sigma - c| \le R/2$. Hence the Taylor series
+  $\sum_k (\zeta - b)^k A_k(\sigma)$ has terms bounded by $(5/6)^k$ near $(a, c)$, and each term
+  is $q$-continuous, so $g$ is $q$-continuous at $(a, c)$.
+\end{proof}
+
+\begin{proposition}[Weak holomorphy in Mackey complete spaces]
+  \label{prop:weak-holomorphic}
+  \lean{LocallyConvex.Analysis.norm_avg_sub_coeff_le, LocallyConvex.Analysis.exists_coeff_of_weak,
+    LocallyConvex.Analysis.CAnalyticOn.of_weak}
+  \leanok
+  \uses{def:mackey-complete}
+  Let $F$ be Mackey complete and $f \colon U \to F$ continuous on an open set
+  $U \subseteq \mathbb{C}$, with $\ell \circ f$ holomorphic for every continuous functional $\ell$.
+  Then $f$ is complex analytic.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  With $\omega = e^{2\pi i/N}$ and $j < N$, the average
+  $S_N = N^{-1} \sum_{i<N} \omega^{i(N-j)} f(x + \tfrac{\rho}{2}\omega^i) \in F$ satisfies
+  $|\ell(S_N) - (\rho/2)^j c_j^\ell| \le 2 M_\ell 2^{-N}$, where $c_j^\ell$ is the $j$-th Taylor
+  coefficient of $\ell \circ f$ at $x$ and $M_\ell$ bounds $|\ell \circ f|$ on the circle of radius
+  $\rho$: only the coefficients of index $\ge N$ alias onto $c_j$. By Hahn--Banach,
+  $q(S_{N+1} - S_N) \le 4 M_q 2^{-N}$ for every continuous seminorm $q$, with the ratio $1/2$
+  independent of $q$, so $(S_N)$ converges in $F$. Its limit gives the coefficient $a_j \in F$
+  with $\ell(a_j) = c_j^\ell$, and the Taylor series converges in $F$
+  (\texttt{WeakTaylorOn.hasPowerSeriesOnDisc}).
+\end{proof}
+
+\begin{theorem}[Hartogs, joint analyticity {\cite[Thm.~36.1]{Muj86}}]
+  \label{thm:hartogs-joint}
+  \lean{LocallyConvex.Analysis.differentiableAt_line_of_separately,
+    LocallyConvex.Analysis.complexAnalyticOn_of_separately}
+  \leanok
+  \uses{thm:hartogs-separate, prop:weak-holomorphic, thm:complex-analytic-iff}
+  If $F$ is Mackey complete, a map $g \colon U \to F$ on an open set $U \subseteq \mathbb{C}^2$
+  which is complex analytic in each variable separately is complex analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  By Theorem~\ref{thm:hartogs-separate}, $g$ is continuous. For each functional $\ell$,
+  $\ell \circ g$ is continuous and separately holomorphic, so by Osgood's lemma it has a double
+  power series and is holomorphic along every complex line (swap the variables if the slope
+  exceeds $1$). By Proposition~\ref{prop:weak-holomorphic}, $g$ is complex analytic along every
+  complex line, i.e.\ Gâteaux analytic, and Theorem~\ref{thm:complex-analytic-iff} concludes.
+\end{proof}
+
+\begin{example}[Separate does not imply joint analyticity without completeness]
+  \label{ex:hartogs-incomplete}
+  \lean{LocallyConvex.Analysis.diagCoeff₂_notMem, LocallyConvex.Analysis.cAnalyticOn_sepG_fst,
+    LocallyConvex.Analysis.cAnalyticOn_sepG_snd, LocallyConvex.Analysis.not_complexAnalyticOn_sepG,
+    LocallyConvex.Analysis.not_mackeyComplete_sepSpan}
+  \leanok
+  \uses{thm:hartogs-joint}
+  Let $F \subseteq \mathbb{C}^{\mathbb{N} \times \mathbb{N}}$ (product topology) be the span of the
+  matrices $\alpha(n) \sigma^m$ and $\zeta^n \beta(m)$, and $G(\zeta, \sigma) = (\zeta^n \sigma^m)$.
+  Then $G \colon \mathbb{C}^2 \to F$ is complex analytic in each variable (and continuous), but not
+  complex analytic. In particular $F$ is not Mackey complete.
+\end{example}
+
+\begin{proof}
+  \leanok
+  The Taylor coefficients of $G$ in $\zeta$ at any point, $\binom{n}{k} \zeta_0^{n-k} \sigma^m$, and
+  those in $\sigma$, lie in $F$, and the series converge coordinatewise. The second Taylor
+  coefficient of $t \mapsto G(t, t)$ is $e_{20} + e_{11} + e_{02}$. If it were a combination of
+  matrices $\alpha_i(n) \sigma_i^m$ and $\zeta_j^n \beta_j(m)$, take
+  $P = X \prod_{\sigma_i \ne 0} (X - \sigma_i)$ and $Q = X \prod_{\zeta_j \ne 0} (X - \zeta_j)$. The
+  form $x \mapsto \sum_{s, r} q_s p_r x(s, r)$ vanishes on $\alpha(n)\sigma_i^m$ (it is
+  $P(\sigma_i) \sum_s q_s \alpha(s)$) and on $\zeta_j^n \beta(m)$, but equals $q_1 p_1 \ne 0$ on
+  $e_{20} + e_{11} + e_{02}$, since $p_0 = q_0 = 0$. The last claim follows from
+  Theorem~\ref{thm:hartogs-joint}.
+\end{proof}
+
+So Mackey completeness enters only through the Taylor coefficients along oblique lines, and some
+completeness is needed there; continuity needs none.
+
+\begin{theorem}[Products {\cite[Thms.~36.5, 36.8]{Muj86}}]
+  \label{thm:separate-products}
+  \lean{LocallyConvex.Analysis.GateauxAnalyticOn.continuousOn_of_locallyBoundedOn,
+    LocallyConvex.Analysis.GateauxAnalyticOn.complexAnalyticOn_of_locallyBoundedOn,
+    LocallyConvex.Analysis.GateauxAnalyticOn.cAnalyticOn_line, LocallyConvex.Analysis.gateauxAnalyticOn_of_separately,
+    LocallyConvex.Analysis.complexAnalyticOn_of_separately_of_locallyBoundedOn}
+  \leanok
+  \uses{thm:hartogs-joint, thm:complex-analytic-iff, lem:weak-seminorm}
+  A Gâteaux analytic map which is locally bounded for every continuous seminorm is continuous,
+  hence complex analytic; no completeness is needed. If $F$ is Mackey complete, a separately
+  complex analytic map on an open subset of $E_1 \times E_2$ is Gâteaux analytic; if it is also
+  locally bounded, it is complex analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  If $q(f) \le M$ on $a + W$, take a balanced $V$ with $a + \lambda h \in W$ for $h \in V$,
+  $|\lambda| \le 3$; along $\lambda \mapsto f(a + \lambda h)$ the Cauchy estimates give
+  $q(f(a + t h) - f(a)) \le M |t|$ for $|t| \le 1$ (Lemma~\ref{lem:weak-seminorm}), so $f$ is
+  $q$-continuous at $a$. For the products, $(\zeta, \sigma) \mapsto f(p_1 + \zeta u, p_2 + \sigma v)$
+  is separately analytic on an open subset of $\mathbb{C}^2$, hence complex analytic by
+  Theorem~\ref{thm:hartogs-joint}, and $f(p + z(u, v))$ is its restriction to the diagonal.
+\end{proof}
+
+\begin{theorem}[Zorn's theorem for one seminorm {\cite[Lemma~36.6, Prop.~36.7, Thm.~36.5]{Muj86}}]
+  \label{thm:zorn}
+  \lean{LocallyConvex.Analysis.taylorCoeff_smul, LocallyConvex.Analysis.planeFun_line_identity,
+    LocallyConvex.Analysis.planeFun_hasSum_shift, LocallyConvex.Analysis.seminorm_taylorCoeff_sub_le,
+    LocallyConvex.Analysis.qCont_taylorCoeff, LocallyConvex.Analysis.seminorm_taylorCoeff_le_of_shift,
+    LocallyConvex.Analysis.exists_nhds_seminorm_bound, LocallyConvex.Analysis.exists_taylorCoeff_ball_bound,
+    LocallyConvex.Analysis.exists_nhds_seminorm_bound_of_near}
+  \leanok
+  \uses{thm:hartogs-separate, lem:weak-seminorm}
+  Let $E$ be a Baire space, $f$ Gâteaux analytic on $U$, $q$ a continuous seminorm on $F$, and
+  let the $N$-ball of radius $8\rho$ about $c$ lie in $U$. If $q \circ f$ is bounded near $c - e$
+  with $N(e) < \rho/16$, then it is bounded near $c$. No completeness of $F$ is needed.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Let $T_y(k, h)$ be the coefficient of $\lambda^k$ in $f(y + \lambda h)$. On each complex plane,
+  $f$ is continuous (Theorem~\ref{thm:hartogs-separate}), so by Osgood's lemma
+  $\lambda \mapsto \ell(T_y(m, h + \lambda v))$ is a polynomial of degree $\le m$ whose coefficients
+  are the double Taylor coefficients $c_{ab}$ of $(\zeta, \sigma) \mapsto \ell f(y + \zeta h + \sigma v)$,
+  and $\ell(T_{y+h}(k, v)) = \sum_b c_{kb}$. Hence: if $T_y(m, \cdot)$ is $q$-bounded on a ball, it is
+  $q$-continuous (its coefficients along planes are bounded); and a bound on $t_0 + V$ passes to
+  $V$ by averaging over roots of unity (shift lemma). With $x = c - e$: the $T_x(m, \cdot)$ are
+  $q$-bounded on a ball by the Cauchy estimates, hence $q$-continuous. The maps
+  $Q_m(t) = (m+1)^{-1} \sum_j \omega^{j(m+1-k)} T_x(m, e + \omega^j t)$, $\omega = e^{2\pi i/(m+1)}$,
+  satisfy $\ell(Q_m(t)) = c_{k, m-k}$, so their partial sums are $q$-continuous, pointwise
+  bounded, and converge weakly to $T_c(k, t)$. Baire's theorem and the shift lemma bound each
+  $T_c(k, \cdot)$ on a ball, so they are $q$-continuous. A second application of Baire's
+  theorem to $(2^k T_c(k, \cdot))_k$ and the shift lemma give $q(T_c(k, v)) \le n 2^{-k}$ near $0$,
+  hence $q(f(c + v)) \le 2n$.
+\end{proof}
+
+\begin{theorem}[Hartogs' theorem on products {\cite[Lemma~36.2, Thm.~36.8]{Muj86}}]
+  \label{thm:hartogs-products}
+  \lean{LocallyConvex.Analysis.exists_near_seminorm_bound, LocallyConvex.Analysis.locallyBoundedOn_of_separately,
+    LocallyConvex.Analysis.complexAnalyticOn_of_separately_prod}
+  \leanok
+  \uses{thm:zorn, thm:separate-products}
+  Let $E_1$ and $E_1 \times E_2$ be Baire spaces, $E_2$ first countable (e.g.\ Fréchet spaces), and
+  $F$ Mackey complete. A separately complex analytic map on an open subset of $E_1 \times E_2$ is
+  complex analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Fix $(a, b)$ and $q$. With a countable decreasing basis $(V_n)$ at $b$, the closed sets
+  $\{x : q(f(x, y)) \le n \text{ for } y \in V_n\}$ cover a neighbourhood of $a$, so by Baire's
+  theorem $q \circ f$ is bounded near some $(x', b)$ with $x'$ as close to $a$ as needed.
+  Theorem~\ref{thm:zorn} gives a bound near $(a, b)$, and Theorem~\ref{thm:separate-products}
+  concludes.
+\end{proof}
+
+\section{Comparison with Mathlib on Banach spaces}
+
+On Banach spaces, Mathlib's \texttt{AnalyticOnNhd} (convergent power series in norm) should be
+compared with the definitions above, as Theorem~\ref{thm:mb-to-frechet} compares the Michal--Bastiani and
+Fréchet calculi. This is planned once the locally convex theory is in place.

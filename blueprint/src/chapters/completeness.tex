@@ -1,0 +1,323 @@
+\chapter{Completeness and the existence of integrals}
+\label{chap:completeness}
+
+In Chapter~\ref{chap:integrals} the weak integral of a curve was defined, but its existence was
+always a hypothesis. In a Banach space this hypothesis is superfluous: continuous curves on a
+compact interval have Riemann integrals. In a general locally convex space nothing of the sort
+holds, and one has to pay for integrals with some completeness of $F$. The aim of this chapter
+is to determine how much completeness is needed, and to draw the consequences for integrals
+depending on parameters.
+
+Two answers are classical. Weak integrals of continuous curves exist when $F$ is sequentially
+complete, and weak integrals of $\Ck{1}$ curves exist under the weaker assumption of Mackey
+completeness. The second one is the natural hypothesis for smooth calculus: it is what makes
+parameter-dependent integrals of smooth maps smooth. Mackey completeness is also the completeness
+notion of Kriegl and Michor \cite[\S 2]{KM97}; we stress that here it is only a hypothesis on
+the model space, inside Michal--Bastiani calculus. Our main reference is \cite[\S1.1]{GN26}.
+
+The chapter is organized as follows. In Section~\ref{sec:completeness-notions} we introduce
+both completeness notions and compare them. In Section~\ref{sec:riemann} we study Riemann sums,
+which in both cases provide the integral as a limit. Section~\ref{sec:existence} contains the
+two existence theorems, Section~\ref{sec:ftc2} the second half of the fundamental theorem of
+calculus, and Section~\ref{sec:param} the regularity of integrals depending on parameters.
+
+\section{Completeness notions}
+\label{sec:completeness-notions}
+
+We state completeness through the topology of $F$, without fixing a uniform structure.
+
+\begin{definition}[Sequential completeness]
+  \label{def:seq-complete}
+  \lean{LocallyConvex.Analysis.SeqComplete}
+  \leanok
+  A sequence $(u_n)$ in $F$ is Cauchy if for every neighborhood $W$ of $0$ there is $N$ with
+  $u_n - u_m \in W$ for all $m, n \geq N$. The space $F$ is sequentially complete if every
+  Cauchy sequence converges.
+\end{definition}
+
+\begin{definition}[Mackey completeness]
+  \label{def:mackey-complete}
+  \lean{LocallyConvex.Analysis.MackeyComplete}
+  \leanok
+  A sequence $(u_n)$ in $F$ is Mackey--Cauchy if there are a bounded set $B \subseteq F$ and
+  real numbers $r_k \to 0$ with $u_l - u_k \in r_k B$ for all $k \leq l$. The space $F$ is
+  Mackey complete if every Mackey--Cauchy sequence converges.
+\end{definition}
+
+Here bounded means bounded in the sense of von Neumann: absorbed by every neighborhood of $0$.
+In other words, a Mackey--Cauchy sequence is Cauchy at a controlled rate, measured by a single
+bounded set; in a normed space one may take for $B$ the unit ball, and the condition reads
+$\|u_l - u_k\| \leq r_k$.
+
+\begin{remark}
+  Definition~\ref{def:mackey-complete} is one of the equivalent descriptions of Mackey
+  completeness in \cite[1.1.18(e)]{GN26} and \cite[2.2, 2.14]{KM97}. Glöckner and Neeb take as
+  definition the existence of weak integrals of Lipschitz curves; we prove in
+  Chapter~\ref{chap:mackey-lipschitz} that both definitions agree, so the choice is a matter of
+  convenience.
+\end{remark}
+
+\begin{proposition}[Comparison]
+  \label{prop:completeness-chain}
+  \lean{LocallyConvex.Analysis.SeqComplete.of_completeSpace, LocallyConvex.Analysis.SeqComplete.mackeyComplete}
+  \leanok
+  \uses{def:seq-complete, def:mackey-complete}
+  Complete uniform additive groups are sequentially complete, and sequentially complete spaces
+  are Mackey complete.
+\end{proposition}
+
+In particular, every complete locally convex space (for instance, a Fréchet or a Banach space)
+is Mackey complete, and all the results of this chapter apply to it.
+
+\begin{proof}
+  \leanok
+  The first claim amounts to comparing our notion of Cauchy sequence with the uniform one. For
+  the second, it suffices to observe that a Mackey--Cauchy sequence is Cauchy: given a
+  neighborhood $W$ of $0$, the bounded set $B$ is absorbed by $W$, so $r_k B \subseteq W$ for
+  large $k$.
+\end{proof}
+
+We will need the following elementary fact, which is where local convexity enters.
+
+\begin{lemma}[Convex hulls of bounded sets]
+  \label{lem:conv-bounded}
+  \lean{LocallyConvex.Analysis.isVonNBounded_convexHull}
+  \leanok
+  In a locally convex space, the convex hull of a bounded set is bounded.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  It is immediate that if $B$ is absorbed by a convex balanced neighborhood $W$ of $0$, so is
+  $\conv B$; and these neighborhoods form a basis of neighborhoods of $0$.
+\end{proof}
+
+\section{Riemann sums}
+\label{sec:riemann}
+
+In both existence theorems the integral will be obtained as the limit of a sequence of Riemann
+sums. We only need sums over uniform partitions.
+
+\begin{definition}[Riemann sums]
+  \label{def:riemann}
+  \lean{LocallyConvex.Analysis.riemannSum}
+  \leanok
+  For $\gamma \colon \R \to F$ and $N \geq 1$, the Riemann sum of $\gamma$ over $[a, b]$ with
+  $N$ equal subintervals and left endpoints is
+  \[
+    R_N(\gamma) = \frac{b-a}{N} \sum_{i=0}^{N-1} \gamma\Bigl(a + i\, \frac{b-a}{N}\Bigr).
+  \]
+\end{definition}
+
+The basic estimate compares a Riemann sum with the sums of its refinements. It is stated with an
+arbitrary convex set $V$, so that the same lemma serves both for neighborhoods of $0$ (the
+sequentially complete case) and for multiples of a bounded set (the Mackey complete case).
+
+\begin{lemma}[Refinements]
+  \label{lem:riemann-refine}
+  \lean{LocallyConvex.Analysis.riemannSum_mul_sub_mem, LocallyConvex.Analysis.tendsto_riemannSum_real, LocallyConvex.Analysis.map_riemannSum}
+  \leanok
+  \uses{def:riemann}
+  Let $V \subseteq F$ be convex, and suppose that $\gamma(s) - \gamma(t) \in V$ whenever
+  $s, t \in [a, b]$ and $0 \leq s - t \leq \frac{b - a}{N}$. Then
+  $R_{Nm}(\gamma) - R_N(\gamma) \in (b - a)\, V$ for every $m \geq 1$. Moreover, for a continuous
+  real function $g$ the Riemann sums $R_N(g)$ tend to $\int_a^b g$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The difference $R_{Nm} - R_N$ is $b - a$ times an average of increments of $\gamma$ over
+  intervals of length at most $\frac{b - a}{N}$; since $V$ is convex, the average lies in $V$.
+  The second claim is the classical convergence of Riemann sums of continuous functions.
+\end{proof}
+
+\begin{lemma}[Limits of Riemann sums]
+  \label{lem:riemann-limit}
+  \lean{LocallyConvex.Analysis.hasWeakIntegral_of_tendsto}
+  \leanok
+  \uses{lem:riemann-refine, def:weak-integral}
+  If $\gamma$ is continuous on $[a, b]$ and the dyadic Riemann sums $R_{2^n}(\gamma)$ converge to
+  $y$, then $y$ is the weak integral of $\gamma$ over $[a, b]$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  For each continuous linear functional $\varphi$ we have
+  $\varphi(R_{2^n}(\gamma)) = R_{2^n}(\varphi \circ \gamma)$, which converges both to
+  $\varphi(y)$ and, by Lemma~\ref{lem:riemann-refine}, to $\int_a^b \varphi \circ \gamma$.
+\end{proof}
+
+\begin{remark}
+  The dyadic sums $R_{2^n}(\gamma)$ form a \emph{sequence}, each term being a refinement of the
+  previous one. This is why sequential notions of completeness suffice: no nets of partitions
+  are needed.
+\end{remark}
+
+\section{Existence of integrals}
+\label{sec:existence}
+
+We can now state the two existence theorems. The construction is the same in both; only the
+Cauchy estimate for the dyadic sums changes.
+
+\begin{theorem}[Continuous curves, sequentially complete case]
+  \label{thm:exists-seq}
+  \lean{LocallyConvex.Analysis.exists_hasWeakIntegral, LocallyConvex.Analysis.exists_hasWeakIntegral_of_le}
+  \leanok
+  \uses{def:seq-complete, lem:riemann-limit}
+  If $F$ is sequentially complete, every curve that is continuous on $[a, b]$ has a weak
+  integral over $[a, b]$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  By uniform continuity on the compact interval $[a, b]$, for each closed convex neighborhood
+  $V$ of $0$ the increments of $\gamma$ over sufficiently short intervals lie in $V$. By
+  Lemma~\ref{lem:riemann-refine}, the dyadic Riemann sums form a Cauchy sequence; its limit is
+  the weak integral by Lemma~\ref{lem:riemann-limit}. This is \cite[1.1.15]{GN26}.
+\end{proof}
+
+\begin{theorem}[$\Ck{1}$ curves, Mackey complete case]
+  \label{thm:exists-mackey}
+  \lean{LocallyConvex.Analysis.exists_hasWeakIntegral_of_hasDirDerivAt_of_le, LocallyConvex.Analysis.ContDiffMBOn.exists_hasWeakIntegral, LocallyConvex.Analysis.sub_mem_smul_closure_convexHull}
+  \leanok
+  \uses{def:mackey-complete, lem:riemann-limit, lem:conv-bounded, lem:mean-value-inclusion}
+  If $F$ is Mackey complete, every curve that is $\Ck{1}$ on a neighborhood of $[a, b]$ has a weak
+  integral over $[a, b]$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Let $K$ be the closure of the convex hull of $\{s\,\gamma'(t) : s \in [0, 1],\ t \in [a, b]\}$.
+  It is bounded by Lemma~\ref{lem:conv-bounded}, since $\gamma'([a, b])$ is compact. By the mean
+  value inclusion (Lemma~\ref{lem:mean-value-inclusion}), $\gamma(s) - \gamma(t) \in h\, K$
+  whenever $0 \leq s - t \leq h$. Then Lemma~\ref{lem:riemann-refine} gives
+  \[
+    R_{2^m}(\gamma) - R_{2^n}(\gamma) \in \frac{(b - a)^2}{2^n}\, K \qquad (n \leq m),
+  \]
+  so the dyadic Riemann sums form a Mackey--Cauchy sequence, with bounded set $K$ and
+  $r_n = (b - a)^2 2^{-n}$. Its limit is the weak integral by Lemma~\ref{lem:riemann-limit}.
+  Compare \cite[1.1.18]{GN26} and \cite[2.14]{KM97}.
+\end{proof}
+
+\begin{remark}
+  In the continuous case the Cauchy estimate comes from uniform continuity, and it only says
+  that the differences of dyadic sums are eventually small. In the $\Ck{1}$ case it comes from
+  the mean value inclusion, and it says more: the differences lie in multiples of one fixed
+  bounded set, with factors tending to $0$ at a known rate. This additional control is what
+  allows us to replace sequential completeness by Mackey completeness.
+\end{remark}
+
+\section{The fundamental theorem of calculus, second part}
+\label{sec:ftc2}
+
+The first part of the fundamental theorem (Theorem~\ref{thm:ftc1}) recovers a $\Ck{1}$ curve
+from the integral of its derivative. The second part, which we prove now, differentiates an
+integral with respect to its upper limit.
+
+\begin{theorem}[Fundamental theorem of calculus, II]
+  \label{thm:ftc2}
+  \lean{LocallyConvex.Analysis.hasDirDerivAt_weakIntegral_right_of_exists, LocallyConvex.Analysis.hasDirDerivAt_weakIntegral_right}
+  \leanok
+  \uses{lem:weak-integral-small, lem:weak-integral-algebra, prop:change-of-variables}
+  Let $I \subseteq \R$ be an open interval, $a \in I$ and $\gamma$ continuous on $I$. If the weak
+  integrals $\eta(s) = \int_a^s \gamma$ exist for $s \in I$, then $\eta$ is differentiable on
+  $I$ with $\eta' = \gamma$. If $F$ is sequentially complete, these integrals always exist.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  By additivity in the interval and the affine change of variables $r \mapsto t + sr$,
+  \[
+    \frac{1}{s}\bigl(\eta(t + s) - \eta(t)\bigr) - \gamma(t)
+      = \int_0^1 \bigl(\gamma(t + sr) - \gamma(t)\bigr)\, dr .
+  \]
+  Let $W$ be a closed convex neighborhood of $0$. By continuity of $\gamma$ at $t$, for small
+  $s$ the integrand lies in $W$, and Lemma~\ref{lem:weak-integral-small} puts the integral in
+  $2W$. The last claim follows from Theorem~\ref{thm:exists-seq}. This is \cite[1.1.12]{GN26}.
+\end{proof}
+
+\begin{remark}
+  Note that the first assertion needs no completeness at all: what is assumed is the existence
+  of the integrals $\eta(s)$, and the limit of the difference quotients is then controlled by
+  Hahn--Banach through Lemma~\ref{lem:weak-integral-small}. Completeness of $F$ enters only to
+  guarantee that existence.
+\end{remark}
+
+\section{Integrals depending on parameters}
+\label{sec:param}
+
+Let $U$ be an open subset of a locally convex space $E$, let $T \subseteq \R$ be open with
+$[a, b] \subseteq T$, and let $f$ be a map on $U \times T$. We study the regularity of
+$x \mapsto \int_a^b f(x, t)\, dt$. All the results follow from a single induction, in which the
+existence of the integrals is isolated as a hypothesis.
+
+\begin{theorem}[The induction behind parameter-dependent integrals]
+  \label{thm:param-induction}
+  \lean{LocallyConvex.Analysis.contDiffMBOn_weakIntegral_of_exists}
+  \leanok
+  \uses{thm:diff-under-integral, prop:param-continuity, thm:partials}
+  Let $T \subseteq \R$ be open with $[a, b] \subseteq T$, and $m \in \N$. Suppose that, for
+  every $\Ck{m}$ map $f$ on a product $U \times T$, the weak integrals $\int_a^b f(x, t)\, dt$
+  exist. Then, for every $\Ck{k + m}$ map $f$ on $U \times T$, the map
+  $x \mapsto \int_a^b f(x, t)\, dt$ is $\Ck{k}$ on $U$.
+\end{theorem}
+
+Here the hypothesis is understood for all open sets $U$ of all locally convex spaces $E$; this
+uniformity is what makes the induction work.
+
+\begin{proof}
+  \leanok
+  We argue by induction on $k$, for all locally convex spaces $E$ at once. The case $k = 0$ is
+  Proposition~\ref{prop:param-continuity}. For the inductive step, differentiation under the
+  integral sign (Theorem~\ref{thm:diff-under-integral}) gives
+  \[
+    \dd\Bigl(\int_a^b f(\cdot, t)\, dt\Bigr)(x)(h) = \int_a^b \dd f\bigl((x, t), (h, 0)\bigr)\, dt ,
+  \]
+  and the integrand is a $\Ck{k - 1 + m}$ map on the product $(U \times E) \times T$, to which
+  the inductive hypothesis applies.
+\end{proof}
+
+\begin{remark}
+  This single induction yields all the results on parameter-dependent integrals at once; the
+  sources prove the sequentially complete case and the Mackey complete case separately.
+\end{remark}
+
+\begin{remark}[Lean]
+  The quantification over all spaces $E$ is the reason for the universe restriction mentioned in
+  Chapter~\ref{chap:differentiability}.
+\end{remark}
+
+Combined with the existence theorems of Section~\ref{sec:existence}, the induction gives the
+following statements, with no existence hypotheses left.
+
+\begin{corollary}[Parameter-dependent integrals]
+  \label{cor:param}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.contDiffMBOn_weakIntegral, LocallyConvex.Analysis.ContDiffMBOn.contDiffMBOn_weakIntegral_of_mackey, LocallyConvex.Analysis.SmoothMBOn.smoothMBOn_weakIntegral, LocallyConvex.Analysis.ContDiffMBOn.dMB_weakIntegral,
+    LocallyConvex.Analysis.ContDiffMBOn.exists_hasWeakIntegral_slice,
+    LocallyConvex.Analysis.ContDiffMBOn.dMB_weakIntegral_of_mackey}
+  \leanok
+  \uses{thm:param-induction, thm:exists-seq, thm:exists-mackey}
+  Let $f$ be a map on $U \times T$ with $[a, b] \subseteq T$, and
+  $I(x) = \int_a^b f(x, t)\, dt$.
+  \begin{enumerate}
+    \item If $F$ is sequentially complete and $f$ is $\Ck{k}$, then $I$ is $\Ck{k}$, and
+    $\dd I(x)(h) = \int_a^b \dd f\bigl((x,t), (h,0)\bigr)\, dt$ for $k \geq 1$.
+    \item If $F$ is Mackey complete and $f$ is $\Ck{k+1}$, then $I$ is $\Ck{k}$; if $f$ is
+    $\Ck{2}$, the formula for $\dd I$ of (1) holds.
+    \item If $F$ is Mackey complete and $f$ is smooth, then $I$ is smooth.
+  \end{enumerate}
+\end{corollary}
+
+\begin{proof}
+  \leanok
+  Apply Theorem~\ref{thm:param-induction} with $m = 0$ and Theorem~\ref{thm:exists-seq} in the
+  first case, and with $m = 1$ and Theorem~\ref{thm:exists-mackey} in the other two. This is
+  \cite[1.3.23]{GN26}.
+\end{proof}
+
+\begin{remark}
+  The loss of one derivative in the Mackey complete case has a simple origin: in that setting
+  we only know that $\Ck{1}$ curves have integrals (Theorem~\ref{thm:exists-mackey}), so the
+  induction has to be started with $m = 1$. For smooth maps nothing is lost, and this is why
+  Mackey completeness is the natural hypothesis for smooth calculus.
+\end{remark}

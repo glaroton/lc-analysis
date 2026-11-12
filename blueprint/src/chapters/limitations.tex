@@ -1,0 +1,196 @@
+\chapter{Limitations of the Michal--Bastiani calculus}
+\label{chap:limitations}
+
+The Michal--Bastiani calculus is defined on arbitrary locally convex spaces, needs no
+completeness, and its smooth maps are continuous. The price is paid elsewhere: spaces of
+operators and of smooth maps carry several natural topologies, none of which makes evaluation
+continuous in infinite dimensions, and as a consequence the category of smooth maps is
+\emph{not} cartesian closed. This chapter collects these caveats, explains why they are not a
+matter of completeness, and records the convention that we follow throughout to avoid them:
+operator-valued data are always required to be smooth \emph{jointly} (in uncurried form), never
+as maps into a space of operators. Nothing in this chapter is formalized; it is here to explain
+the design.
+
+Throughout, $E$ and $F$ are locally convex spaces over $\mathbb{K} \in \{\R, \mathbb{C}\}$, and
+$\Lin(E, F)$ is the space of continuous linear maps.
+
+\section{Topologies on spaces of operators}
+
+Three topologies on $\Lin(E, F)$ will appear, each one the topology of uniform convergence on
+a family of subsets of $E$:
+\begin{itemize}
+  \item $\Lin(E, F)_s$: uniform convergence on finite sets (pointwise convergence); on normed
+    spaces this is the \emph{strong operator topology};
+  \item $\Lin(E, F)_c$: uniform convergence on compact sets (the compact-open topology);
+  \item $\Lin(E, F)_b$: uniform convergence on bounded sets; on normed spaces this is the
+    \emph{operator norm} topology, since it suffices to look at the unit ball.
+\end{itemize}
+Since finite sets are compact and compact sets are bounded, $s \subseteq c \subseteq b$.
+
+A word of caution on terminology: in operator theory ``strong topology'' means $s$, while in
+the theory of locally convex spaces the ``strong topology'' (on a dual space, say) is $b$.
+
+\begin{remark}[$s$ and $c$ agree on equicontinuous sets]
+  \label{rem:s-c-equicontinuous}
+  On an equicontinuous subset $H \subseteq \Lin(E, F)$ (for normed $E$, $F$: a set bounded in
+  operator norm) the topologies $s$ and $c$ coincide. Indeed, given a compact $K \subseteq E$,
+  a continuous seminorm $q$ on $F$ and $\varepsilon > 0$, equicontinuity gives a
+  $0$-neighborhood $V$ with $q(T v) < \varepsilon$ for $T \in H$, $v \in V$; covering $K$ by
+  finitely many translates $x_i + V$ reduces uniform convergence on $K$ to convergence at the
+  finitely many points $x_i$. In particular, for a Banach space $E$, a sequence in
+  $\Lin(E, F)$ which converges in $s$ is bounded in operator norm (uniform boundedness
+  principle), hence converges in $c$: on Banach spaces the two topologies can only be
+  distinguished by nets.
+\end{remark}
+
+\begin{remark}[$c$ is strictly finer than $s$ in infinite dimensions]
+  \label{rem:c-finer-than-s}
+  If $E$ is infinite-dimensional and $F \ne 0$, then $s \ne c$ on $\Lin(E, F)$. It suffices
+  to treat $F = \mathbb{K}$, i.e.\ the dual $E'$. Every $s$-neighborhood of $0$ in $E'$
+  contains the annihilator of a finite set $\{x_1, \dots, x_k\}$. If the polar $K^\circ$ of a
+  compact set $K$ contained such an annihilator, then every $f \in E'$ vanishing on the
+  $x_j$ would vanish on $K$ (scale $f$), and by the Hahn--Banach theorem $K$ would lie in the
+  finite-dimensional span of the $x_j$. A compact set not contained in any finite-dimensional
+  subspace exists (for normed $E$: $\{0\} \cup \{x_n / n\}$ with $x_n$ linearly independent
+  unit vectors), so $K^\circ$ is a $c$-neighborhood of $0$ which is not an $s$-neighborhood.
+\end{remark}
+
+\begin{example}
+  \label{ex:s-not-c}
+  \begin{enumerate}
+    \item (Incomplete $E$, sequences.) Let $E = c_{00}$ be the space of finitely supported
+      sequences with the supremum norm, and $\varphi_n = n\, e_n^*$. For each $x \in E$,
+      $\varphi_n(x) = 0$ for large $n$, so $\varphi_n \to 0$ in $s$. On the compact set
+      $K = \{0\} \cup \{e_m / m : m \ge 1\}$ we have $\varphi_n(e_n / n) = 1$, so
+      $\varphi_n \not\to 0$ in $c$. (By Remark~\ref{rem:s-c-equicontinuous}, such a sequence
+      cannot exist on a Banach space.)
+    \item ($E = \ell^2$, nets.) Let $A = \{\sqrt{n}\, e_n^* : n \ge 1\} \subseteq (\ell^2)'$.
+      Then $0$ lies in the $s$-closure of $A$: otherwise there would be
+      $x^{(1)}, \dots, x^{(k)} \in \ell^2$ and $\varepsilon > 0$ with
+      $\max_j \sqrt{n}\,|x^{(j)}_n| \ge \varepsilon$ for all $n$, whence
+      $\sum_j |x^{(j)}_n|^2 \ge \varepsilon^2 / n$, and summing over $n$ gives a contradiction.
+      But $0$ is not in the $c$-closure of $A$: on the compact set
+      $K = \{0\} \cup \{e_m / \sqrt{m}\}$ each element of $A$ takes the value $1$.
+  \end{enumerate}
+\end{example}
+
+For a Banach space $E$, the topology $c$ on $E'$ is the \emph{bounded weak-$*$ topology}: the
+finest topology which agrees with the weak-$*$ topology on bounded sets (Banach--Dieudonné
+theorem; for the statement on convex sets see \cite[Thm.~4.44]{FHHMPZ01}).
+
+\section{The exponential law}
+
+For locally convex subsets $U \subseteq E_1$ and $V \subseteq E_2$ with dense interior, endow
+$C^\infty(V, F)$ with the compact-open $C^\infty$-topology, and write
+$f^\vee(x) = f(x, \cdot)$.
+
+\begin{theorem}[{\cite[Thm.~1.7.30, Cor.~1.7.35]{GN26}}]
+  \label{thm:exponential-law-smooth}
+  For all locally convex $E_1$, $E_2$, $F$ and every $f \in C^\infty(U \times V, F)$, the map
+  $f^\vee \colon U \to C^\infty(V, F)$ is smooth, and
+  $\Phi \colon C^\infty(U \times V, F) \to C^\infty(U, C^\infty(V, F))$, $f \mapsto f^\vee$, is
+  linear and a topological embedding. If moreover $V$ is locally compact, or
+  $U \times V \times E_1 \times E_2$ is a $k_{\R}$-space, then $\Phi$ is an isomorphism of
+  topological vector spaces.
+\end{theorem}
+
+\begin{remark}[Completeness plays no role]
+  \label{rem:exponential-law-completeness}
+  No completeness is assumed in Theorem~\ref{thm:exponential-law-smooth}. The hypothesis for the
+  converse direction is topological: a $k_{\R}$-space is a Hausdorff space on which a real
+  function is continuous as soon as its restrictions to compact sets are
+  \cite[Rem.~A.6.15]{GN26}. It holds when $E_1$ and $E_2$ are metrizable (normed spaces,
+  complete or not; Fréchet spaces), when $V$ is finite-dimensional, and also for
+  $k_\omega$-spaces such as countable direct limits of finite-dimensional spaces, e.g.\
+  $\R^{(\N)}$ \cite[Rem.~4.1.22, Prop.~A.7.20]{GN26}. So the absence of a countable basis of
+  $0$-neighborhoods only threatens the converse direction, and only for spaces which are not
+  $k_{\R}$-spaces.
+\end{remark}
+
+\section{Evaluation and cartesian closedness}
+
+The category would be cartesian closed if $C^\infty(V, F)$ were an object and the evaluation
+$\varepsilon \colon C^\infty(V, F) \times V \to F$ were smooth. This holds when $V$ is
+finite-dimensional: then $\varepsilon$ is $C^{\infty, \ell}$ \cite[Lemma~1.7.25]{GN26}. It
+fails in every infinite-dimensional case, and already at the linear level.
+
+\begin{proposition}[Evaluation on the compact-open dual]
+  \label{prop:evaluation-discontinuous}
+  If $E$ is infinite-dimensional, the evaluation $E'_c \times E \to \mathbb{K}$,
+  $(f, x) \mapsto f(x)$, is not continuous. Consequently, for every open
+  $U \subseteq E$, the evaluation $C^\infty(U, \mathbb{K}) \times U \to \mathbb{K}$ is not
+  continuous for the compact-open $C^\infty$-topology.
+\end{proposition}
+
+\begin{proof}
+  Suppose the evaluation is continuous at $(0, 0)$. Then there are a compact $K \subseteq E$,
+  $\delta > 0$ and an absolutely convex $0$-neighborhood $W \subseteq E$ with $|f(x)| \le 1$
+  whenever $\sup_K |f| \le \delta$ and $x \in W$. By homogeneity, $K^\circ \subseteq
+  \delta^{-1} W^\circ$, and by the bipolar theorem
+  $W \subseteq \overline{W} = W^{\circ\circ} \subseteq \delta^{-1} K^{\circ\circ}$, where
+  $K^{\circ\circ}$ is the closed absolutely convex hull of $K$. The absolutely convex hull of a
+  precompact set is precompact, and so is its closure; hence $E$ has a precompact
+  $0$-neighborhood and is finite-dimensional.
+
+  For the second statement, the compact-open $C^\infty$-topology induces on
+  $E' \subseteq C^\infty(U, \mathbb{K})$ the topology of $E'_c$ (for a linear map all
+  derivatives of order $\ge 1$ are $f$ itself or zero), and continuity of the evaluation at
+  $(0, x_0)$ would give continuity of $(f, h) \mapsto f(x_0 + h) - f(x_0) = f(h)$ at $(0, 0)$.
+\end{proof}
+
+The proposition covers Banach and Hilbert spaces: there the evaluation
+$\Lin(E, F)_b \times E \to F$ \emph{is} continuous \cite[Rem.~2.3.9]{GN26}, but $b$ is not
+the topology which the compact-open $C^\infty$-topology induces on operators. For non-normable
+$E$ there is no way out at all: the evaluation $\Lin(E) \times E \to E$ is discontinuous for
+\emph{every} vector topology on $\Lin(E)$ (Maissen \cite[Satz 1]{Mai63}, see also \cite[p.~2]{KM97}
+and the notes to Ch.~3 of \cite{GN26}).
+
+\begin{remark}[The convenient calculus]
+  \label{rem:convenient}
+  The convenient calculus of Frölicher, Kriegl and Michor \cite{KM97} is cartesian closed. It
+  works on Mackey complete ($c^\infty$-complete) spaces, and this is where a completeness
+  hypothesis enters. The price: the exponential law holds only as an isomorphism of
+  bornological spaces (already for $E_1 = E_2 = \R$, the map $\Phi$ is discontinuous for the
+  topologies of the convenient setting, see the notes to Ch.~1 of \cite{GN26}), and convenient
+  smooth maps need not be continuous. On Fréchet spaces both calculi have the same smooth maps.
+\end{remark}
+
+\section{The derivative as an operator-valued map}
+
+Let $f \colon U \to F$ be $\Ck{k}$ with $k \ge 1$, $U \subseteq E$ open.
+
+\begin{itemize}
+  \item \emph{Into $\Lin(E, F)_c$, no hypotheses.} The map $x \mapsto \dd f(x) \in
+    \Lin(E, F)_c$ is $\Ck{k-1}$, for arbitrary locally convex $E$, $F$: apply the first part of
+    Theorem~\ref{thm:exponential-law-smooth} to $\dd f$ and corestrict to the closed subspace
+    $\Lin(E, F) \subseteq C(E, F)$ (as in the proof of \cite[Prop.~2.3.17(b)]{GN26}). Dually,
+    for fixed $x$ the map $C^\infty(U, F) \to \Lin(E, F)_c$, $f \mapsto \dd f(x)$, is
+    continuous linear, directly from the definition of the compact-open $C^\infty$-topology.
+  \item \emph{Into $\Lin(E, F)_b$, normed spaces.} If $E$, $F$ are normed, a Michal--Bastiani
+    $\Ck{k+1}$ map is Fréchet $\Ck{k}$ (Theorem~\ref{thm:mb-to-frechet}): continuity of
+    $x \mapsto \dd f(x)$ in operator norm costs one derivative, and nothing for smooth maps
+    (Corollary~\ref{cor:smooth-iff}). On the other hand, $f \mapsto \dd f(x)$ is \emph{not}
+    continuous from $C^\infty(U, F)$ to $\Lin(E, F)_b$ when $E$ is infinite-dimensional, since
+    on $E'$ the compact-open $C^\infty$-topology is $c \ne b$.
+  \item \emph{Non-normable spaces.} By Maissen's theorem, there is no vector topology on
+    $\Lin(E)$ making evaluation continuous, so no choice of topology turns the derivative into
+    a well-behaved operator-valued map while keeping the chain rule continuous.
+\end{itemize}
+
+\section{The convention adopted}
+
+To stay clear of all of the above, operator-valued data are always required to be smooth in
+uncurried form. A smooth family of projectors on an embedded submanifold $X \subseteq F$ is a
+map $E \colon X \times F \to F$, linear in the second variable, such that $(p, w) \mapsto
+E_p w$ is smooth in charts (\texttt{LocallyConvex.Manifolds.ProjectorField}); the Christoffel symbols of a
+connection are smooth as functions $(x, a, b) \mapsto \Gamma_x(a, b)$ of three variables
+(\texttt{LocallyConvex.Manifolds.Connection}). No topology on $\Lin(F)$ is ever needed. On Banach spaces
+this loses nothing: by Corollary~\ref{cor:smooth-iff}, $(x, w) \mapsto E_x w$ is then Fréchet
+smooth, hence so is $x \mapsto E_x$ into $\Lin(F)$ with the operator norm; the uncurried and
+the operator-norm notions of smoothness agree for $C^\infty$ data.
+
+The convention does have visible consequences on non-normable models: the dual bundle
+$T^*M = \bigcup_x (T_x M)'$ carries in general no canonical vector bundle structure
+\cite[notes to Ch.~3]{GN26}, so $1$-forms are treated as smooth maps on $TM$ which are linear on
+the fibres; and the adjoint action of a Lie group is handled as the smooth map
+$G \times \mathfrak{g} \to \mathfrak{g}$, not as a map into $\Lin(\mathfrak{g})$.

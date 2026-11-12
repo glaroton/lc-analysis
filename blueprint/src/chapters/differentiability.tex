@@ -1,0 +1,379 @@
+\chapter{Michal--Bastiani differentiability}
+\label{chap:differentiability}
+
+On a Banach space a map is $\Ck{1}$ when its derivative is a continuous map into the space of
+bounded operators, with the operator norm. On a general locally convex space $E$ there is no
+canonical topology on the space of continuous linear maps $E \to F$ that would play this role,
+and the definition has to be rephrased. The solution of Michal \cite{Mic38} and Bastiani
+\cite{Bas64} is to consider the derivative as a function of two variables, the point and the
+direction, and to ask for joint continuity. In the recursive form used by Glöckner, which we
+adopt, $\Ck{k+1}$ means that this function of two variables is $\Ck{k}$.
+
+In this chapter we define $\Ck{k}$ maps between locally convex spaces and prove the basic
+results of first-order calculus. After the definitions, we prove the mean value theorem, which
+in this setting takes the form of an inclusion in a closed convex set. From it we obtain
+Glöckner's lemma on the continuous extension of difference quotients, and from this lemma the
+linearity of the differential and the chain rule. We close the chapter with partial
+derivatives, the symmetry of the second differential, and the comparison with Fréchet $\Ck{k}$
+maps on normed spaces. The references are \cite[\S1.2]{GN26} and \cite[\S I.2]{Nee06}.
+
+\section{Directional derivatives and $\Ck{k}$ maps}
+
+\begin{definition}[Directional derivative]
+  \label{def:dir-deriv}
+  \lean{LocallyConvex.Analysis.HasDirDerivAt, LocallyConvex.Analysis.dMB}
+  \leanok
+  Let $f \colon E \to F$ and $x, h \in E$. We say that $f$ has derivative $y \in F$ at $x$ in
+  the direction $h$ if
+  \[
+    \lim_{t \to 0,\ t \neq 0} \frac{1}{t}\bigl(f(x + t h) - f(x)\bigr) = y .
+  \]
+  We write $\dd f(x)(h)$ for this limit when it exists, and regard $\dd f$ as a function on
+  $E \times E$.
+\end{definition}
+
+The limit is taken in $F$, which is Hausdorff, so it is unique when it exists. Note that
+$\dd f(x)(0) = 0$ always, and that no linearity in $h$ is built into the definition.
+
+\begin{remark}
+  In Lean, $\dd f$ is a total function: it takes an arbitrary value where the limit does not
+  exist. This is harmless, since it is only used where the limit is known to exist.
+\end{remark}
+
+\begin{definition}[$\Ck{k}$ and smooth maps]
+  \label{def:ck}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn, LocallyConvex.Analysis.SmoothMBOn}
+  \leanok
+  \uses{def:dir-deriv}
+  Let $U \subseteq E$ be open. A map $f$ is $\Ck{0}$ on $U$ if it is continuous on $U$. It is
+  $\Ck{k+1}$ on $U$ if it is continuous on $U$, all directional derivatives $\dd f(x)(h)$ exist
+  for $x \in U$, $h \in E$, and $\dd f \colon U \times E \to F$ is $\Ck{k}$ on the open set
+  $U \times E$. The map $f$ is smooth on $U$ if it is $\Ck{k}$ for every $k$.
+\end{definition}
+
+Thus $f$ is $\Ck{1}$ when its directional derivatives exist and are jointly continuous in the
+point and the direction. This is \cite[1.2.1 and 1.3.1]{GN26}, in the recursive form used by Glöckner;
+Bastiani's original definition, through the continuity of all the iterated differentials, is
+equivalent (Theorem~\ref{thm:ck-iff-bastiani}).
+
+\begin{remark}
+  Two features of the definition deserve a comment. First, linearity of $h \mapsto \dd f(x)(h)$
+  is not assumed; it is a theorem (Theorem~\ref{thm:linear}), and it depends on the joint
+  continuity in an essential way (Example~\ref{ex:not-linear} below). Second, no topology on
+  the space of continuous linear maps $E \to F$ is involved: the regularity of $\dd f$ is
+  measured on the locally convex space $E \times E$, so that the induction stays within the
+  category of locally convex spaces.
+\end{remark}
+
+\begin{remark}
+  The recursive definition quantifies over the domain of $\dd f$, which is $U \times E$ rather
+  than $U$. As a consequence, in Lean the domains of $\Ck{k}$ maps live in a fixed universe.
+  Codomains are unrestricted.
+\end{remark}
+
+We record the two basic examples, which are used throughout.
+
+\begin{lemma}[Continuous linear maps are smooth]
+  \label{lem:clm-smooth}
+  \lean{ContinuousLinearMap.contDiffMBOn, ContinuousLinearMap.smoothMBOn}
+  \leanok
+  \uses{def:ck}
+  Every continuous linear map $L \colon E \to F$ is smooth, and $\dd L(x)(h) = L h$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The difference quotients of $L$ are constant, equal to $Lh$. Then $\dd L = L \circ \pi_2$ is
+  again continuous and linear, and the claim follows by induction on $k$.
+\end{proof}
+
+\begin{lemma}[Pairs]
+  \label{lem:prod}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.prodMk}
+  \leanok
+  \uses{def:ck}
+  If $f \colon U \to F$ and $g \colon U \to G$ are $\Ck{k}$, so is $x \mapsto (f(x), g(x))$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Directional derivatives of a pair are computed componentwise, so $\dd (f,g)$ is the pair
+  $(\dd f, \dd g)$; the claim follows by induction on $k$.
+\end{proof}
+
+\section{The mean value theorem}
+
+The classical mean value inequality $\|f(x+h) - f(x)\| \leq \sup_s \|Df(x+sh)\|\,\|h\|$ has no
+meaning without a norm. Its replacement is an inclusion: increments of $f$ lie in the closed
+convex hull of the derivatives along the segment. Since closed convex neighborhoods form a
+basis of the topology, this inclusion carries the same information as a family of estimates,
+one for each continuous seminorm.
+
+\begin{lemma}[Mean value inclusion]
+  \label{lem:mean-value-inclusion}
+  \lean{LocallyConvex.Analysis.sub_mem_of_hasDirDerivAt}
+  \leanok
+  \uses{def:dir-deriv}
+  Let $z, w \in E$ and suppose that $f$ has derivative $D(s)$ at $z + s w$ in the direction $w$
+  for every $s \in [0,1]$, with $D$ continuous on $[0,1]$. If $W \subseteq F$ is closed, convex
+  and contains $D(s)$ for every $s \in [0,1]$, then $f(z + w) - f(z) \in W$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Suppose not. By Hahn--Banach there are a continuous linear functional $\varphi$ and $c \in \R$
+  with $\varphi(f(z+w) - f(z)) > c \geq \varphi(v)$ for all $v \in W$. The real function
+  $g(s) = \varphi(f(z + s w))$ has derivative $\varphi(D(s)) \leq c$ on $[0,1]$, and this
+  derivative is continuous. By the fundamental theorem of calculus for real functions,
+  $g(1) - g(0) = \int_0^1 \varphi(D(s))\,ds \leq c$, a contradiction.
+\end{proof}
+
+This is the remark after Lemma~8.4 in \cite{Mic80}. A first consequence is that the continuity
+required in Definition~\ref{def:ck} is, from the first order on, automatic.
+
+\begin{lemma}[Continuity]
+  \label{lem:continuity}
+  \lean{LocallyConvex.Analysis.continuousOn_of_hasDirDerivAt}
+  \leanok
+  \uses{lem:mean-value-inclusion}
+  If all directional derivatives of $f$ exist on $U$ and are jointly continuous on $U \times E$,
+  then $f$ is continuous on $U$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Since $\dd f(x)(0) = 0$, joint continuity gives, for each closed convex neighborhood $W$ of
+  $0$, a neighborhood of $(x, 0)$ on which $\dd f$ takes values in $W$. For $w$ small, the
+  mean value inclusion then gives $f(x + w) - f(x) \in W$. This is \cite[8.1]{Mic80}.
+\end{proof}
+
+When the derivatives are tested against continuous linear functionals, the mean value inclusion
+becomes an identity.
+
+\begin{proposition}[Mean value theorem, weak form]
+  \label{prop:mean-value-weak}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.integral_dMB}
+  \leanok
+  \uses{def:ck}
+  Let $f$ be $\Ck{1}$ on a set containing the segment $\{x + t h : t \in [0,1]\}$. Then, for
+  every continuous linear functional $\varphi$ on $F$,
+  \[
+    \varphi\bigl(f(x+h)\bigr) - \varphi\bigl(f(x)\bigr)
+      = \int_0^1 \varphi\bigl(\dd f(x + t h)(h)\bigr)\, dt .
+  \]
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  The real function $t \mapsto \varphi(f(x + t h))$ has continuous derivative
+  $t \mapsto \varphi(\dd f(x + th)(h))$; it suffices to apply the fundamental theorem of
+  calculus for real functions.
+\end{proof}
+
+In the language of Chapter~\ref{chap:integrals}, $f(x+h) - f(x)$ is the weak integral of
+$t \mapsto \dd f(x + th)(h)$ over $[0,1]$ (Corollary~\ref{cor:ftc-segment}). This is \cite[1.2.6]{GN26}.
+Note that no completeness of $F$ is needed here: the integral exists because its value,
+$f(x+h) - f(x)$, is given in advance.
+
+\section{Glöckner's lemma and the linearity of the differential}
+
+The following lemma is the technical core of the chapter. It says that, for a $\Ck{1}$ map, the
+difference quotient is jointly continuous in the base point, the direction and the step, up to
+and including $t = 0$.
+
+\begin{lemma}[Glöckner]
+  \label{lem:glockner}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.tendsto_quotient}
+  \leanok
+  \uses{def:ck, lem:mean-value-inclusion}
+  Let $g$ be $\Ck{1}$ on $U$ and $y \in U$, $v \in E$. Then
+  \[
+    \frac{1}{t}\bigl(g(y' + t v') - g(y')\bigr) \longrightarrow \dd g(y)(v)
+    \qquad \text{as } (y', v', t) \to (y, v, 0),\ t \neq 0 .
+  \]
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  By the mean value inclusion, the difference quotient lies in the closed convex hull of
+  $\{\dd g(y' + s t v')(v') : s \in [0,1]\}$. Let $W$ be a closed convex neighborhood of
+  $\dd g(y)(v)$. By continuity of $\dd g$ at $(y, v)$, all these derivatives lie in $W$ when
+  $(y', v', t)$ is close to $(y, v, 0)$; hence so does the difference quotient. Since closed
+  convex neighborhoods form a basis, the claim follows.
+\end{proof}
+
+In other words, the difference quotient extends continuously to $t = 0$ by $\dd g$. This is the
+characterization of $\Ck{1}$ maps of Glöckner \cite{Glo02} (\cite[1.2.10]{GN26}), and it is the key
+step in the chain rule. It also gives the linearity of the differential.
+
+\begin{theorem}[The differential is linear]
+  \label{thm:linear}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.exists_clm}
+  \leanok
+  \uses{lem:glockner}
+  If $f$ is $\Ck{1}$ on $U$ and $x \in U$, then $h \mapsto \dd f(x)(h)$ is a continuous linear
+  map $E \to F$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Homogeneity, $\dd f(x)(sh) = s\, \dd f(x)(h)$, follows from the definition by a change of
+  variable in the limit. For additivity we write
+  \[
+    \tfrac{1}{t}\bigl(f(x + th + tk) - f(x)\bigr)
+    = \tfrac{1}{t}\bigl(f((x + th) + tk) - f(x + th)\bigr)
+      + \tfrac{1}{t}\bigl(f(x + th) - f(x)\bigr) .
+  \]
+  As $t \to 0$ the second term tends to $\dd f(x)(h)$, and by Glöckner's lemma, applied at the
+  moving base point $x + th \to x$, the first one tends to $\dd f(x)(k)$. Continuity follows from
+  the joint continuity of $\dd f$. This is \cite[1.2.11]{GN26}.
+\end{proof}
+
+\begin{example}
+  \label{ex:not-linear}
+  The existence of all directional derivatives, even everywhere and for a continuous map, does
+  not imply linearity. Let $f \colon \R^2 \to \R$ be given by $f(a, b) = a^2 b/(a^2 + b^2)$ for
+  $(a,b) \neq 0$ and $f(0) = 0$. It is continuous, since $|f(a,b)| \leq |b|$, and smooth away
+  from the origin. Since $f(t a, t b) = t f(a, b)$, we have $\dd f(0)(a, b) = f(a, b)$, which
+  is not additive: $\dd f(0)(1,0) = \dd f(0)(0,1) = 0$, while $\dd f(0)(1,1) = 1/2$. By
+  Theorem~\ref{thm:linear}, $f$ is not $\Ck{1}$; since $f$ is smooth away from the origin,
+  what fails is the joint continuity of $\dd f$ at some point of the form $(0, h)$.
+\end{example}
+
+\section{The chain rule}
+
+\begin{theorem}[Chain rule]
+  \label{thm:chain-rule}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.comp, LocallyConvex.Analysis.ContDiffMBOn.dMB_comp}
+  \leanok
+  \uses{lem:glockner, lem:prod}
+  Let $U \subseteq E$ and $V \subseteq F$ be open, $f \colon U \to F$ with $f(U) \subseteq V$
+  and $g \colon V \to G$. If $f$ and $g$ are $\Ck{k}$, then $g \circ f$ is $\Ck{k}$, and for
+  $k \geq 1$
+  \[
+    \dd (g \circ f)(x)(h) = \dd g\bigl(f(x)\bigr)\bigl(\dd f(x)(h)\bigr) .
+  \]
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  For $t \neq 0$ write $f(x + th) = f(x) + t\, q(t)$, where
+  $q(t) = \frac{1}{t}(f(x + th) - f(x)) \to \dd f(x)(h)$. Then
+  \[
+    \tfrac{1}{t}\bigl(g(f(x + th)) - g(f(x))\bigr)
+    = \tfrac{1}{t}\bigl(g(f(x) + t\, q(t)) - g(f(x))\bigr),
+  \]
+  which tends to $\dd g(f(x))(\dd f(x)(h))$ by Glöckner's lemma at
+  $(y', v', t) = (f(x), q(t), t)$. This gives the formula. It says that
+  $\dd (g \circ f) = \dd g \circ (f \circ \pi_1, \dd f)$, a composition of $\Ck{k-1}$ maps, so
+  the regularity follows by induction on $k$. This is \cite[1.2.13 and 1.3.4]{GN26}.
+\end{proof}
+
+\begin{remark}
+  The direction $q(t)$ at which Glöckner's lemma is applied moves with $t$. This is where the
+  continuity of $\dd g$ in the direction, and not only in the base point, enters the proof.
+\end{remark}
+
+\section{Partial derivatives}
+
+As in finite dimension, a map on a product is $\Ck{1}$ as soon as its partial derivatives exist
+and are continuous.
+
+\begin{theorem}[Continuous partial derivatives]
+  \label{thm:partials}
+  \lean{LocallyConvex.Analysis.contDiffMBOn_one_of_partials}
+  \leanok
+  \uses{lem:mean-value-inclusion, def:ck}
+  Let $U \subseteq E \times F$ be open and $f \colon U \to G$. Suppose that the partial
+  derivatives $\dd_1 f(p)(u) = \dd f(p)(u, 0)$ and $\dd_2 f(p)(v) = \dd f(p)(0, v)$ exist for
+  $p \in U$, and are jointly continuous on $U \times E$ and $U \times F$. Then $f$ is $\Ck{1}$ on
+  $U$, and $\dd f(p)(u, v) = \dd_1 f(p)(u) + \dd_2 f(p)(v)$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  We split
+  \[
+    f(p + t(u,v)) - f(p) = \bigl[f(p + t(u,v)) - f(p + t(0,v))\bigr]
+      + \bigl[f(p + t(0,v)) - f(p)\bigr].
+  \]
+  Divided by $t$, the second bracket tends to $\dd_2 f(p)(v)$. By the mean value inclusion, the
+  first one, divided by $t$, lies in the closed convex hull of
+  $\{\dd_1 f(p + t(0,v) + st(u,0))(u) : s \in [0,1]\}$, and these values tend to
+  $\dd_1 f(p)(u)$ by joint continuity. The resulting formula for $\dd f$ is jointly continuous,
+  and $f$ is continuous by Lemma~\ref{lem:continuity}. This is \cite[8.3]{Mic80} and \cite[1.2.8]{GN26}.
+\end{proof}
+
+This criterion is a practical way to verify that a given map is $\Ck{1}$; for instance, it is
+used in the proof that continuous bilinear maps are smooth (Theorem~\ref{thm:bilinear}).
+
+\section{Symmetry of the second differential}
+
+For a $\Ck{2}$ map, the second differential at $x$ is
+$(h_1, h_2) \mapsto \dd(\dd f)\bigl((x, h_1), (h_2, 0)\bigr)$, the derivative of
+$\dd f(\cdot)(h_1)$ in the direction $h_2$. We prove that it is symmetric. As in the classical
+proof, both orders of differentiation are compared with a second difference quotient, which is
+symmetric by construction.
+
+\begin{lemma}[Second differences]
+  \label{lem:second-diff}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.second_diff_mem}
+  \leanok
+  \uses{lem:mean-value-inclusion, thm:linear}
+  Let $f$ be $\Ck{2}$ on $U$, $x \in U$ and $h_1, h_2 \in E$. For every closed convex
+  neighborhood $W$ of $\dd(\dd f)\bigl((x, h_1), (h_2, 0)\bigr)$, the second difference quotient
+  \[
+    \frac{1}{t^2}\bigl(f(x + t h_1 + t h_2) - f(x + t h_1) - f(x + t h_2) + f(x)\bigr)
+  \]
+  lies in $W$ for all small $t \neq 0$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  We apply the mean value inclusion twice: first to $s \mapsto f(x + s h_1 + t h_2) - f(x + s h_1)$,
+  then to the derivative of this map in the direction $h_2$. The second difference quotient
+  lies in the closed convex hull of values of the second differential at points near $x$, and
+  these lie in $W$ by continuity.
+\end{proof}
+
+\begin{theorem}[Schwarz, second order]
+  \label{thm:symm2}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.dMB_dMB_symm}
+  \leanok
+  \uses{lem:second-diff}
+  If $f$ is $\Ck{2}$ on $U$ and $x \in U$, then
+  $\dd(\dd f)\bigl((x, h_1), (h_2, 0)\bigr) = \dd(\dd f)\bigl((x, h_2), (h_1, 0)\bigr)$ for all
+  $h_1, h_2 \in E$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  The second difference quotient is symmetric in $h_1$ and $h_2$. By the previous lemma it
+  converges to both sides, and limits in a Hausdorff space are unique. This is \cite[1.3.17]{GN26} for
+  $k = 2$.
+\end{proof}
+
+The symmetry of the higher differentials is the subject of Chapter~\ref{chap:higher}.
+
+\section{Fréchet differentiable maps}
+
+On normed spaces both calculi are available, and the Fréchet one is the stronger of the two.
+
+\begin{proposition}[Fréchet $\Ck{k}$ implies Michal--Bastiani $\Ck{k}$]
+  \label{prop:frechet-to-mb}
+  \lean{LocallyConvex.Analysis.ContDiffOn.contDiffMBOn, HasFDerivAt.hasDirDerivAt}
+  \leanok
+  \uses{def:ck}
+  Let $E$ and $F$ be normed spaces. If $f$ is $\Ck{k}$ on $U$ in the sense of Fréchet, then it
+  is $\Ck{k}$ in the sense of Michal--Bastiani.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  A Fréchet differentiable map has all directional derivatives, with $\dd f(x)(h) = Df(x)h$.
+  The map $(x, h) \mapsto Df(x) h$ is Fréchet $\Ck{k-1}$ on $U \times E$, and the claim follows by
+  induction on $k$. This is \cite[Remark I.2.2]{Nee06}.
+\end{proof}
+
+The converse fails for $\Ck{k}$, but holds up to the loss of one derivative; see
+Chapter~\ref{chap:frechet}.

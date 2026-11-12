@@ -1,0 +1,147 @@
+\chapter{Rules of calculus}
+\label{chap:rules}
+
+With the chain rule (Theorem~\ref{thm:chain-rule}) and the structure of the higher
+differentials (Chapter~\ref{chap:higher}) at hand, we can now derive the remaining rules of
+calculus that are used in practice. All of them are classical in the Banach setting, and their
+statements are the familiar ones; what has to be checked is that the proofs survive without
+norms. In each case the argument either reduces to the chain rule or, through a continuous
+linear functional, to the calculus of real functions of one variable.
+
+We begin with continuous bilinear maps and the product rule. We then compute the derivatives
+of a map along a line, which leads to Taylor's formula in a weak form, valid without any
+completeness assumption on $F$. The chapter closes with the chain rule for second
+differentials. The references are the results of \cite{GN26} quoted in each proof.
+
+\section{Bilinear maps and the product rule}
+
+\begin{theorem}[Bilinear maps]
+  \label{thm:bilinear}
+  \lean{LocallyConvex.Analysis.hasDirDerivAt_bilin, LocallyConvex.Analysis.contDiffMBOn_bilin}
+  \leanok
+  \uses{def:ck, thm:partials}
+  Let $\beta \colon A \times B \to F$ be continuous and bilinear. Then $\beta$ is $\Ck{k}$ for
+  every $k$, with $\dd \beta\bigl((a, b), (h, w)\bigr) = \beta(a, w) + \beta(h, b)$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  The difference quotient of $\beta$ at $(a,b)$ in the direction $(h,w)$ is
+  $\beta(a, w) + \beta(h, b) + t\,\beta(h, w)$, and letting $t \to 0$ gives the formula. The
+  differential is therefore a sum of continuous bilinear maps composed with continuous linear
+  maps, and induction on $k$ completes the proof. This is \cite[1.2.3 and 1.3.5]{GN26}.
+\end{proof}
+
+Note that continuity of $\beta$ means joint continuity on $A \times B$. This cannot be
+weakened to separate continuity: for $b = 0$ and $h = 0$ the differential above reduces to
+$\beta(a, w)$, which must be jointly continuous in $(a, w)$.
+
+\begin{corollary}[Product rule]
+  \label{cor:product}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.bilin, LocallyConvex.Analysis.ContDiffMBOn.dMB_bilin}
+  \leanok
+  \uses{thm:bilinear, thm:chain-rule, lem:prod}
+  If $f \colon U \to A$ and $g \colon U \to B$ are $\Ck{k}$ and $\beta$ is continuous and
+  bilinear, then $x \mapsto \beta(f(x), g(x))$ is $\Ck{k}$ and
+  \[
+    \dd\bigl(\beta(f, g)\bigr)(x)(h) = \beta\bigl(f(x), \dd g(x)(h)\bigr)
+      + \beta\bigl(\dd f(x)(h), g(x)\bigr).
+  \]
+\end{corollary}
+
+\begin{proof}
+  \leanok
+  It is immediate from the chain rule applied to $\beta \circ (f, g)$, together with
+  Theorem~\ref{thm:bilinear}.
+\end{proof}
+
+\begin{example}
+  Let $\beta \colon E \times E \to F$ be continuous and bilinear, and let
+  $q(x) = \beta(x, x)$. Taking $f = g = \mathrm{id}_E$ in Corollary~\ref{cor:product}, we
+  obtain that $q$ is smooth, with $\dd q(x)(h) = \beta(x, h) + \beta(h, x)$. When $\beta$ is
+  symmetric this is the familiar $2\beta(x, h)$.
+\end{example}
+
+\section{Taylor's formula}
+
+To pass from the differentials of $f$ to the values of $f$ we restrict $f$ to a line and
+compose with a continuous linear functional. The resulting real function of one variable is
+as regular as $f$, and its derivatives are the iterated differentials of $f$ along the line.
+
+\begin{lemma}[Derivatives along a line]
+  \label{lem:line}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.hasDerivAt_iteratedDMB_line, LocallyConvex.Analysis.ContDiffMBOn.continuousOn_iteratedDMB_line}
+  \leanok
+  \uses{thm:iterated-regular}
+  Let $f$ be $\Ck{k}$ on $U$, $j < k$ and $\psi$ a continuous linear functional on $F$. Then
+  the real function $s \mapsto \psi\bigl(\dd^{(j)} f(x + sh; h, \dots, h)\bigr)$ has derivative
+  $\psi\bigl(\dd^{(j+1)} f(x + sh; h, \dots, h)\bigr)$ wherever $x + sh \in U$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  By the chain rule along the line $s \mapsto (x + sh, h, \dots, h)$, whose derivative is
+  $(h, 0, \dots, 0)$.
+\end{proof}
+
+\begin{theorem}[Taylor's formula, weak form]
+  \label{thm:taylor}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.taylor}
+  \leanok
+  \uses{lem:line}
+  Let $f$ be $\Ck{k+1}$ on a set containing the segment $[x, x+h]$. For every continuous linear
+  functional $\psi$ on $F$,
+  \[
+    \psi\bigl(f(x + h)\bigr) = \sum_{j=0}^{k} \frac{1}{j!}\,
+      \psi\bigl(\dd^{(j)} f(x; h, \dots, h)\bigr)
+      + \int_0^1 \frac{(1-t)^k}{k!}\,
+      \psi\bigl(\dd^{(k+1)} f(x + th; h, \dots, h)\bigr)\, dt .
+  \]
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  We apply Taylor's formula with integral remainder to the real function
+  $s \mapsto \psi(f(x + sh))$, whose derivatives are given by Lemma~\ref{lem:line}. Compare
+  \cite[1.6.1 and 1.6.14]{GN26}, where the formula is stated for the integrals in $F$; the weak form
+  needs no completeness of $F$.
+\end{proof}
+
+\begin{remark}
+  The remainder in Theorem~\ref{thm:taylor} is a real integral, one for each functional $\psi$.
+  Writing it as a vector of $F$ requires the weak integral of
+  $t \mapsto \frac{(1-t)^k}{k!}\,\dd^{(k+1)} f(x + th; h, \dots, h)$ to exist, which in general
+  depends on a completeness property of $F$ (Chapters~\ref{chap:integrals}
+  and~\ref{chap:completeness}). Since continuous linear functionals separate points, the weak
+  form determines $f(x + h)$ all the same.
+\end{remark}
+
+\section{The second-order chain rule}
+
+\begin{theorem}[Second-order chain rule]
+  \label{thm:chain-second}
+  \lean{LocallyConvex.Analysis.dMB_dMB_comp}
+  \leanok
+  \uses{thm:chain-rule}
+  Let $\tau \colon U \to V$ and $g \colon V \to F$ be $\Ck{2}$, with $U \subseteq E$ and
+  $V \subseteq E'$ open. For $y \in U$ and $a, b \in E$,
+  \[
+    \dd^{(2)} (g \circ \tau)(y; a, b)
+      = \dd^{(2)} g\bigl(\tau y; \dd\tau(y)(a), \dd\tau(y)(b)\bigr)
+        + \dd g(\tau y)\bigl(\dd^{(2)} \tau(y; a, b)\bigr).
+  \]
+\end{theorem}
+
+The first term is what one would guess by applying the chain rule twice naively; the second
+involves the second differential of $\tau$, and vanishes when $\tau$ is the restriction of a continuous
+linear map, since then $\dd\tau(y)(b)$ does not depend on $y$.
+
+\begin{proof}
+  \leanok
+  On $U \times E$, the first-order chain rule gives $\dd(g \circ \tau) = \dd g \circ \Phi$ with
+  $\Phi(y', b') = (\tau y', \dd\tau(y')(b'))$. We differentiate this once more with the
+  first-order chain rule. The derivative of $\Phi$ at $(y, b)$ in the direction $(a, 0)$ is
+  $(\dd\tau(y)(a), \dd^{(2)}\tau(y; a, b))$. Splitting it as
+  $(\dd\tau(y)(a), 0) + (0, \dd^{(2)}\tau(y; a, b))$, the first term gives $\dd^{(2)} g$, and
+  the second gives $\dd g$, because $\dd g(\tau y)$ is linear.
+\end{proof}

@@ -1,0 +1,214 @@
+\chapter{Weak integrals}
+\label{chap:integrals}
+
+Integration enters Michal--Bastiani calculus in two places: through the mean value theorem,
+which expresses $f(x + h) - f(x)$ as an integral of the differential along the segment, and
+through integrals depending on parameters, which are a basic tool to produce smooth maps.
+Without a norm there is no Bochner integral, and without completeness Riemann
+sums need not converge. The integral used in infinite-dimensional Lie theory is therefore
+defined by duality: a vector is the integral of a curve if every continuous linear functional
+sees it as such.
+
+Weak integrals defined in this way are unique, by Hahn--Banach, but they need not exist;
+existence is the subject of the next two chapters (Chapters~\ref{chap:completeness}
+and~\ref{chap:mackey-lipschitz}). Everything in the present chapter holds in an arbitrary
+locally convex space, with the existence of the relevant integrals as an explicit hypothesis.
+We first establish the basic properties of the integral and the change of variables formula,
+then the first part of the fundamental theorem of calculus, which needs no hypothesis on $F$
+at all, and finally the continuity and differentiability of integrals depending on parameters.
+Our reference is \cite[\S1.1]{GN26}.
+
+\section{Definition and basic properties}
+
+\begin{definition}[Weak integral]
+  \label{def:weak-integral}
+  \lean{LocallyConvex.Analysis.HasWeakIntegral}
+  \leanok
+  Let $\gamma \colon \R \to F$ and $a, b \in \R$. A vector $y \in F$ is a weak integral of
+  $\gamma$ over $[a, b]$ if
+  \[
+    \varphi(y) = \int_a^b \varphi\bigl(\gamma(t)\bigr)\, dt
+  \]
+  for every continuous linear functional $\varphi$ on $F$.
+\end{definition}
+
+\begin{lemma}[Uniqueness]
+  \label{lem:weak-integral-unique}
+  \lean{LocallyConvex.Analysis.HasWeakIntegral.unique}
+  \leanok
+  \uses{def:weak-integral}
+  Weak integrals are unique.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Two weak integrals have the same image under every continuous linear functional, and these
+  separate points by Hahn--Banach.
+\end{proof}
+
+We write $\int_a^b \gamma$ for the weak integral when it exists.
+
+\begin{remark}
+  In Lean, the function that returns the weak integral is total: its value is $0$ when the
+  integral does not exist. It is only used where existence is known.
+\end{remark}
+
+\begin{lemma}[Algebraic rules]
+  \label{lem:weak-integral-algebra}
+  \lean{LocallyConvex.Analysis.HasWeakIntegral.add, LocallyConvex.Analysis.HasWeakIntegral.sub, LocallyConvex.Analysis.HasWeakIntegral.neg, LocallyConvex.Analysis.HasWeakIntegral.const_smul, LocallyConvex.Analysis.hasWeakIntegral_const, LocallyConvex.Analysis.HasWeakIntegral.add_adjacent, LocallyConvex.Analysis.HasWeakIntegral.map}
+  \leanok
+  \uses{def:weak-integral}
+  For continuous curves, weak integrals are linear in the integrand and additive in the
+  interval: $\int_a^b \gamma + \int_b^c \gamma = \int_a^c \gamma$. The constant curve $v$ has
+  integral $(b - a)v$. If $L \colon F \to G$ is continuous and linear, then
+  $L\bigl(\int_a^b \gamma\bigr)$ is the weak integral of $L \circ \gamma$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Apply a functional and use the corresponding rules for real integrals. For $L$, it suffices
+  to note that $\varphi \circ L$ is a continuous linear functional on $F$ whenever $\varphi$ is
+  one on $G$. This is \cite[1.1.4 and 1.1.8]{GN26}.
+\end{proof}
+
+The next lemma replaces the estimate $\|\int_a^b \gamma\| \leq (b - a) \sup \|\gamma\|$ of
+the normed case. Since there is no norm, the size of a vector is measured by the closed convex
+neighborhoods of $0$ that contain it.
+
+\begin{lemma}[Integrals of small curves are small]
+  \label{lem:weak-integral-small}
+  \lean{LocallyConvex.Analysis.HasWeakIntegral.mem_smul}
+  \leanok
+  \uses{def:weak-integral}
+  Let $a \leq b$ and let $\gamma$ be continuous on $[a, b]$ with weak integral $y$. If
+  $W \subseteq F$ is closed, convex, contains $0$ and contains $\gamma([a, b])$, then
+  $y \in (b - a + 1)\, W$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  If not, Hahn--Banach separates $y$ from the closed convex set $(b - a + 1)W$ by a functional
+  $\varphi$. Bounding $\int_a^b \varphi(\gamma)$ by $(b - a)\sup_W \varphi$ gives a
+  contradiction. The constant $b - a + 1$ instead of $b - a$ avoids a separate treatment of
+  the case $a = b$. Compare \cite[1.1.9]{GN26}.
+\end{proof}
+
+\begin{remark}
+  When $F$ is normed and $W$ is the closed ball of radius $r$ centered at $0$, the lemma says
+  that $\|y\| \leq (b - a + 1)\, r$ whenever $\|\gamma(t)\| \leq r$ on $[a, b]$. Up to the
+  harmless constant, this is the classical estimate. For the applications in this document
+  (continuity and convergence statements) only the shape of the bound matters, not the
+  constant.
+\end{remark}
+
+\section{Change of variables}
+
+\begin{proposition}[Change of variables]
+  \label{prop:change-of-variables}
+  \lean{LocallyConvex.Analysis.hasWeakIntegral_comp_smul_deriv_iff, LocallyConvex.Analysis.hasWeakIntegral_affine_iff}
+  \leanok
+  \uses{def:weak-integral}
+  Let $\phi$ be a real $\Ck{1}$ function on $[a, b]$ and $\gamma$ continuous on
+  $\phi([a, b])$. Then $y$ is a weak integral of $t \mapsto \phi'(t)\,\gamma(\phi(t))$ over
+  $[a, b]$ if and only if it is a weak integral of $\gamma$ over $[\phi(a), \phi(b)]$.
+\end{proposition}
+
+Note that the statement is an equivalence: the existence of either integral implies the
+existence of the other. The case used most often is the affine one,
+$\phi(t) = a + t(b - a)$ on $[0, 1]$, which shows that $\int_a^b \gamma$ exists if and only if
+$\int_0^1 (b - a)\, \gamma(a + t(b - a))\, dt$ does, and that both coincide.
+
+\begin{proof}
+  \leanok
+  Apply a functional and use the change of variables formula for real integrals.
+\end{proof}
+
+\section{The fundamental theorem of calculus, first part}
+
+\begin{theorem}[Fundamental theorem of calculus, I]
+  \label{thm:ftc1}
+  \lean{LocallyConvex.Analysis.hasWeakIntegral_sub_of_hasDirDerivAt, LocallyConvex.Analysis.weakIntegral_eq_sub_of_hasDirDerivAt}
+  \leanok
+  \uses{def:weak-integral, def:dir-deriv}
+  Let $\gamma$ be differentiable on $[a, b]$, with continuous derivative $\gamma'$. Then
+  $\gamma(b) - \gamma(a)$ is the weak integral of $\gamma'$ over $[a, b]$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  For every functional $\varphi$, the real function $\varphi \circ \gamma$ has continuous
+  derivative $\varphi \circ \gamma'$, and it suffices to apply the real fundamental theorem of
+  calculus. This is \cite[1.1.5]{GN26}.
+\end{proof}
+
+We remark that no completeness of $F$ is needed: the integral exists because
+$\gamma(b) - \gamma(a)$ is a candidate. In other words, derivatives of $\Ck{1}$ curves are
+always integrable; the difficulty of the existence problem lies with curves that are not known
+to be derivatives.
+
+\begin{corollary}[Mean value theorem]
+  \label{cor:ftc-segment}
+  \lean{LocallyConvex.Analysis.ContDiffMBOn.hasWeakIntegral_dMB}
+  \leanok
+  \uses{thm:ftc1, prop:mean-value-weak}
+  If $f$ is $\Ck{1}$ on a set containing the segment $[x, x + h]$, then
+  $f(x + h) - f(x) = \int_0^1 \dd f(x + th)(h)\, dt$, the weak integral existing in $F$.
+\end{corollary}
+
+\begin{proof}
+  \leanok
+  This is Proposition~\ref{prop:mean-value-weak}, read as a statement about weak integrals.
+  See \cite[1.2.6]{GN26}.
+\end{proof}
+
+\section{Integrals depending on parameters}
+
+We now let the integrand depend on a parameter $x$ and study the regularity of
+$x \mapsto \int_a^b f(x, t)\, dt$. As in the classical case, the arguments rest on the
+compactness of $[a, b]$, which turns pointwise closeness into uniform closeness in $t$; the
+uniform estimate is then transferred to the integrals by
+Lemma~\ref{lem:weak-integral-small}.
+
+\begin{proposition}[Continuity]
+  \label{prop:param-continuity}
+  \lean{LocallyConvex.Analysis.continuousOn_weakIntegral}
+  \leanok
+  \uses{lem:weak-integral-small, lem:weak-integral-algebra}
+  Let $X$ be a topological space, $U \subseteq X$ and $T \subseteq \R$ open with
+  $[a, b] \subseteq T$, and let $f \colon U \times T \to F$ be continuous. If the weak integrals
+  $I(x) = \int_a^b f(x, t)\, dt$ exist for $x \in U$, then $I$ is continuous on $U$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  By compactness of $[a, b]$ (the tube lemma), for $x'$ close to $x$ the curve
+  $f(x', \cdot) - f(x, \cdot)$ takes values in a given closed convex neighborhood $W$ of $0$ on
+  $[a, b]$. By Lemma~\ref{lem:weak-integral-small}, $I(x') - I(x) \in (b - a + 1)W$. Since
+  the closed convex neighborhoods of $0$ form a basis, this proves the claim. This is
+  \cite[1.1.11]{GN26}.
+\end{proof}
+
+\begin{theorem}[Differentiation under the integral sign]
+  \label{thm:diff-under-integral}
+  \lean{LocallyConvex.Analysis.hasDirDerivAt_weakIntegral}
+  \leanok
+  \uses{prop:param-continuity, lem:mean-value-inclusion}
+  Let $f \colon U \times T \to F$ be continuous, with partial derivatives
+  $D(x,t)(h) = \dd f\bigl((x,t), (h, 0)\bigr)$ jointly continuous on $(U \times T) \times E$.
+  Suppose that the weak integrals $I(x) = \int_a^b f(x, t)\, dt$ exist for $x \in U$, and that
+  $J = \int_a^b D(x, t)(h)\, dt$ exists. Then $I$ has derivative $J$ at $x$ in the direction
+  $h$.
+\end{theorem}
+
+In other words, $\dd I(x)(h) = \int_a^b D(x, t)(h)\, dt$, as in the classical case, provided
+that both sides make sense. The existence of the integrals is part of the hypotheses; in a
+space with a suitable completeness property it is automatic (Chapter~\ref{chap:completeness}).
+
+\begin{proof}
+  \leanok
+  For $s \neq 0$, the difference quotient $\frac{1}{s}\bigl(I(x + sh) - I(x)\bigr)$ is the weak
+  integral of $t \mapsto \frac{1}{s}\bigl(f(x + sh, t) - f(x, t)\bigr)$. By the mean value
+  inclusion and the tube lemma, for small $s$ this curve is uniformly close to
+  $t \mapsto D(x, t)(h)$ on $[a, b]$, and Lemma~\ref{lem:weak-integral-small} gives the
+  convergence. This is \cite[1.3.15 and 1.3.23]{GN26}.
+\end{proof}

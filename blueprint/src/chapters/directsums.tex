@@ -1,0 +1,512 @@
+\chapter{Locally convex direct sums and direct limits}
+
+Locally convex direct sums and direct limits, after \cite[Appendix~B.13 and Sections~2.7--2.8]{GN26}.
+They are the tool for spaces of compactly supported functions and sections, fine box products of
+manifolds and manifolds of mappings on non-compact manifolds \cite[Sections~4.3--4.4]{GN26}.
+
+\section{Direct sums}
+
+\begin{definition}[Locally convex direct sum]
+  \label{def:ds-direct-sum}
+  \lean{LocallyConvex.Analysis.LCDirectSum, LocallyConvex.Analysis.LCDirectSum.box,
+    LocallyConvex.Analysis.LCDirectSum.addGroupFilterBasis}
+  \leanok
+  For topological vector spaces $(E_j)_{j \in J}$, $\bigoplus_j E_j$ is the space of finitely
+  supported families with the \emph{box topology}: the boxes
+  $\bigoplus_j V_j = \{x \mid x_j \in V_j \text{ for all } j\}$, $V_j$ a $0$-neighbourhood in $E_j$,
+  form a basis of $0$-neighbourhoods.
+\end{definition}
+
+\begin{theorem}[Basic properties {\cite[Remark~B.13.1, Lemma~B.13.2(a), (c)]{GN26}}]
+  \label{thm:ds-basic}
+  \lean{LocallyConvex.Analysis.LCDirectSum.nhds_zero_hasBasis,
+    LocallyConvex.Analysis.LCDirectSum.nhds_hasBasis,
+    LocallyConvex.Analysis.LCDirectSum.isOpen_box,
+    LocallyConvex.Analysis.LCDirectSum.continuous_apply,
+    LocallyConvex.Analysis.LCDirectSum.continuous_single,
+    LocallyConvex.Analysis.LCDirectSum.continuous_of_continuous_single,
+    LocallyConvex.Analysis.LCDirectSum.prodEquiv,
+    LocallyConvex.Analysis.LCDirectSum.sigmaEquiv}
+  \leanok
+  \uses{def:ds-direct-sum}
+  The box topology is a vector topology over any nontrivially normed field, locally convex and
+  Hausdorff when the $E_j$ are; boxes of open sets are open; coordinates and inclusions are
+  continuous. For countable $J$, an additive map from $\bigoplus_j E_j$ to a topological group is
+  continuous as soon as its restrictions to the summands are; hence the box topology is the locally
+  convex direct sum topology of \cite[(B.24)]{GN26}. Moreover
+  $\bigoplus_j (E_j \times F_j) \cong \bigoplus_j E_j \times \bigoplus_j F_j$ and, for any index
+  sets, $\bigoplus_{(i, j)} E_{ij} \cong \bigoplus_i \bigoplus_j E_{ij}$
+  \cite[Lemma~B.13.2(b)]{GN26}.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  For the universal property, as in \cite[Lemma~B.13.2(a)]{GN26}: choose $0$-neighbourhoods $Q_k$
+  with $Q_{k+1} + Q_{k+1} \subseteq Q_k$ and an injection $n \colon J \to \mathbb{N}$; the box of
+  preimages of $Q_{n_j + 1}$ is mapped into $Q_0$, by induction on the support, adding the summand of
+  least index first. For uncountable $J$ the locally convex direct sum topology can be strictly finer
+  than the box topology.
+\end{proof}
+
+\begin{theorem}[Subspaces, bounded sets, completeness {\cite[Lemma~B.13.2(d)--(f)]{GN26}}]
+  \label{thm:ds-subspaces}
+  \lean{LocallyConvex.Analysis.LCDirectSum.isEmbedding_mapCLM_subtype,
+    LocallyConvex.Analysis.LCDirectSum.exists_finset_of_isVonNBounded,
+    LocallyConvex.Analysis.LCDirectSum.tendsto_mk_of_finset,
+    LocallyConvex.Analysis.LCDirectSum.seqComplete,
+    LocallyConvex.Analysis.LCDirectSum.mackeyComplete,
+    LocallyConvex.Analysis.LCDirectSum.quasiCompleteSpace}
+  \leanok
+  \uses{thm:ds-basic}
+  If $F_j \subseteq E_j$ are subspaces, $\bigoplus_j F_j$ carries the topology induced by
+  $\bigoplus_j E_j$. If the $E_j$ are Hausdorff, every bounded subset of $\bigoplus_j E_j$ lies in
+  $\bigoplus_{j \in J_0} E_j$ for a finite $J_0 \subseteq J$, and $\bigoplus_j E_j$ is complete
+  (quasi-complete, sequentially complete, Mackey complete) if every $E_j$ is.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  The box of the sets $V_j \cap F_j$ is the trace of the box of the $V_j$. If a bounded set met
+  infinitely many summands, at coordinates $x_{j_k} \neq 0$, a box omitting $k^{-1} x_{j_k}$ would
+  not absorb it. For completeness, the coordinates of a Cauchy filter converge, and the limit has
+  finite support by the same argument. Closed bounded sets, Cauchy sequences and Mackey--Cauchy
+  sequences are bounded, hence lie in a finite partial sum, where convergence is coordinatewise;
+  the coordinates converge in the factors.
+\end{proof}
+
+\begin{theorem}[Direct sums of $\Ck{k}$ and real analytic maps {\cite[Proposition~2.8.1]{GN26}}]
+  \label{thm:ds-calculus}
+  \lean{LocallyConvex.Analysis.LCDirectSum.map,
+    LocallyConvex.Analysis.LCDirectSum.continuousOn_map,
+    LocallyConvex.Analysis.LCDirectSum.hasDirDerivAt_map,
+    LocallyConvex.Analysis.LCDirectSum.contDiffMBOn_map,
+    LocallyConvex.Analysis.LCDirectSum.smoothMBOn_map,
+    LocallyConvex.Analysis.LCDirectSum.complexAnalyticOn_map,
+    LocallyConvex.Analysis.LCDirectSum.realAnalyticOn_map}
+  \leanok
+  \uses{thm:ds-basic}
+  Let $f_j \colon U_j \to F_j$ be $\Ck{k}$ ($k \in \mathbb{N} \cup \{\infty\}$) on open sets
+  $U_j \subseteq E_j$, with $f_j(0) = 0$ for all but finitely many $j$. Then
+  $\bigoplus_j f_j \colon (x_j)_j \mapsto (f_j(x_j))_j$ is $\Ck{k}$ on the open set
+  $\bigoplus_j U_j$, with $\dd(\bigoplus_j f_j) = (\bigoplus_j \dd f_j) \circ \Phi$. If each $f_j$
+  is real analytic and $0 \in U_j$ for all but finitely many $j$, then $\bigoplus_j f_j$ is real
+  analytic.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Induction on $k$, as in \cite{GN26}: the difference quotients of $\bigoplus_j f_j$ only involve
+  finitely many coordinates. In the real analytic case $\bigoplus_j \tilde f_j$, for complex analytic
+  extensions $\tilde f_j$, is smooth with complex linear differentials, hence complex analytic, and
+  extends $\bigoplus_j f_j$ through $(\bigoplus_j E_j)_{\mathbb{C}} \cong \bigoplus_j (E_j)_{\mathbb{C}}$.
+\end{proof}
+
+\section{Direct limits}
+
+\begin{theorem}[Locally convex direct limits {\cite[Definition~B.13.4, Remark~B.13.5]{GN26}}]
+  \label{thm:ds-limit}
+  \lean{LocallyConvex.Analysis.LCDirectLimit,
+    LocallyConvex.Analysis.LCDirectLimit.continuous_incl,
+    LocallyConvex.Analysis.LCDirectLimit.continuous_of_continuous_comp_incl,
+    LocallyConvex.Analysis.LCDirectLimit.t2Space_of_injective}
+  \leanok
+  Let $S_n$ be subspaces of a real vector space $V$, each with a vector topology. The seminorms of
+  $V$ whose restrictions to every $S_n$ are continuous define the locally convex direct limit
+  topology. The inclusions are continuous, a linear map to a locally convex space is continuous as
+  soon as its restrictions to the $S_n$ are, and an injective such map to a Hausdorff space makes the
+  limit Hausdorff.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  For the universal property, compose with the gauge seminorms of the target.
+\end{proof}
+
+\begin{remark}[Cofinal sequences {\cite[Remark~B.13.10]{GN26}}]
+  \label{rem:ds-cofinal}
+  \lean{LocallyConvex.Analysis.LCDirectLimit.topology_eq_comp}
+  \leanok
+  \uses{thm:ds-limit}
+  If a monotone family $(S_i)_{i \in I}$ of subspaces with continuous inclusions admits a cofinal
+  sequence $(S_{i_n})_n$, then both have the same locally convex direct limit topology: apply the
+  universal property in both directions.
+\end{remark}
+
+\begin{lemma}[Convex neighbourhoods {\cite[Lemma~B.13.6]{GN26}}]
+  \label{lem:ds-convex-nhds}
+  \lean{LocallyConvex.Analysis.LCDirectLimit.mem_nhds_zero_iff_of_convex,
+    LocallyConvex.Analysis.LCDirectLimit.isOpen_iff_of_convex,
+    LocallyConvex.Analysis.LCDirectLimit.barrelledSpace,
+    LocallyConvex.Analysis.locallyConvexSpace_quotient,
+    LocallyConvex.Analysis.LCDirectLimit.isOpenQuotientMap_sumMap,
+    LocallyConvex.Analysis.LCDirectLimit.nhds_zero_hasBasis_sumMap,
+    LocallyConvex.Analysis.LCDirectLimit.isOpen_sumMap_box}
+  \leanok
+  \uses{thm:ds-limit, thm:ds-basic}
+  Let the $S_n$ cover $V$.
+  \begin{enumerate}
+    \item A convex set $U \ni 0$ is a $0$-neighbourhood of the direct limit if and only if
+      $U \cap S_n$ is a $0$-neighbourhood of $S_n$ for every $n$.
+    \item For an ascending sequence with continuous inclusions, a convex set is open if and only
+      if its traces on the $S_n$ are open.
+    \item For countably many steps, the summation map $\bigoplus_n S_n \to V$ is an open quotient
+      map; hence the sets $\bigcup_n (W_0 + \cdots + W_n)$, $W_n$ (open) $0$-neighbourhoods of
+      $S_n$, form a basis of (open) $0$-neighbourhoods.
+    \item If the $S_n$ are barrelled, so is the direct limit.
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  (a) The gauge of $U \cap (-U)$ is a seminorm on $V$ whose restrictions to the $S_n$ are
+  continuous. (b) Translate to a point of $U$ and apply (a). (c) The summation map is continuous
+  by the universal property of the direct sum; on the quotient of the direct sum by its kernel,
+  a locally convex space, the inclusions of the $S_n$ are continuous, so the inverse of the
+  induced bijection is continuous by the universal property of the direct limit. (d) A lower
+  semicontinuous seminorm on the limit restricts to continuous seminorms on the steps.
+\end{proof}
+
+\begin{lemma}[Extension of absolutely convex open sets {\cite[Lemma~B.13.8]{GN26}}]
+  \label{lem:ds-extension}
+  \lean{LocallyConvex.Analysis.exists_absConvex_isOpen_preimage_eq}
+  \leanok
+  Let $j \colon F \to E$ be an injective linear topological embedding into a locally convex space.
+  Every absolutely convex open set $V \subseteq F$ is $j^{-1}(Q)$ for an absolutely convex open set
+  $Q \subseteq E$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  As in \cite{GN26}, $Q$ is the convex join of $j(V)$ and an absolutely convex open
+  $0$-neighbourhood $W$ of $E$ with $j^{-1}(W) \subseteq V$. A point $a\, j(v) + b w$ of $Q$ has the
+  open neighbourhood $a\, j(v) + b W \subseteq Q$ if $b > 0$, and $j(v) = r^{-1} j(rv) + (1 - r^{-1})
+  \cdot 0$ with $rv \in V$, $r > 1$, otherwise.
+\end{proof}
+
+\begin{theorem}[Strict direct limits {\cite[Proposition~B.13.9(a)--(d)]{GN26}}]
+  \label{thm:ds-strict}
+  \lean{LocallyConvex.Analysis.LCDirectLimit.IsStrict,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.exists_mem_nhds_preimage_eq_of_subset,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.isEmbedding_incl,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.t2Space,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.exists_subset_isVonNBounded,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.exists_subset_isCompact,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.completeSpace,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.quasiCompleteSpace,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.exists_tendsto_of_cauchySeq,
+    LocallyConvex.Analysis.LCDirectLimit.IsStrict.mackeyComplete}
+  \leanok
+  \uses{lem:ds-convex-nhds, lem:ds-extension}
+  Let $S_0 \subseteq S_1 \subseteq \cdots$ be locally convex subspaces covering $V$, each $S_n$
+  carrying the topology induced by $S_{n+1}$. Then:
+  \begin{enumerate}
+    \item the direct limit induces the given topology on each $S_n$;
+    \item the direct limit is Hausdorff if the $S_n$ are;
+    \item if each $S_n$ is closed in $S_{n+1}$, every bounded (compact) subset of the limit is
+      contained, and bounded (compact), in some $S_n$;
+    \item the direct limit is complete if the $S_n$ are;
+    \item if each $S_n$ is closed in $S_{n+1}$, the direct limit is quasi-complete (sequentially
+      complete, Mackey complete) if the $S_n$ are.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  (a) Extend an absolutely convex open $0$-neighbourhood of $S_m$ step by step with
+  Lemma~\ref{lem:ds-extension} and take the union, a $0$-neighbourhood by
+  Lemma~\ref{lem:ds-convex-nhds}. (b) follows from (a). (c) If a bounded set $B$ met infinitely
+  many differences $S_{n+1} \setminus S_n$, at points $x_n$, the extensions in (a) can be cut down
+  so that $x_n \notin (n+1) W$, and $W$ does not absorb $B$. (d) As in \cite{GN26}, a Cauchy filter
+  concentrates near some $S_m$: otherwise the convex hull of sets $W_n \cap S_n$, with $W_n$
+  shrinking $0$-neighbourhoods, contradicts the Cauchy property. The traces on $S_m$ of the sets
+  $A + W$ then form a Cauchy filter on $S_m$, by (a), whose limit is the limit of the filter.
+  (e) Closed bounded sets, Cauchy sequences and Mackey--Cauchy sequences (together with their
+  bounded set) are bounded, hence lie and are bounded in some $S_n$, by (c); conclude with (a).
+\end{proof}
+
+\section{Direct limits of topological spaces}
+
+\begin{definition}[Direct sequences {\cite[Definitions~A.7.1, A.7.5, Remark~A.7.15]{GN26}}]
+  \label{def:top-dl}
+  \lean{LocallyConvex.Analysis.TopDirectLimit, LocallyConvex.Analysis.IsDirectSeq,
+    LocallyConvex.Analysis.IsDirectSeq.IsStrict, LocallyConvex.Analysis.IsDirectSeq.IsCompactifying,
+    LocallyConvex.Analysis.IsDirectSeq.CompactlyRegular}
+  \leanok
+  Let $X_0 \subseteq X_1 \subseteq \cdots$ be topological spaces covering a set $X$, with continuous
+  inclusions. The \emph{direct limit topology} on $X$ is the final topology of the inclusions. The
+  sequence is \emph{strict} if each $X_n$ carries the topology induced by $X_{n+1}$, and
+  \emph{compactifying} if every point of $X_n$ has a neighbourhood whose closure in some $X_m$ is
+  compact. It is \emph{compactly regular} if every compact subset of the limit lies, and is
+  compact, in some $X_n$.
+\end{definition}
+
+\begin{theorem}[Basic properties {\cite[Remark~A.7.2, Lemmas~A.7.3, A.7.6, Remark~A.7.15]{GN26}}]
+  \label{thm:top-dl-basic}
+  \lean{LocallyConvex.Analysis.TopDirectLimit.isOpen_iff,
+    LocallyConvex.Analysis.TopDirectLimit.continuous_iff,
+    LocallyConvex.Analysis.TopDirectLimit.eq_topology_iff,
+    LocallyConvex.Analysis.TopDirectLimit.topology_eq_comp,
+    LocallyConvex.Analysis.TopDirectLimit.continuous_map,
+    LocallyConvex.Analysis.IsDirectSeq.isOpen_iUnion,
+    LocallyConvex.Analysis.IsDirectSeq.exists_subset_of_isCompact,
+    LocallyConvex.Analysis.IsDirectSeq.IsStrict.isEmbedding_incl,
+    LocallyConvex.Analysis.IsDirectSeq.IsStrict.compactlyRegular,
+    LocallyConvex.Analysis.IsDirectSeq.isCompactifying_of_locallyCompactSpace,
+    LocallyConvex.Analysis.IsDirectSeq.isStrict_of_compactSpace,
+    LocallyConvex.Analysis.TopDirectLimit.topology_subtype_eq,
+    LocallyConvex.Analysis.IsDirectSeq.topology_iUnion_eq}
+  \leanok
+  \uses{def:top-dl}
+  A set is open (closed) in the direct limit iff its traces on all steps are; a map on the limit is
+  continuous iff its restrictions to the steps are, and this characterizes the topology; cofinal
+  subsequences give the same limit; ascending unions of open subsets of the steps are open. If the
+  steps are $T_1$, so is the limit, and compact sets lie in some step. Strict sequences have
+  embedded steps and, for $T_1$ steps, are compactly regular. Locally compact Hausdorff steps are
+  compactifying; compact Hausdorff steps are strict. Open and closed subsets carry the direct limit
+  topology of their traces, and so do ascending unions $\bigcup_n V_n$ of open subsets
+  $V_n \subseteq X_n$, with respect to the $V_n$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  As in \cite{GN26}. For compact sets, points $x_n \in K \setminus X_n$ would form an infinite
+  closed discrete subset of $K$. For strict sequences, open subsets of $X_m$ are extended
+  recursively to open subsets of the later steps.
+\end{proof}
+
+\begin{theorem}[Compactifying sequences {\cite[Lemmas~A.7.4, A.7.6(h), A.7.9,
+  Proposition~A.7.20]{GN26}}]
+  \label{thm:top-dl-compactifying}
+  \lean{LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.exists_isOpen,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.exists_disjoint,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.t2Space,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.isOpen_prod_iff,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.continuous_prod_iff,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.compactlyRegular,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.isLocallyKOmegaSpace,
+    LocallyConvex.Analysis.isKOmegaSpace_iff_exists_topology_eq,
+    LocallyConvex.Analysis.IsKOmegaSpace.isLocallyKOmegaSpace,
+    LocallyConvex.Analysis.isKOmegaSpace_of_sigmaCompactSpace,
+    LocallyConvex.Analysis.isLocallyKOmegaSpace_of_locallyCompactSpace,
+    LocallyConvex.Analysis.IsLocallyKOmegaSpace.compactlyGeneratedSpace}
+  \leanok
+  \uses{thm:top-dl-basic}
+  Let $X_0 \subseteq X_1 \subseteq \cdots$ and $Y_0 \subseteq Y_1 \subseteq \cdots$ be
+  compactifying sequences of Hausdorff spaces. Then $\varinjlim X_n$ is Hausdorff, compactly
+  regular and locally $k_\omega$, and $\varinjlim X_n \times \varinjlim Y_n =
+  \varinjlim (X_n \times Y_n)$ as topological spaces. A Hausdorff space is $k_\omega$ iff it is
+  the direct limit of an ascending sequence of compact subspaces; $k_\omega$-spaces and locally
+  compact spaces are locally $k_\omega$, and locally $k_\omega$-spaces are $k$-spaces
+  \cite[Remark~A.7.19]{GN26}.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Compact subsets of a step have open neighbourhoods with compact closure in a later step, inside
+  any prescribed open set. Iterating gives chains $K_j \subseteq V_j \subseteq K_{j+1}$, with $V_j$
+  open and $K_j$ compact in increasing steps, whose unions are open: two disjoint chains separate
+  points, and products of chains fit inside open subsets of the product. A set meeting every
+  $K_j$ in a closed set is closed in $\bigcup_j V_j$, so compact subsets of $\bigcup_j V_j$ lie in
+  some $K_j$ (otherwise they contain an infinite closed discrete set); covering a compact set by
+  finitely many compact pieces of such unions gives compact regularity.
+\end{proof}
+
+\begin{theorem}[Groups and vector spaces {\cite[Proposition~A.7.11, Corollary~A.7.12,
+  Example~A.7.13]{GN26}}]
+  \label{thm:top-dl-groups}
+  \lean{LocallyConvex.Analysis.TopDirectLimit.continuous_inv',
+    LocallyConvex.Analysis.TopDirectLimit.continuous_mul_left',
+    LocallyConvex.Analysis.TopDirectLimit.continuous_mul_right',
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.isTopologicalGroup,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.nhds_one_hasBasis,
+    LocallyConvex.Analysis.IsDirectSeq.isTopologicalGroup_of_locallyCompactSpace,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.continuousSMul,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.locallyConvexSpace,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.topology_eq_lcDirectLimit}
+  \leanok
+  \uses{thm:top-dl-compactifying, thm:ds-limit}
+  For an ascending sequence of topological groups with continuous inclusions, inversion and
+  translations are continuous in the direct limit topology. If the sequence is compactifying and
+  the steps are Hausdorff, the limit is a topological group, with the sets
+  $\bigcup_n U_0 U_1 \cdots U_n$ ($U_n$ open identity neighbourhoods of the steps) as a basis of
+  identity neighbourhoods. Compactifying direct limits of Hausdorff (locally convex) topological
+  vector spaces are (locally convex) topological vector spaces, and the direct limit topology is
+  then the locally convex direct limit topology.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Multiplication and scalar multiplication are continuous by the product theorem, the field being
+  the constant compactifying sequence. In the basis the $U_n$ can be taken convex, and ascending
+  unions of convex sets are convex. A locally convex topology making the inclusions continuous is
+  coarser than the locally convex direct limit topology, by its universal property.
+\end{proof}
+
+\begin{theorem}[Further properties {\cite[Remark~A.7.7, Example~A.7.17, Remark~A.7.21,
+  Lemma~A.7.22]{GN26}, \cite[Section~4]{GGH10}}]
+  \label{thm:top-dl-komega}
+  \lean{LocallyConvex.Analysis.IsDirectSeq.exists_nested_nhds,
+    LocallyConvex.Analysis.IsDirectSeq.IsCompactifying.isCompactifying_unionSet,
+    LocallyConvex.Analysis.compactlyGeneratedSpace_iff_topology_eq,
+    LocallyConvex.Analysis.IsDirectSeq.t2Space_isKOmegaSpace,
+    LocallyConvex.Analysis.IsDirectSeq.isLocallyKOmegaSpace,
+    LocallyConvex.Analysis.IsKOmegaSpace.prod,
+    LocallyConvex.Analysis.IsLocallyKOmegaSpace.prod,
+    LocallyConvex.Analysis.IsDirectSeq.isOpen_prod_iff,
+    LocallyConvex.Analysis.IsDirectSeq.isOpen_prod_iff_of_isKOmegaSpace}
+  \leanok
+  \uses{thm:top-dl-compactifying}
+  For locally compact Hausdorff steps, a point of an open set has nested open neighbourhoods
+  $V_n \subseteq X_n$ with compact closures inside the set and $\overline{V_n} \subseteq V_{n+1}$.
+  The sets $V_n$ of Lemma~A.7.6(b) form a compactifying sequence if the $X_n$ do. A Hausdorff
+  space is a $k$-space iff it is the direct limit of its compact subsets. Direct limits of
+  (locally) $k_\omega$-spaces are (locally) $k_\omega$ and compactly regular, finite products of
+  (locally) $k_\omega$-spaces are (locally) $k_\omega$, and
+  $\varinjlim X_n \times \varinjlim Y_n = \varinjlim (X_n \times Y_n)$ for locally $k_\omega$
+  steps.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  As in \cite{GN26} and \cite{GGH10}. For $k_\omega$ steps, the diagonal of cumulative
+  $k_\omega$-sequences is an ascending sequence of compact spaces with the same direct limit. For
+  locally $k_\omega$ steps, open $k_\omega$ sets $W_n \subseteq X_n$ with $W_n \subseteq W_{n+1}$
+  (countable unions of open $k_\omega$ sets are $k_\omega$) have union $\varinjlim W_n$. The
+  product of two such limits is a $k$-space, and its compact subsets lie in products of compact
+  subsets of the steps.
+\end{proof}
+
+\begin{theorem}[The finite topology {\cite[Examples~A.7.14, A.7.16]{GN26}}]
+  \label{thm:top-dl-finite}
+  \lean{LocallyConvex.Analysis.FiniteTop, LocallyConvex.Analysis.FiniteTop.continuous_linearMap,
+    LocallyConvex.Analysis.FiniteTop.topology_le,
+    LocallyConvex.Analysis.FiniteTop.topology_eq_seq,
+    LocallyConvex.Analysis.FiniteTop.locallyConvexSpace,
+    LocallyConvex.Analysis.FiniteTop.continuousLinearEquivFinsupp}
+  \leanok
+  \uses{thm:top-dl-groups}
+  The direct limit topology of the finite-dimensional subspaces of a real vector space $E$ is finer
+  than every vector topology, and linear maps on it are continuous. If $E$ has countable
+  dimension, it is a Hausdorff locally convex vector topology, hence the finest vector topology
+  and the finest locally convex topology, and $E \cong \mathbb{R}^{(\mathbb{N})}$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Linear maps on finite-dimensional spaces are continuous. For countable dimension, the spans of
+  the first $n$ basis vectors are cofinal and locally compact, so the limit is a locally convex
+  vector topology by Corollary~A.7.12.
+\end{proof}
+
+
+\section{Silva spaces}
+
+\begin{definition}[Silva systems {\cite[Definition~B.13.12]{GN26}}]
+  \label{def:ds-silva}
+  \lean{LocallyConvex.Analysis.IsSilvaSystem, LocallyConvex.Analysis.LCDirectLimit.IsSilva,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.isSilvaSystem}
+  \leanok
+  \uses{lem:ds-convex-nhds}
+  A \emph{Silva system} presenting a locally convex space $E$ consists of continuous linear maps
+  $j_n \colon E_n \to E$ from locally convex spaces and compact operators
+  $u_n \colon E_n \to E_{n+1}$ with $j_{n+1} \circ u_n = j_n$, such that the ranges of the $j_n$
+  cover $E$ and a convex set $C \ni 0$ is a $0$-neighbourhood as soon as every $j_n^{-1}(C)$ is.
+  Silva spaces, locally convex direct limits of Banach spaces with compact inclusions, are the case
+  of injective $j_n$ (by Lemma~\ref{lem:ds-convex-nhds}).
+\end{definition}
+
+\begin{theorem}[Topology of Silva spaces {\cite[Proposition~B.13.13(a)--(d)]{GN26}}]
+  \label{thm:ds-silva}
+  \lean{LocallyConvex.Analysis.IsSilvaSystem.isOpen_iff,
+    LocallyConvex.Analysis.IsSilvaSystem.prod,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.isOpen_iff,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.continuous_iff,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.t2Space,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.isClosed_of_isClosed_inter,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.exists_subset_isCompact,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.exists_subset_isVonNBounded,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.isCompact_closure_of_isVonNBounded}
+  \leanok
+  \uses{def:ds-silva}
+  Let $E$ be presented by a Silva system.
+  \begin{enumerate}
+    \item A set $O \subseteq E$ is open as soon as every $j_n^{-1}(O)$ is open: the locally convex
+      direct limit topology is the direct limit topology of the topological spaces $E_n$. Hence a
+      map from $E$ to a topological space is continuous as soon as its composites with the $j_n$
+      are, and $E$ is Hausdorff if the $E_n$ are $T_1$ and the $j_n$ injective.
+    \item Products of Silva systems are Silva systems.
+  \end{enumerate}
+  For a Silva space with $T_1$ sequential steps (for instance Banach spaces), compact subsets are
+  contained, and compact, in some step; if moreover the steps have bounded $0$-neighbourhoods,
+  bounded subsets are contained, and bounded, in some step, and they are relatively compact.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  We do not follow the route of \cite{GN26} through direct limits of compactifying sequences and
+  $k_\omega$-spaces (Corollary~A.7.12, Proposition~A.7.20). (a) Given $x = j_m(y_0) \in O$, build
+  compact sets $K_i \subseteq E_{m+i}$ with $j_{m+i}(K_i) \subseteq O$ and convex sets $A_i \ni 0$
+  with $x + A_i \subseteq j_{m+i}(K_i)$: if $U_i$ is a convex $0$-neighbourhood of $E_{m+i}$ with
+  $u_{m+i}(U_i)$ inside a compact set $L_i$, take $A_{i+1} = A_i + \varepsilon_i j_{m+i}(U_i)$ and
+  $K_{i+1} = u_{m+i}(K_i) + \varepsilon_i L_i$, with $\varepsilon_i > 0$ so small that $K_{i+1}$
+  is still mapped into $O$, by compactness. The union of the $A_i$ is a convex
+  $0$-neighbourhood, and $x$ plus it lies in $O$. (b) A convex set $C \ni 0$ contains
+  $\tfrac12 C_1 \times \tfrac12 C_2$, where $C_1 \times \{0\}$ and $\{0\} \times C_2$ are its
+  traces on the factors. For compact regularity, the compact sets $k L_p$ cover $E$ and, by (a),
+  detect closed sets; a compact set meeting the complements of all their finite unions would
+  contain an infinite closed discrete set. Bounded regularity and relative compactness then follow
+  as in \cite{GN26}, with an increasing sequence of bounded $0$-neighbourhoods of the steps in
+  place of normalized unit balls. We do not claim these arguments are new.
+\end{proof}
+
+\begin{theorem}[Duality for Silva spaces {\cite[Proposition~B.13.13(e)--(g)]{GN26}}]
+  \label{thm:ds-silva-duality}
+  \lean{LocallyConvex.Analysis.exists_evalStrongDual_eq,
+    LocallyConvex.Analysis.exists_continuousLinearEquiv_strongBidual,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.isKOmegaSpace,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.metrizableSpace_strongDual,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.completeSpace_strongDual,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.exists_continuousLinearEquiv_strongBidual,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.completeSpace}
+  \leanok
+  \uses{thm:ds-silva}
+  A barrelled Hausdorff locally convex space whose bounded sets are relatively compact is
+  reflexive. Consequently, a Silva space with $T_1$ sequential barrelled steps having bounded
+  $0$-neighbourhoods (for instance Banach spaces) is a reflexive, complete $k_\omega$-space, and its
+  strong dual is a Fréchet space.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  A functional $\varphi$ on the strong dual is bounded by $1$ on the functionals bounded by $1$ on
+  a compact absolutely convex set $C$. If no point of $C$ matched $\varphi$ on finitely many
+  functionals $f_1, \dots, f_k$, a functional on $\mathbb{R}^k$ would separate
+  $(\varphi(f_i))_i$ from the image of $C$; compactness of $C$ then gives a point matching
+  $\varphi$ everywhere. The evaluation map is continuous by Banach--Steinhaus and open by the
+  bipolar argument (Hahn--Banach). For Silva spaces, the compact sets $k L_p$ detect closed sets
+  and absorb the compact sets, so $E$ is $k_\omega$; its topology is coherent with the bounded
+  sets, so the strong dual is complete, and a sequence of compact sets absorbing the bounded sets
+  makes it metrizable. The strong bidual of a metrizable space is complete, so $E$ is complete.
+  We do not claim this argument is new.
+\end{proof}
+
+\begin{theorem}[$\Ck{k}$ maps on Silva spaces {\cite[Proposition~2.7.1]{GN26}}]
+  \label{thm:ds-silva-calculus}
+  \lean{LocallyConvex.Analysis.IsSilvaSystem.contDiffMBOn_of_comp,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.contDiffMBOn_of_comp,
+    LocallyConvex.Analysis.LCDirectLimit.IsSilva.contDiffMBOn_iUnion}
+  \leanok
+  \uses{thm:ds-silva}
+  Let $E$ be presented by a Silva system with Hausdorff steps and $U \subseteq E$ open. A map
+  $f \colon U \to F$ to a Hausdorff locally convex space is $\Ck{k}$ as soon as every
+  $f \circ j_n$ is $\Ck{k}$ on $j_n^{-1}(U)$. In a Silva space, the union of ascending open subsets
+  $U_n$ of the steps is open, and a map on it is $\Ck{k}$ as soon as its restrictions to the $U_n$
+  are.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Induction on $k$, as in \cite{GN26}: the directional derivatives of $f$ are those of the
+  $f \circ j_n$, and $\dd f$ is $\Ck{k-1}$ on $U \times E$, presented by the product Silva system,
+  by the induction hypothesis. Continuity comes from Theorem~\ref{thm:ds-silva}(a).
+\end{proof}
