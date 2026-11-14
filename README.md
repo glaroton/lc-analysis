@@ -30,7 +30,8 @@ check this.
 * [Verification](#verification)
 
 What might belong in Mathlib, and how it overlaps with Mathlib, is mapped in
-[UPSTREAMING.md](UPSTREAMING.md).
+[UPSTREAMING.md](UPSTREAMING.md). The first candidate, a `LocallyConvexSpace` instance on
+quotients, is prepared there with the reasons to add it.
 
 ## The setting
 

@@ -2,7 +2,8 @@
 
 This file maps the contents of lc-analysis against Mathlib, so that Mathlib maintainers and
 reviewers can see what might belong in Mathlib, what it depends on, and where it overlaps with
-existing Mathlib code. Nothing has been proposed to Mathlib yet. Inclusion is decided by the
+existing Mathlib code. Nothing has been proposed to Mathlib yet; the first candidate is prepared
+(see [below](#prepared-a-locallyconvexspace-instance-on-quotients)). Inclusion is decided by the
 Mathlib community, piece by piece, after discussion.
 
 Checked against Mathlib `v4.36.0-rc2` (commit `9d581dfff2e4`), on 2026-11-12. The overlap search
@@ -26,6 +27,47 @@ The rules are those of the Mathlib contribution guide,
   reviewers himself.
 * **Tracking.** When a piece is proposed, its row gets the Zulip thread or PR number. When it is
   merged, the file here is changed to use the Mathlib version, and the row says so.
+
+## Prepared: a `LocallyConvexSpace` instance on quotients
+
+The first candidate is ready but not yet proposed. It is a single instance, added to Mathlib's
+`Mathlib/Topology/Algebra/Module/LocallyConvex.lean` (22 lines, on Mathlib master of
+2026-11-12):
+
+```lean
+instance Submodule.Quotient.locallyConvexSpace (S : Submodule 𝕜 E) :
+    LocallyConvexSpace 𝕜 (E ⧸ S)
+```
+
+for a ring `𝕜` with a partial order and a topological additive group `E` which is a locally
+convex `𝕜`-module. The submodule need not be closed.
+
+**Why it is worth adding, although the proof is three lines of existing lemmas.**
+
+* *An instance is found automatically.* Today every user who needs `E ⧸ S` to be locally convex
+  must prove it by hand at each use, also when `E ⧸ S` appears inside another construction. With
+  the instance, Lean finds it.
+* *It completes the basic constructions.* The same Mathlib file has the instances for
+  subspaces, `Prod.locallyConvexSpace` and `Pi.locallyConvexSpace`, each a one-line consequence
+  of existing lemmas. Quotients are the missing basic construction.
+* *It has a use.* In this library, `Spaces/DirectLimitQuotient.lean` presents locally convex
+  direct limits (LF-spaces) as quotients of direct sums, and has to supply this fact by hand
+  through `locallyConvexSpace_quotient`, stated over `ℝ` only.
+* *No diamonds.* `LocallyConvexSpace` is a `Prop`, so another path to the same instance (for
+  example through a normed quotient) cannot conflict with this one.
+
+**The cost: one import.** The file now imports `Mathlib.Topology.Algebra.Module.Basic`, where the
+topology on `E ⧸ S` is declared. This adds 10 modules to what the file loads, and keeps
+`assert_not_exists NormedSpace` true. Nine of the ten come from the quotient topology on groups,
+through `GroupTheory/GroupAction/Quotient.lean` (orbit counting, periodic points, permutations of
+lists). Of that file, the topology on quotient groups uses only the action of `G` on `G ⧸ N` and
+its transitivity, about 76 lines; splitting them off into a light file, which would be a
+separate pull request on the group theory files, brings the cost down to 3 modules. Downstream,
+six of the seven Mathlib files that import `LocallyConvex` directly already load
+`Module.Basic`.
+
+**After it is merged,** `locallyConvexSpace_quotient` is removed from this library and
+`Spaces/DirectLimitQuotient.lean` uses the Mathlib instance.
 
 ## Classes
 
@@ -119,7 +161,7 @@ Proposed Mathlib locations are tentative.
 |---|---|---|---|---|
 | `DirectLimit` | Locally convex direct limits, universal property, strict limits, completeness | `Analysis/LocallyConvex/DirectLimit.lean` | N (see `TestFunction`) | – |
 | `DirectSum` | Locally convex direct sums, universal property; direct sums of `C^k` and analytic maps | `Analysis/LocallyConvex/DirectSum.lean` | N, last section F | – |
-| `DirectLimitQuotient` | Direct limits as quotients of direct sums; the quotient of a locally convex space is locally convex | `Analysis/LocallyConvex/DirectLimit.lean` | N (`locallyConvexSpace_quotient`: E) | – |
+| `DirectLimitQuotient` | Direct limits as quotients of direct sums; the quotient of a locally convex space is locally convex | `Analysis/LocallyConvex/DirectLimit.lean`; the quotient instance in `Topology/Algebra/Module/LocallyConvex.lean` | N (`locallyConvexSpace_quotient`: E) | quotient instance prepared, not proposed |
 | `DirectCompleteness` | Sequential, Mackey and quasi-completeness of direct sums and strict limits | `Analysis/LocallyConvex/DirectLimit.lean` | N | – |
 | `Silva` | Silva spaces (DFS) | `Analysis/LocallyConvex/Silva.lean` | N, one result F | – |
 | `SilvaDuality` | Reflexivity of Silva spaces; Silva spaces are `k_ω` | `Analysis/LocallyConvex/Silva.lean` | N | – |
@@ -205,7 +247,8 @@ These would be candidates of class E if they were rewritten with Mathlib's Fréc
 1. **Class E, now.** Each item extends an existing Mathlib file and needs no prior Zulip
    discussion:
    * `Analytic/Polynomial.lean` (symmetrization and polarization);
-   * `locallyConvexSpace_quotient` (Mathlib has no `LocallyConvexSpace` instance on quotients);
+   * `locallyConvexSpace_quotient` (Mathlib has no `LocallyConvexSpace` instance on quotients;
+     prepared, see [above](#prepared-a-locallyconvexspace-instance-on-quotients));
    * the real case of `Krein/SpectralParts.lean`.
 2. **Class X without the calculus:** `Units`, `WeakDarboux` (after rewriting with `extDeriv`),
    `BognarKrein` (after `Krein/`).
