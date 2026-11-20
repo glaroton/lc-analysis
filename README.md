@@ -180,6 +180,7 @@ continuously to `U × E`. No completeness is assumed.
 |---|---|---|
 | Between normed spaces, Michal–Bastiani `C^{k+1}` implies Fréchet `C^k` | `ContDiffMBOn.contDiffOn` | [GN26, 2.3.17] |
 | Between normed spaces, the two notions of smoothness agree | `smoothMBOn_iff_contDiffOn` | [GN26, 2.3.17] |
+| On a finite-dimensional domain, Michal–Bastiani and Fréchet `C^k` agree, for every `k` (`Calculus/MBFrechetFinite.lean`) | `contDiffMBOn_iff_contDiffOn` | from [GN26, 2.3.17(c)] |
 
 ### Ordinary differential equations on Banach spaces — [`ODE/Quadratic.lean`](LocallyConvexAnalysis/ODE/Quadratic.lean), [`ODE/Flow.lean`](LocallyConvexAnalysis/ODE/Flow.lean), [`ODE/FlowAnalytic.lean`](LocallyConvexAnalysis/ODE/FlowAnalytic.lean)
 
