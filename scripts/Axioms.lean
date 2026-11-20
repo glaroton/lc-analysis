@@ -433,3 +433,6 @@ open LocallyConvex.Analysis
 #print axioms LocallyConvex.Analysis.Counterexamples.Marsden.L2.denseRange_S
 #print axioms LocallyConvex.Analysis.Counterexamples.Marsden.L2.no_vector_bundle_chart
 #print axioms LocallyConvex.Analysis.Counterexamples.BognarKrein.bognar_example
+-- Implicit functions with finite-dimensional values (`Calculus/ImplicitFinite.lean`)
+#print axioms contDiffMBOn_of_implicit
+#print axioms smoothMBOn_of_implicit

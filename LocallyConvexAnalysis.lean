@@ -40,6 +40,7 @@ public import LocallyConvexAnalysis.Calculus.Integral.Basic
 public import LocallyConvexAnalysis.Calculus.Integral.Existence
 public import LocallyConvexAnalysis.Calculus.Integral.FundamentalTheorem
 public import LocallyConvexAnalysis.Calculus.MBFrechet
+public import LocallyConvexAnalysis.Calculus.ImplicitFinite
 public import LocallyConvexAnalysis.Calculus.MBFrechetFinite
 public import LocallyConvexAnalysis.Calculus.MackeyLipschitz
 public import LocallyConvexAnalysis.Calculus.MichalBastiani
